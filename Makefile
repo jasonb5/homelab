@@ -1,3 +1,23 @@
+.PHONY: terraform-init
+terraform-init:
+	. $(PWD)/setup.sh && \
+		terraform -chdir=terraform/ init
+
+.PHONY: terraform-plan
+terraform-plan:
+	. $(PWD)/setup.sh && \
+		terraform -chdir=terraform/ plan
+
+.PHONY: terraform-apply
+terraform-apply:
+	. $(PWD)/setup.sh && \
+		terraform -chdir=terraform/ apply
+
+.PHONY: terraform-destroy
+terraform-destroy:
+	. $(PWD)/setup.sh && \
+		terraform -chdir=terraform/ destroy
+
 .PHONY: public-key
 public-key:
 	. $(PWD)/setup.sh && \
