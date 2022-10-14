@@ -1,0 +1,5 @@
+---
+- name: Apply roles
+  hosts: all
+  roles:
+    - k3s

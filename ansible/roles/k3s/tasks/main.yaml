@@ -1,0 +1,77 @@
+- name: Download K3S insall script
+  become: true
+  get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s-installer.sh
+    mode: '0700'
+- name: Install common packages
+  become: true
+  apt:
+    name: nfs-common
+    state: present
+- name: Install K3S server
+  block:
+    - name: Install K3S server
+      become: true
+      command: >
+        /tmp/k3s-installer.sh
+        --disable traefik
+        --disable local-storage
+        --disable metrics-server
+    - name: Slurp K3S token
+      become: true
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+    - name: Copy k3s.yaml
+      become: true
+      fetch:
+        dest: "{{ lookup('env', 'HOME') }}/.kube/config"
+        flat: true
+        src: /etc/rancher/k3s/k3s.yaml
+    - name: Update K3S server address
+      delegate_to: localhost
+      replace:
+        path: "{{ lookup('env', 'HOME') }}/.kube/config"
+        regexp: 127.0.0.1
+        replace: "{{ ansible_facts['default_ipv4']['address'] }}"
+  when: "'k3s_server' in group_names"
+- name: Install K3S agent
+  become: true
+  environment:
+    K3S_URL: "https://{{ hostvars[groups['k3s_server']|first]['ansible_default_ipv4']['address'] }}:6443"
+    K3S_TOKEN: "{{ hostvars[groups['k3s_server']|first]['k3s_token']['content']|b64decode|trim }}"
+  command: /tmp/k3s-installer.sh
+  when: "'k3s_agent' in group_names"
+- name: Install GPU
+  block:
+    - name: Install Nvidia apt key
+      become: true
+      apt_key:
+        url: https://nvidia.github.io/libnvidia-container/gpgkey
+        state: present
+    - name: Install Nvidia apt source
+      become: true
+      get_url:
+        url: https://nvidia.github.io/libnvidia-container/ubuntu20.04/libnvidia-container.list
+        dest: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+    - name: Install Nvidia packages
+      become: true
+      apt:
+        name:
+          - nvidia-headless-470-server
+          - nvidia-utils-470-server
+          - nvidia-container-toolkit
+        update_cache: true
+        state: present
+    - name: Copy containerd config.toml
+      become: true
+      get_url:
+        url: https://k3d.io/v4.4.8/usage/guides/cuda/config.toml.tmpl
+        dest: /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
+    - name: Restart k3s service
+      become: true
+      systemd:
+        name: k3s
+        state: restarted
+  when: "'k3s_gpu' in group_names"
