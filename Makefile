@@ -1,3 +1,9 @@
+.PHONY: ansible-init
+ansible-init:
+	. $(PWD)/setup.sh && \
+		cd ansible/ && \
+		ansible-playbook -i hosts.yaml init.yaml
+
 .PHONY: terraform-init
 terraform-init:
 	. $(PWD)/setup.sh && \

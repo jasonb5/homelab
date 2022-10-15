@@ -64,12 +64,7 @@
           - nvidia-container-toolkit
         update_cache: true
         state: present
-    - name: Copy containerd config.toml
-      become: true
-      get_url:
-        url: https://k3d.io/v4.4.8/usage/guides/cuda/config.toml.tmpl
-        dest: /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
-    - name: Restart k3s service
+    - name: Restart K3S service
       become: true
       systemd:
         name: k3s
