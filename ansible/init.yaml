@@ -1,5 +1,6 @@
 ---
-- name: Apply roles
-  hosts: all
+- name: Apply k3s role
+  become: true
+  hosts: k3s
   roles:
     - k3s
