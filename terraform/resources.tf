@@ -16,6 +16,14 @@ locals {
       macaddr = "4e:58:39:92:c1:fb"
       disk_size = "512G"
     }
+    omada = {
+      target_node = "hyperion"
+      desc = "Omada SDN controller"
+      memory = 1024
+      cores = 2
+      macaddr = "be:b5:4d:f3:74:0c"
+      disk_size = "16G"
+    }
   }
 }
 
