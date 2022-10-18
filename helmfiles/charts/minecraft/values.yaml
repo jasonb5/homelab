@@ -1,0 +1,28 @@
+image:
+  repository: docker.io/jasonb87/minecraft
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+  TZ: America/Los_Angeles
+  INSTALLER_TYPE: curse
+  INSTALL_PATH: /modpack
+
+service:
+  main:
+    ports:
+      http:
+        port: 25565
+
+ingress:
+  main:
+    enabled: false
+
+persistence:
+  modpack:
+    enabled: false
+    mountPath: /modpack
+
+  data:
+    enabled: false
+    mountPath: /data
