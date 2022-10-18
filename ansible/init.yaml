@@ -4,3 +4,12 @@
   hosts: k3s
   roles:
     - k3s
+  tags:
+    - k3s
+- name: Apply omada role
+  hosts: omada
+  become: true
+  roles:
+    - omada
+  tags:
+    - omada
