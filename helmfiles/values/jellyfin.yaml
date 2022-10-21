@@ -1,3 +1,5 @@
+hostNetwork: true
+
 persistence:
   config:
     enabled: true
