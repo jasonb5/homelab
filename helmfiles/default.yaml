@@ -33,6 +33,14 @@ releases:
         persistence:
           config:
             enabled: true
+  - name: photoprism
+    namespace: default
+    chart: k8s-at-home/photoprism
+    version: 7.1.2
+    values:
+      - env:
+          TZ: America/Los_Angeles
+          PHOTOPRISM_PUBLIC: true
   - name: minecraft-ntc2
     namespace: default
     chart: charts/minecraft
@@ -74,6 +82,9 @@ releases:
           vaultwarden:
             namespace: default
             port: 80
+          photoprism:
+            namespace: default
+            port: 2342
 
 # these are processed before releases in this state file
 # ensuring longhorn CRDs are available
