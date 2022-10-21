@@ -18,6 +18,13 @@ The VMs provisioned on Proxmox are using cloud images, to prepare these images I
 # Software
 I'm using [Ansible][10] to automate deploying software on to the VMs and rpi4s.
 
+* [K3S][12]
+* [Pi-hole][13]
+* [Home Assistant][14]
+* [Omada][15]
+# Apps
+The rest of the apps are running on [K3S][12], managed using [Helmfile][16].
+
 [1]: <https://www.proxmox.com/en/> "Proxmox"
 [2]: <https://www.raspberrypi.com/products/raspberry-pi-4-model-b/> "Raspberry Pi 4"
 [3]: <https://unradi.net/> "Unraid"
@@ -29,3 +36,8 @@ I'm using [Ansible][10] to automate deploying software on to the VMs and rpi4s.
 [9]: <https://libguestfs.org/virt-customize.1.html> "virt-customize"
 [10]: <https://www.ansible.com/> "Ansible"
 [11]: <https://pawa.lt/posts/2019/07/automating-k3s-deployment-on-proxmox/> "Automating k3s Deployment on Proxmox"
+[12]: <https://k3s.io/> "K3S"
+[13]: <https://pi-hole.net/> "Pi-hole"
+[14]: <https://www.home-assistant.io/> "Home Assistant"
+[15]: <https://www.tp-link.com/us/support/download/omada-software-controller/> "Omada Software Controller"
+[16]: <https://helmfile.readthedocs.io/en/latest/> "Helmfile"
