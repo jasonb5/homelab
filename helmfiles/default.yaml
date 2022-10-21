@@ -23,6 +23,16 @@ releases:
     values:
       - values/common.yaml
       - values/jellyfin.yaml
+  - name: vaultwarden
+    namespace: default
+    chart: k8s-at-home/vaultwarden
+    version: 5.3.2
+    values:
+      - env:
+          ADMIN_TOKEN: ref+vault://homelab/vaultwarden/#admin_token
+        persistence:
+          config:
+            enabled: true
   - name: minecraft-ntc2
     namespace: default
     chart: charts/minecraft
@@ -61,6 +71,9 @@ releases:
             type: tcp
             namespace: default
             port: 25565
+          vaultwarden:
+            namespace: default
+            port: 80
 
 # these are processed before releases in this state file
 # ensuring longhorn CRDs are available
