@@ -56,7 +56,7 @@ resource "proxmox_vm_qemu" "vm" {
 
   disk {
     type = "virtio"
-    storage = "proxmox-cache"
+    storage = "local-lvm"
     size = each.value.disk_size
     slot = 0
   }
