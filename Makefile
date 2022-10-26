@@ -50,9 +50,36 @@ ubuntu-focal-cloudimg: public-key
 	sudo virt-customize -a ubuntu-20.04-cloudimg.img --run-command "echo 'Acquire::http::Proxy \"http://192.168.55.53:3142\";' >> /etc/apt/apt.conf.d/proxy.conf"
 	scp ubuntu-20.04-cloudimg.img root@charon.angrydonkey.io:/mnt/user/proxmox-backup/template/iso
 
-.PHONY: proxmox-cloudimg-template-destroy
-proxmox-cloudimg-template-destroy:
-	ssh root@blackhole.angrydonkey.io qm destroy 9000
+.PHONY: haos
+haos: public-key
+	test -e haos_ova-9.2.qcow2.xz || \
+		curl -sSLO https://github.com/home-assistant/operating-system/releases/download/9.2/haos_ova-9.2.qcow2.xz
+	test -e haos_ova-9.2.qcow2 || \
+		7z x haos_ova-9.2.qcow2.xz
+	cp haos_ova-9.2.qcow2 haos_ova-9.2.img
+	scp haos_ova-9.2.img root@charon.angrydonkey.io:/mnt/user/proxmox-backup/template/iso
+
+.PHONY: proxmox-haos-template
+proxmox-haos-template: TARGET=blackhole
+proxmox-haos-template: ID=9000
+proxmox-haos-template:
+	ssh root@$(TARGET).angrydonkey.io qm create $(ID) \
+		--name haos-template
+	ssh root@$(TARGET).angrydonkey.io qm importdisk $(ID) \
+		/mnt/pve/backup/template/iso/haos_ova-9.2.img local-lvm
+	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
+		--net0 virtio,bridge=vmbr0
+	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
+		--scsihw virtio-scsi-single \
+		--scsi0 local-lvm:vm-$(ID)-disk-0
+	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
+		--boot order=scsi0 \
+		--tablet 0 \
+		--bios ovmf \
+		--agent 1 \
+		--machine q35 \
+		--cpu host
+	ssh root@$(TARGET).angrydonkey.io qm template $(ID)
 
 .PHONY: proxmox-cloudimg-template
 proxmox-cloudimg-template: TARGET=blackhole
