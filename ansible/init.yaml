@@ -13,3 +13,13 @@
     - omada
   tags:
     - omada
+- name: Apply pihole role
+  hosts: pihole
+  become: true
+  roles:
+    - role: certbot
+      tags:
+        - certbot
+    - role: pihole
+      tags:
+        - pihole

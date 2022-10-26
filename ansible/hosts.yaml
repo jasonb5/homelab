@@ -14,3 +14,7 @@ all:
     omada:
       hosts:
         omada.angrydonkey.io:
+
+    pihole:
+      hosts:
+        pihole.angrydonkey.io:
