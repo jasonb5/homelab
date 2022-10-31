@@ -1,0 +1,168 @@
+suite: test app
+templates:
+  - app.yaml
+tests:
+  - it: should work
+    asserts:
+      - isKind:
+          of: Deployment
+  - it: should set extra workloads
+    set:
+      extraWorkloads:
+        - type: deployment
+          name: worker
+          image:
+            repository: centos
+            tag: 8
+    asserts:
+      - hasDocuments:
+          count: 2
+  - it: should set configMaps
+    set:
+      configMaps:
+        config:
+          data1: value1
+          data2: |
+            value2
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: data
+          value:
+            data1: value1
+            data2: |
+              value2
+  - it: should set secrets
+    set:
+      secrets:
+        credentials:
+          password: secret
+          data: |
+            stuff is secret
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: data
+          value:
+            data: c3R1ZmYgaXMgc2VjcmV0Cg==
+            password: c2VjcmV0
+  - it: should set persistentvolumeclaim
+    set:
+      persistence:
+        config:
+          type: pvc 
+          accessMode: ReadWriteMany
+          size: 10Gi
+          storageClassName: fast
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec
+          value:
+            accessModes:
+              - ReadWriteMany
+            volumeMode: FileSystem
+            resources:
+              requests:
+                storage: 10Gi
+            storageClassName: fast
+  - it: should set ingress
+    set:
+      services:
+        http:
+          port: 80
+        https:
+          port: 443
+      ingress:
+        http:
+          ingressClassName: nginx
+          paths:
+            - path: /home
+              host: example.io
+            - path: /about
+              pathType: Prefix
+        https:
+          paths:
+            - path: /private
+          tls:
+            - host: example.io
+              name: global-tls
+    asserts:
+      - equal:
+          path: spec
+          value:
+            ingressClassName: nginx
+            rules:
+              - http:
+                  paths:
+                    - host: example.io
+                      path: /home
+                      backend:
+                        service:
+                          name: common-test-http
+                          port: 
+                            number: 80
+                    - path: /about
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: common-test-http
+                          port: 
+                            number: 80
+        documentIndex: 1
+      - equal:
+          path: spec
+          value:
+            rules:
+              - http:
+                  paths:
+                    - path: /private
+                      backend:
+                        service:
+                          name: common-test-https
+                          port: 
+                            number: 443
+            tls:
+              - host: example.io
+                secretName: common-test-global-tls
+        documentIndex: 2
+  - it: should set extra objects
+    release:
+      name: sample
+      namespace: default
+    chart:
+      version: 0.1.0
+      appVersion: 0.1.0
+    set:
+      extraObjects:
+        - |
+          apiVersion: traefik.containo.us/v1alpha1
+          kind: IngressRoute
+          metadata:
+            name: {{ printf "%s-index" (include "common.name" .) }}
+            namespace: {{ .Release.Namespace }}
+          spec:
+            entryPoints:                      
+              - foo
+            routes:                           
+            - kind: Rule
+              match: Host(`test.example.com`) 
+              services:                       
+              - kind: Service
+                name: {{ printf "%s-index" (include "common.name" .) }}
+                namespace: {{ .Release.Namespace }}
+                port: 80
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata
+          value:
+            name: common-test-index
+            namespace: default
+      - equal:
+          path: spec.routes[0].services[0]
+          value:
+            kind: Service
+            name: common-test-index
+            namespace: default
+            port: 80

@@ -1,0 +1,25 @@
+{{- define "common.pvc" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "common.name" . }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.annotations }}
+  annotations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- $commonLabels := include "common.labels" . | fromYaml }}
+  {{- $labels := mustMerge $commonLabels (default dict .Values.labels) }}
+  labels:
+  {{- toYaml . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ default "ReadWriteOnce" .Values.accessMode }}
+  volumeMode: FileSystem
+  resources:
+    requests:
+      storage: {{ .Values.size }}
+  {{- with .Values.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
+{{- end }}

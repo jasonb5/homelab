@@ -1,0 +1,195 @@
+suite: test pod
+templates:
+  - app.yaml
+tests:
+  - it: should work
+    release:
+      name: sample
+      namespace: default
+    chart:
+      version: 0.1.0
+      appVersion: 0.1.0
+    asserts:
+      - equal:
+          path: spec.template.spec
+          value:
+            containers:
+            - name: common-test
+              image: ubuntu:20.04
+  - it: should set affinity
+    set:
+      affinity:
+        nodeAffinity:
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+            nodeAffinity:
+  - it: should set extra containers
+    set:
+      extraContainers:
+        fixperms:
+          image:
+            repository: centos
+            tag: 8
+    asserts:
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: fixperms
+            image: centos:8
+  - it: should set dnsConfig
+    set:
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            nameservers:
+              - 8.8.8.8
+  - it: should set dnsPolicy
+    set:
+      dnsPolicy: ClusterFirst
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirst
+  - it: should set hostNetwork
+    set:
+      hostNetwork: true
+    asserts:
+      - equal:
+          path: spec.template.spec.hostNetwork
+          value: true
+  - it: should set init containers
+    set:
+      initContainers:
+        fixperms:
+          image:
+            repository: centos
+            tag: 8
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0]
+          value:
+            image: centos:8
+            name: fixperms
+  - it: should set nodeName
+    set:
+      nodeName: test
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeName
+          value: test
+  - it: should set nodeSelector
+    set:
+      nodeSelector:
+        capabilities: ml
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            capabilities: ml
+  - it: should set runtimeClassName
+    set:
+      runtimeClassName: nvidia
+    asserts:
+      - equal:
+          path: spec.template.spec.runtimeClassName
+          value: nvidia
+  - it: should set securityContext
+    set:
+      podSecurityContext:
+        fsGroup: 457
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            fsGroup: 457
+  - it: should set serviceAccountName
+    set:
+      serviceAccountName: default
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: default
+  - it: should set tolerations
+    set:
+      tolerations:
+      - key: capabilities
+        operator: Equal
+        value: ml
+        effect: NoSchedule
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations[0]
+          value:
+            key: capabilities
+            operator: Equal
+            value: ml
+            effect: NoSchedule
+  - it: should set volumes
+    documentIndex: 0
+    set:
+      persistence:
+        data-configmap:
+          type: configMap
+          name: data
+        data-emptyDir:
+          type: emptyDir
+        data-hostpath:
+          type: hostPath
+          path: /data
+        data-nfs:
+          type: nfs
+          path: /mnt/users/data
+          server: 1.2.3.4
+          readOnly: true
+        data-pvc:
+          type: pvc
+          name: existing-pvc
+          readOnly: true
+        data-secret:
+          type: secret
+          name: credentials
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data-configmap
+            configMap:
+              name: data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data-emptyDir
+            emptyDir:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data-hostpath
+            hostPath:
+              path: /data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data-nfs
+            nfs:
+              path: /mnt/users/data
+              server: 1.2.3.4
+              readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data-pvc
+            persistentVolumeClaim:
+              claimName: existing-pvc
+              readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data-secret
+            secret:
+              secretName: credentials
