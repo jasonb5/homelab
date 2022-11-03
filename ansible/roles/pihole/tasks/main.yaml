@@ -57,7 +57,7 @@
     regexp: '(.*PIHOLE_DNS_2)=.*'
     replace: '\1='
 - name: Restart pihole dns
-  command: pihole restartdns
+  shell: pihole restartdns
 - name: Create combined.pem
   shell: >
     cat
