@@ -1,6 +1,7 @@
 locals {
   vms = {
     k3s-node1 = {
+      vmid = 500
       target_node = "blackhole" 
       desc = "k3s server"
       memory = 16384
@@ -11,6 +12,7 @@ locals {
       disk_type = "virtio"
     }
     k3s-node2 = {
+      vmid = 501
       target_node = "hyperion"
       desc = "k3s agent"
       memory = 16384
@@ -21,6 +23,7 @@ locals {
       disk_type = "virtio"
     }
     omada = {
+      vmid = 502
       target_node = "hyperion"
       desc = "Omada SDN controller"
       memory = 1024
@@ -31,6 +34,7 @@ locals {
       disk_type = "virtio"
     }
     pihole = {
+      vmid = 503
       target_node = "hyperion"
       desc = "Pi-hole"
       memory = 1024
@@ -41,6 +45,7 @@ locals {
       disk_type = "virtio"
     }
     homeassistant = {
+      vmid = 504
       target_node = "blackhole"
       desc = "home assistant"
       memory = 2048
@@ -58,7 +63,7 @@ resource "proxmox_vm_qemu" "vm" {
 
   name = each.key
   target_node = each.value.target_node
-  vmid = 500 + index(keys(local.vms), each.key)
+  vmid = each.value.vmid
   desc = each.value.desc
   startup = "order=2"
   oncreate = false
