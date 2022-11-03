@@ -1,3 +1,0 @@
-provider "proxmox" {}
-
-provider "vault" {}

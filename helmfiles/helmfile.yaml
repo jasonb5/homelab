@@ -1,3 +1,0 @@
-helmfiles:
-- path: default.yaml
-- path: git::https://gitea.angrydonkey.io/titters/helmfiles-private@helmfile.yaml?ref=main
