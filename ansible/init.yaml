@@ -3,16 +3,16 @@
   become: true
   hosts: k3s
   roles:
-    - k3s
-  tags:
-    - k3s
+    - role: k3s
+      tags:
+        - k3s
 - name: Apply omada role
   hosts: omada
   become: true
   roles:
-    - omada
-  tags:
-    - omada
+    - role: omada
+      tags:
+        - omada
 - name: Apply pihole role
   hosts: pihole
   become: true
