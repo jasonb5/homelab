@@ -49,5 +49,3 @@ extraObjects:
     stringData:
       token: ref+vault://homelab/cloudflare/#token
     type: Opaque
-
-    

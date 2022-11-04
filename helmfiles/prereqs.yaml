@@ -1,0 +1,35 @@
+repositories:
+- name: longhorn
+  url: https://charts.longhorn.io
+- name: traefik
+  url: https://helm.traefik.io/traefik
+
+releases:
+  - name: longhorn
+    namespace: longhorn-system
+    createNamespace: true
+    chart: longhorn/longhorn
+    version: 1.3.2
+    values:
+      - persistence:
+          defaultClassReplicaCount: 2
+    wait: true
+  - name: traefik
+    namespace: default
+    chart: traefik/traefik
+    version: 18.0.0
+    values:
+      - values/traefik.yaml
+    wait: true
+    needs:
+    - longhorn-system/longhorn
+  - name: longhorn-post
+    namespace: longhorn-system
+    chart: charts/common
+    version: 0.1.0
+    values:
+      - ingressRoutes:
+          longhorn:
+            service: longhorn-frontend
+            namespace: longhorn-system
+            port: 80
