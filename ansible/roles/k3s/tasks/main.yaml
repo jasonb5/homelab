@@ -10,7 +10,9 @@
 - name: Install K3S server
   block:
     - name: Install K3S server
-      command: >
+      environment:
+        INSTALL_K3S_VERSION: v1.24.7+k3s1
+      shell: >
         /tmp/k3s-installer.sh
         --disable traefik
         --disable local-storage
@@ -36,6 +38,7 @@
   environment:
     K3S_URL: "https://{{ hostvars[groups['k3s_server']|first]['ansible_default_ipv4']['address'] }}:6443"
     K3S_TOKEN: "{{ hostvars[groups['k3s_server']|first]['k3s_token']['content']|b64decode|trim }}"
+    INSTALL_K3S_VERSION: v1.24.7+k3s1
   command: /tmp/k3s-installer.sh
   when: "'k3s_agent' in group_names"
 - name: Install GPU
