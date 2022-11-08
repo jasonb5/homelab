@@ -1,0 +1,74 @@
+templates:
+  - app.yaml
+tests:
+  - it: should set tls
+    set:
+      services:
+        http:
+          port: 80
+      ingress:
+        http:
+          paths:
+            - path: /
+          tls: true
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.tls[0].secretName
+          value: common-test-http
+  - it: should set multiple paths
+    set:
+      services:
+        http:
+          port: 80
+      ingress:
+        http:
+          paths:
+            - path: /
+            - path: /dashboard
+    documentIndex: 2
+    asserts:
+      - contains:
+          path: spec.rules[0].http.paths
+          content:
+            path: /
+            backend:
+              service:
+                name: common-test-http
+                port:
+                  number: 80
+      - contains:
+          path: spec.rules[0].http.paths
+          content:
+            path: /dashboard
+            backend:
+              service:
+                name: common-test-http
+                port:
+                  number: 80
+  - it: should set ingressClassName
+    set:
+      services:
+        http:
+          port: 80
+      ingress:
+        http:
+          ingressClassName: traefik
+          paths:
+            - path: /
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: traefik
+  - it: should set single path
+    set:
+      services:
+        http:
+          port: 80
+      ingress:
+        http:
+          paths:
+            - path: /
+    asserts:
+      - matchSnapshot: {}

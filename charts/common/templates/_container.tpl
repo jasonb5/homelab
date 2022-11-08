@@ -18,12 +18,12 @@
     valueFrom:
       {{- if eq $value.type "configMap" }}
       configMapKeyRef:
-        key: {{ $value.key }}
-        name: {{ $value.name }}
+        key: {{ $key }}
+        name: {{ printf "%s-%s" (include "common.name" $) $value.name }}
       {{- else if eq $value.type "secret" }}
       secretKeyRef:
-        key: {{ $value.key }}
-        name: {{ $value.name }}
+        key: {{ $key }}
+        name: {{ printf "%s-%s" (include "common.name" $) $value.name }}
       {{- else }}
       {{ fail "Valid values for 'type': configMap, secret" }}
       {{- end }}
@@ -40,7 +40,7 @@
   {{- else }}
   {{ fail "Valid values for 'type': configMap, secret" }}
   {{- end }}
-      name: {{ .name }}
+      name: {{ printf "%s-%s" (include "common.name" $) .name }}
   {{- end }}
   {{- end }}
   {{- with .Values.image }}

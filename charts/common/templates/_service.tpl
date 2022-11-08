@@ -1,7 +1,7 @@
-{{- define "common.configMap" }}
+{{- define "common.service" }}
 apiVersion: v1
-kind: ConfigMap
-metdata:
+kind: Service
+metadata:
   name: {{ printf "%s-%s" (include "common.name" .) .name }}
   namespace: {{ .Release.Namespace }}
   {{- with .Values.annotations }}
@@ -12,6 +12,11 @@ metdata:
   {{- $labels := mustMerge $commonLabels (default dict .Values.labels) }}
   labels:
   {{- toYaml $labels | nindent 4 }}
-data:
-{{- toYaml .Values | nindent 2 }}
+spec:
+  ports:
+    - name: {{ .name }}
+      port: {{ .Values.port }}
+      protocol: {{ .Values.protocol }}
+  selector:
+  {{ include "common.selectorLabels" . | nindent 4 }}
 {{- end }}

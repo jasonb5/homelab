@@ -1,0 +1,15 @@
+templates:
+  - app.yaml
+tests:
+  - it: should match snapshot
+    set:
+      sidecars:
+        vpn:
+          enabled: true
+          auth: |
+            username
+            password
+          configFile: |
+            vpn
+    asserts:
+      - matchSnapshot: {}

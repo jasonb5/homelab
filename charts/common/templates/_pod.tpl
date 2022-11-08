@@ -59,7 +59,7 @@ volumes:
 - name: {{ $key }}
   {{- if eq $value.type "configMap" }}
   configMap:
-    name: {{ $value.name }}
+    name: {{ printf "%s-%s" (include "common.name" $) (default $key $value.name) }}
   {{- else if eq $value.type "emptyDir" }}
   emptyDir:
   {{- else if eq $value.type "hostPath" }}
@@ -74,13 +74,13 @@ volumes:
     server: {{ $value.server }}
   {{- else if eq $value.type "pvc" }}
   persistentVolumeClaim:
-    claimName: {{ $value.name }}
+    claimName: {{ printf "%s-%s" (include "common.name" $) (default $key $value.name) }}
     {{- with $value.readOnly }}
     readOnly: {{ . }}
     {{- end }}
   {{- else if eq $value.type "secret" }}
   secret:
-    secretName: {{ $value.name }}
+    secretName: {{ printf "%s-%s" (include "common.name" $) (default $key $value.name) }}
   {{- else }}
   {{ fail (printf "%s is not valid, choose from: configMap, emptyDir, hostPath, nfs, pvc, secret" $value.type) }}
   {{- end }}

@@ -1,117 +1,169 @@
-suite: test container
 templates:
   - app.yaml
 tests:
-  - it: should work
-    release:
-      name: sample
-      namespace: default
-    chart:
-      version: 0.1.0
-      appVersion: 0.1.0
-    asserts:
-      - equal:
-          path: spec.template.spec
-          value:
-            containers:
-            - name: common-test
-              image: ubuntu:20.04
-  - it: should customize
-    documentIndex: 0
+  - it: should set volumeMounts
     set:
-      args:
-        - infinity
-      command:
-        - /bin/sleep
-      image:
-        repository: custom
-        tag: latest
-        pullPolicy: Always
-      env:
-        TZ: America/Los_Angeles
-        CONFIG:
-          type: configMap
-          key: CONFIG
-          name: config
-        PASSWORD:
-          type: secret
-          key: PASSWORD
-          name: credentials
-      envFrom:
-        - type: configMap
-          name: config
-        - type: secret
-          name: credentials
-      livenessProbe:
-        exec:
-          command: echo "I am live"
-      services:
-        http:
-          port: 80  
-          hostPort: 80
-          protocol: TCP
-      readinessProbe:
-        exec:
-          command: echo "I am ready"
-      resources:
-        requests:
-          cpu: 1
-      securityContext:
-        fsGroup: 567
       persistence:
         config:
           type: configMap
-          name: config
           mountPath: /config
           readOnly: true
-          subPath: test
+          subPath: production
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /config
+            name: config
+            readOnly: true
+            subPath: production
+  - it: should set securityContext
+    set:
+      securityContext:
+        fsGroup: 101
     asserts:
       - equal:
-          path: spec.template.spec.containers[0]
+          path: spec.template.spec.containers[0].securityContext
           value:
-            args:
-              - infinity
-            command:
-              - /bin/sleep
-            env:
-            - name: CONFIG
-              valueFrom:
-                configMapKeyRef:
-                  key: CONFIG
-                  name: config
-            - name: PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: PASSWORD
-                  name: credentials
-            - name: TZ
-              value: America/Los_Angeles
-            envFrom:
-            - configMapRef:
-                name: config
-            - secretRef:
-                name: credentials
-            name: common-test
-            image: custom:latest
-            imagePullPolicy: Always
-            livenessProbe:
-              exec:
-                command: echo "I am live"
-            ports:
-            - containerPort: 80
-              hostPort: 80
-              name: http
-              protocol: TCP
-            readinessProbe:
-              exec:
-                command: echo "I am ready"
-            resources:
-              requests:
-                cpu: 1
-            securityContext:
-              fsGroup: 567
-            volumeMounts:
-              - mountPath: /config
-                name: config
-                readOnly: true
-                subPath: test
+            fsGroup: 101
+  - it: should set resources
+    set:
+      resources:
+        limits:
+          cpu: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            limits:
+              cpu: 2
+  - it: should set readinessProbe
+    set:
+      readinessProbe:
+        exec:
+          - /bin/exit
+          - 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              - /bin/exit
+              - 1
+  - it: should set ports
+    set:
+      services:
+        http:
+          port: 80
+          hostPort: 80
+          protocol: TCP
+    documentIndex: 0
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 80
+            hostPort: 80
+            name: http
+            protocol: TCP
+  - it: should set livenessProbe
+    set:
+      livenessProbe:
+        exec: ["/bin/exit", "1"]
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec: ["/bin/exit", "1"]
+  - it: should set imagePullPolicy
+    set:
+      image:
+        pullPolicy: Always
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+  - it: should set envFrom secret
+    set:
+      envFrom:
+        - type: secret
+          name: config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: common-test-config
+  - it: should set envFrom configMap
+    set:
+      envFrom:
+        - type: configMap
+          name: config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: common-test-config
+  - it: should set env from secret
+    set:
+      env:
+        CONFIG_FILE:
+          type: secret
+          name: config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: CONFIG_FILE
+            valueFrom:
+              secretKeyRef:
+                key: CONFIG_FILE
+                name: common-test-config
+  - it: should set env from configMap
+    set:
+      env:
+        CONFIG_FILE:
+          type: configMap
+          name: config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: CONFIG_FILE
+            valueFrom:
+              configMapKeyRef:
+                key: CONFIG_FILE
+                name: common-test-config
+  - it: should set env
+    set:
+      env:
+        TZ: America/Los_Angeles
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TZ
+            value: America/Los_Angeles
+  - it: should set command
+    set:
+      command:
+        - /bin/sleep
+        - infinity
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - /bin/sleep
+            - infinity
+  - it: should set args
+    set:
+      args:
+        - /bin/sleep
+        - infinity
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value:
+            - /bin/sleep
+            - infinity

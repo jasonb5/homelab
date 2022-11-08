@@ -19,6 +19,13 @@
 {{- end }}
 {{- end }}
 
+{{- with .services }}
+{{- range $key, $value := . }}
+---
+{{ include "common.service" (dict "Values" $value "name" $key "Release" $.Release "Chart" $.Chart) }}
+{{- end }}
+{{- end }}
+
 {{- with .ingress }}
 {{- range $key, $value := . }}
 ---
@@ -46,7 +53,11 @@
 {{- with .Values.extraObjects }}
 {{- range . }}
 ---
+{{ if typeIs "string" . }}
 {{- tpl . $ }}
+{{- else }}
+{{- tpl (. | toYaml) $ }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

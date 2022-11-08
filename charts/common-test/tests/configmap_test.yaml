@@ -1,0 +1,10 @@
+templates:
+  - app.yaml
+tests:
+  - it: should match snapshot
+    set:
+      configMaps:
+        config:
+          path: /data
+    asserts:
+      - matchSnapshot: {}

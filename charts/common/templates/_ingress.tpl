@@ -11,7 +11,7 @@ metadata:
   {{- $commonLabels := include "common.labels" . | fromYaml }}
   {{- $labels := mustMerge $commonLabels (default dict .Values.labels) }}
   labels:
-  {{- toYaml . | nindent 4 }}
+  {{- toYaml $labels | nindent 4 }}
 spec:
   {{- with .Values.ingressClassName }}
   ingressClassName: {{ . }}
@@ -35,11 +35,6 @@ spec:
       {{- end }}
   {{- with .Values.tls }}
   tls:
-    {{- range . }}
-    - secretName: {{ printf "%s-%s" (include "common.name" $) .name }}
-      {{- with .host }}
-      host: {{ . }}
-      {{- end }}
-    {{- end }}
+    - secretName: {{ printf "%s-%s" (include "common.name" $) $.name }}
   {{- end }}
 {{- end }}

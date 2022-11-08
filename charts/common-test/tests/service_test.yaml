@@ -1,0 +1,11 @@
+templates:
+  - app.yaml
+tests:
+  - it: should match snapshot
+    set:
+      services:
+        http:
+          port: 80
+          protocol: TCP
+    asserts:
+      - matchSnapshot: {}

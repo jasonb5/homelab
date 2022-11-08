@@ -1,54 +1,31 @@
-suite: test deployment
 templates:
   - app.yaml
 tests:
-  - it: should work
-    release:
-      name: sample
-      namespace: default
-    chart:
-      version: 0.1.0
-      appVersion: 0.1.0
+  - it: should match snapshot
     asserts:
-      - isKind:
-          of: Deployment
-      - equal:
-          path: metadata
-          value:
-            name: common-test
-            namespace: default
-            labels:
-              app.kubernetes.io/instance: sample
-              app.kubernetes.io/managed-by: Helm
-              app.kubernetes.io/name: common-test
-              app.kubernetes.io/version: 0.1.0
-              helm.sh/chart: common-test-0.1.0
-      - equal:
-          path: spec.replicas
-          value: 1
-  - it: should handle custom metadata
+      - matchSnapshot: {}
+  - it: should set label
     set:
       labels:
-        capabilities: ml
+        gpu: nvidia
+    asserts:
+      - isSubset:
+          path: metadata.labels
+          content:
+            gpu: nvidia
+  - it: should set annotation
+    set:
       annotations:
-        capabilities: ml
-    release:
-      name: sample
-      namespace: default
-    chart:
-      version: 0.1.0
-      appVersion: 0.1.0
+        gpu: nvidia
+    asserts:
+      - isSubset:
+          path: metadata.annotations
+          content:
+            gpu: nvidia
+  - it: should set replicas
+    set:
+      replicas: 2
     asserts:
       - equal:
-          path: metadata.labels
-          value:
-            app.kubernetes.io/instance: sample
-            app.kubernetes.io/managed-by: Helm
-            app.kubernetes.io/name: common-test
-            app.kubernetes.io/version: 0.1.0
-            helm.sh/chart: common-test-0.1.0
-            capabilities: ml
-      - equal:
-          path: metadata.annotations
-          value:
-            capabilities: ml
+          path: spec.replicas
+          value: 2

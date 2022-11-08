@@ -3,8 +3,8 @@
 {{- $vpnSecret := dict "vpn" (dict "vpn.auth" .Values.sidecars.vpn.auth "vpn.conf" .Values.sidecars.vpn.configFile) }}
 {{- $_ := mustMerge .Values.secrets $vpnSecret }}
 
-{{- $vpnPersistence := dict "vpn-config" (dict "type" "secret" "mountPath" "/vpn/vpn.conf" "subPath" "vpn.conf" "name" (printf "%s-vpn" (include "common.name" $)) "unique" "openvpn") }}
-{{- $_ := mustMerge $vpnPersistence (dict "vpn-auth" (dict "type" "secret" "mountPath" "/vpn/vpn.auth" "subPath" "vpn.auth" "name" (printf "%s-vpn" (include "common.name" $)) "unique" "openvpn")) }}
+{{- $vpnPersistence := dict "vpn-config" (dict "type" "secret" "mountPath" "/vpn/vpn.conf" "subPath" "vpn.conf" "name" "vpn" "unique" "openvpn") }}
+{{- $_ := mustMerge $vpnPersistence (dict "vpn-auth" (dict "type" "secret" "mountPath" "/vpn/vpn.auth" "subPath" "vpn.auth" "name" "vpn" "unique" "openvpn")) }}
 {{- if not .Values.sidecars.vpn.persistence }}
 {{- $_ := set .Values.sidecars.vpn "persistence" $vpnPersistence }}  
 {{- else }}
