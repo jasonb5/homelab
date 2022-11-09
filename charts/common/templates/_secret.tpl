@@ -1,4 +1,5 @@
 {{- define "common.secret" }}
+---
 apiVersion: v1
 kind: Secret
 metadata:

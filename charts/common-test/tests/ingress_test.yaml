@@ -8,6 +8,7 @@ tests:
           port: 80
       ingress:
         http:
+          enabled: true
           paths:
             - path: /
           tls: true
@@ -23,6 +24,7 @@ tests:
           port: 80
       ingress:
         http:
+          enabled: true
           paths:
             - path: /
             - path: /dashboard
@@ -53,6 +55,7 @@ tests:
           port: 80
       ingress:
         http:
+          enabled: true
           ingressClassName: traefik
           paths:
             - path: /

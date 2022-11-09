@@ -1,4 +1,5 @@
 {{- define "common.deployment" }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,6 +24,5 @@ spec:
     metadata:
       labels:
       {{- include "common.selectorLabels" . | nindent 8 }}
-    spec:
-    {{- include "common.pod" . | nindent 6 }}
+    spec: {{- include "common.pod" . | nindent 6 }}
 {{- end }}

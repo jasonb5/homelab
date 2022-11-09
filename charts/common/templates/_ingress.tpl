@@ -1,4 +1,6 @@
 {{- define "common.ingress" }}
+{{- if .Values.enabled }}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -19,7 +21,8 @@ spec:
   rules:
   - http:
       paths:
-      {{- range .Values.paths }}
+      {{- $paths := default (list (dict "path" "/")) .Values.paths }}
+      {{- range $paths }}
       - path: {{ .path }}
         {{- with .host }}
         host: {{ . }}
@@ -37,4 +40,5 @@ spec:
   tls:
     - secretName: {{ printf "%s-%s" (include "common.name" $) $.name }}
   {{- end }}
+{{- end }}
 {{- end }}

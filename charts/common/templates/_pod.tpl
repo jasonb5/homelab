@@ -56,34 +56,37 @@ tolerations:
 {{- with .Values.persistence }}
 volumes:
 {{- range $key, $value := . }}
+{{- $type := default "emptyDir" $value.type }}
+{{- if $value.enabled }}
 - name: {{ $key }}
-  {{- if eq $value.type "configMap" }}
+  {{- if eq $type "configMap" }}
   configMap:
     name: {{ printf "%s-%s" (include "common.name" $) (default $key $value.name) }}
-  {{- else if eq $value.type "emptyDir" }}
+  {{- else if eq $type "emptyDir" }}
   emptyDir:
-  {{- else if eq $value.type "hostPath" }}
+  {{- else if eq $type "hostPath" }}
   hostPath:
     path: {{ $value.path }}
-  {{- else if eq $value.type "nfs" }}
+  {{- else if eq $type "nfs" }}
   nfs:
     path: {{ $value.path }}
     {{- with $value.readOnly }}
     readOnly: {{. }}
     {{- end }}
     server: {{ $value.server }}
-  {{- else if eq $value.type "pvc" }}
+  {{- else if eq $type "pvc" }}
   persistentVolumeClaim:
     claimName: {{ printf "%s-%s" (include "common.name" $) (default $key $value.name) }}
     {{- with $value.readOnly }}
     readOnly: {{ . }}
     {{- end }}
-  {{- else if eq $value.type "secret" }}
+  {{- else if eq $type "secret" }}
   secret:
     secretName: {{ printf "%s-%s" (include "common.name" $) (default $key $value.name) }}
   {{- else }}
   {{ fail (printf "%s is not valid, choose from: configMap, emptyDir, hostPath, nfs, pvc, secret" $value.type) }}
   {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

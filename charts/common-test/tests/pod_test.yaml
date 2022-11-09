@@ -122,6 +122,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: secret
           name: custom
     asserts:
@@ -135,6 +136,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: secret
     asserts:
       - contains:
@@ -159,6 +161,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: nfs
           server: 192.168.1.1
           path: /data
@@ -176,6 +179,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: hostPath
           path: /data
     asserts:
@@ -189,6 +193,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: emptyDir
     asserts:
       - contains:
@@ -200,6 +205,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: configMap
     asserts:
       - contains:
@@ -212,6 +218,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: configMap
           name: custom
     asserts:

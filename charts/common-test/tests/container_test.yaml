@@ -5,6 +5,7 @@ tests:
     set:
       persistence:
         config:
+          enabled: true
           type: configMap
           mountPath: /config
           readOnly: true

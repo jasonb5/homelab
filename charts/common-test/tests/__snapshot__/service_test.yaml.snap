@@ -50,3 +50,4 @@ should match snapshot:
       selector:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/name: common-test
+      type: ClusterIP

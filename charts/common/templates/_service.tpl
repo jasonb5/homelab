@@ -1,4 +1,5 @@
 {{- define "common.service" }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,13 +11,12 @@ metadata:
   {{- end }}
   {{- $commonLabels := include "common.labels" . | fromYaml }}
   {{- $labels := mustMerge $commonLabels (default dict .Values.labels) }}
-  labels:
-  {{- toYaml $labels | nindent 4 }}
+  labels: {{- toYaml $labels | nindent 4 }}
 spec:
   ports:
     - name: {{ .name }}
       port: {{ .Values.port }}
-      protocol: {{ .Values.protocol }}
-  selector:
-  {{ include "common.selectorLabels" . | nindent 4 }}
+      protocol: {{ default "TCP" .Values.protocol }}
+  type: {{ default "ClusterIP" .Values.type }}
+  selector: {{- include "common.selectorLabels" . | nindent 4 }}
 {{- end }}

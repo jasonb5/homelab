@@ -1,4 +1,7 @@
 {{- define "common.pvc" }}
+{{- $type := default "emptyDir" .Values.type }}
+{{- if and (eq $type "pvc") .Values.enabled }}
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -11,15 +14,16 @@ metadata:
   {{- $commonLabels := include "common.labels" . | fromYaml }}
   {{- $labels := mustMerge $commonLabels (default dict .Values.labels) }}
   labels:
-  {{- toYaml . | nindent 4 }}
+  {{- toYaml $labels | nindent 4 }}
 spec:
   accessModes:
     - {{ default "ReadWriteOnce" .Values.accessMode }}
-  volumeMode: FileSystem
+  volumeMode: Filesystem
   resources:
     requests:
-      storage: {{ .Values.size }}
+      storage: {{ default "8Gi" .Values.size }}
   {{- with .Values.storageClassName }}
   storageClassName: {{ . }}
   {{- end }}
+{{- end }}
 {{- end }}

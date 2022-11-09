@@ -45,29 +45,8 @@ should set single path:
       ports:
       - name: http
         port: 80
-        protocol: null
+        protocol: TCP
       selector:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/name: common-test
-  3: |
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      labels:
-        app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: common-test
-        app.kubernetes.io/version: 1.16.0
-        helm.sh/chart: common-test-0.1.0
-      name: common-test-http
-      namespace: NAMESPACE
-    spec:
-      rules:
-      - http:
-          paths:
-          - backend:
-              service:
-                name: common-test-http
-                port:
-                  number: 80
-            path: /
+      type: ClusterIP
