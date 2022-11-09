@@ -1,0 +1,21 @@
+image:
+  repository: linuxserver/jellyfin
+  tag: latest
+
+env:
+  TZ: America/Los_Angeles
+
+services:
+  http:
+    port: 8096
+
+ingress:
+  http:
+    enabled: false
+
+persistence:
+  config:
+    enabled: false
+
+  data:
+    enabled: false
