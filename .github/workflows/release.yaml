@@ -16,10 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Run chart releaser
         run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           ls -la .
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
