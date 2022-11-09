@@ -34,8 +34,20 @@ should match snapshot:
                 add:
                 - NET_ADMIN
                 - SYS_MODULE
-            volumeMounts: null
-          volumes: null
+            volumeMounts:
+            - mountPath: /vpn/vpn.auth
+              name: vpn-auth
+              subPath: vpn.auth
+            - mountPath: /vpn/vpn.conf
+              name: vpn-config
+              subPath: vpn.conf
+          volumes:
+          - name: vpn-auth
+            secret:
+              secretName: common-test-vpn
+          - name: vpn-config
+            secret:
+              secretName: common-test-vpn
   2: |
     apiVersion: v1
     data:

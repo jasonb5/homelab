@@ -57,7 +57,6 @@ tolerations:
 volumes:
 {{- range $key, $value := . }}
 {{- $type := default "emptyDir" $value.type }}
-{{- if $value.enabled }}
 - name: {{ $key }}
   {{- if eq $type "configMap" }}
   configMap:
@@ -86,7 +85,6 @@ volumes:
   {{- else }}
   {{ fail (printf "%s is not valid, choose from: configMap, emptyDir, hostPath, nfs, pvc, secret" $value.type) }}
   {{- end }}
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
