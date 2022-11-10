@@ -1,0 +1,48 @@
+templates:
+  - ingressroute.yaml
+tests:
+  - it: should work
+    set:
+      ingressRoutes:
+        - host: test.domain.io
+          serviceName: test
+          port: 80
+    asserts:
+      - matchSnapshot: {}
+  - it: should override entryPoints
+    set:
+      ingressRoutes:
+        - host: test.domain.io
+          serviceName: test
+          port: 80
+          entryPoints:
+            - web
+            - websecure
+    asserts:
+      - equal:
+          path: spec.entryPoints
+          value:
+            - web
+            - websecure
+  - it: should override service namespace
+    set:
+      ingressRoutes:
+        - host: test.domain.io
+          serviceName: test
+          port: 80
+          namespace: custom
+    asserts:
+      - equal:
+          path: spec.routes[0].services[0].namespace
+          value: custom
+  - it: should override service match
+    set:
+      ingressRoutes:
+        - host: test.domain.io
+          serviceName: test
+          port: 80
+          match: Host(`test.domain.io`) && Path(`/custom`)
+    asserts:
+      - equal:
+          path: spec.routes[0].match
+          value: Host(`test.domain.io`) && Path(`/custom`)
