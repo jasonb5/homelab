@@ -52,4 +52,15 @@
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{- with .Values.extraObjects2 }}
+{{- range . }}
+---
+{{ if typeIs "string" . }}
+{{- tpl . $ }}
+{{- else }}
+{{- tpl (. | toYaml) $ }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- end }}

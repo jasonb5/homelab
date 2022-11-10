@@ -63,6 +63,8 @@ extraWorkloads: []
 
 extraObjects: []
 
+extraObjects2: []
+
 sidecars:
   vpn:
     enabled: false
