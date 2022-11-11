@@ -10,7 +10,7 @@ should work:
       - websecure
       routes:
       - kind: Rule
-        match: Host(`{{ .host }}`)
+        match: Host(`test.domain.io`)
         services:
         - kind: Service
           name: test

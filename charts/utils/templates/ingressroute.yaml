@@ -11,7 +11,7 @@ spec:
   {{ toYaml $entryPoints | nindent 4 }}
   routes:
   - kind: Rule
-    match: {{ default "Host(`{{ .host }}`)" .match }}
+    match: {{ default (printf "Host(`%s`)" .host) .match }}
     services:
     - kind: Service
       name: {{ .serviceName }}
