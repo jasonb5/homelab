@@ -49,9 +49,13 @@
   imagePullPolicy: {{ . }}
   {{- end }}
   {{- end }}
-  {{- with .Values.livenessProbe }}
+  {{- if .Values.livenessProbe }}
   livenessProbe:
-  {{- toYaml . | nindent 4 }}
+  {{- toYaml .Values.livenessProbe | nindent 4 }}
+  {{- else if .Values.services }}
+  {{- $service := get .Values.services ((keys .Values.services) | first) }}
+  livenessProbe:
+  {{- toYaml (dict "tcpSocket" (dict "port" $service.port)) | nindent 4 }}
   {{- end }}
   {{- with .Values.services }}
   ports:
@@ -66,9 +70,13 @@
     {{- end }}
   {{- end }}
   {{- end }}
-  {{- with .Values.readinessProbe }}
+  {{- if .Values.readinessProbe }}
   readinessProbe:
-  {{- toYaml . | nindent 4 }}
+  {{- toYaml .Values.readinessProbe | nindent 4 }}
+  {{- else if .Values.services }}
+  {{- $service := get .Values.services ((keys .Values.services) | first) }}
+  readinessProbe:
+  {{- toYaml (dict "tcpSocket" (dict "port" $service.port)) | nindent 4 }}
   {{- end }}
   {{- with .Values.resources }}
   resources:

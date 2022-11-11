@@ -3,6 +3,7 @@
 {{- include "common.vpn" . }}
 
 {{- range (concat (list .Values) .Values.extraWorkloads) }}
+
 {{- if eq .type "deployment" }}
 {{- include "common.deployment" (dict "Values" . "Release" $.Release "Chart" $.Chart) }}
 {{- else }}
@@ -11,7 +12,7 @@
 
 {{- with .persistence }}
 {{- range $key, $value := . }}
-{{ include "common.pvc" (dict "Values" $value "Release" $.Release "Chart" $.Chart) }}
+{{ include "common.pvc" (dict "Values" $value "name" $key "Release" $.Release "Chart" $.Chart) }}
 {{- end }}
 {{- end }}
 
