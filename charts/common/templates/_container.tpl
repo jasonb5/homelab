@@ -60,8 +60,10 @@
   {{- $defaultProbe = omit $defaultProbe "tcpSocket" }}
   {{- end }}
   {{- end }}
+  {{- with $defaultProbe }}
   livenessProbe: 
-  {{- toYaml $defaultProbe | nindent 4 }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.services }}
   ports:
   {{- range $key, $value := . }}
@@ -86,8 +88,10 @@
   {{- $defaultProbe = omit $defaultProbe "tcpSocket" }}
   {{- end }}
   {{- end }}
+  {{- with $defaultProbe }}
   readinessProbe:
-  {{- toYaml $defaultProbe | nindent 4 }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.resources }}
   resources:
   {{- toYaml . | nindent 4 }}

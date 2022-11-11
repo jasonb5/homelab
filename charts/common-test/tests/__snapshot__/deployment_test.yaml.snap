@@ -25,6 +25,4 @@ should match snapshot:
         spec:
           containers:
           - image: ubuntu:20.04
-            livenessProbe: {}
             name: common-test
-            readinessProbe: {}

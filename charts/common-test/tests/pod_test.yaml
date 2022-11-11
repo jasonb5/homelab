@@ -66,8 +66,6 @@ tests:
           content:
             image: busybox:latest
             name: fix-permission
-            livenessProbe: {}
-            readinessProbe: {}
   - it: should set nodeName
     set:
       nodeName: server
