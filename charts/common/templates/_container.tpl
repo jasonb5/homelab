@@ -89,7 +89,7 @@
   {{- with .Values.persistence }}
   volumeMounts:
   {{- range $key, $value := . }}
-  {{- if or (not (hasKey $value "unique")) (eq (get $value "unique") $.Values.name) }}
+  {{- if and $value.enabled (or (not (hasKey $value "unique")) (eq (get $value "unique") $.Values.name)) }}
   - mountPath: {{ default (printf "/%s" $key) $value.mountPath }}
     name: {{ $key }}
     {{- with $value.readOnly }}

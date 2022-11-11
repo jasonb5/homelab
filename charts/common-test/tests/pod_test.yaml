@@ -118,6 +118,35 @@ tests:
             key: "key1"
             operator: "Exists"
             effect: "NoSchedule"
+  - it: should not have volume
+    set:
+      persistence:
+        config:
+          enabled: false
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].volumeMounts
+      - isNull:
+          path: spec.template.spec.volumes
+      - hasDocuments:
+          count: 1
+  - it: should set default volume type
+    set:
+      persistence:
+        config:
+          enabled: true
+    asserts:
+      - isNotNull:
+          path: spec.template.spec.containers[0].volumeMounts
+        documentIndex: 0
+      - isNotNull:
+          path: spec.template.spec.volumes
+        documentIndex: 0
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: PersistentVolumeClaim
+        documentIndex: 1
   - it: should set secret volume name
     set:
       persistence:
@@ -145,18 +174,23 @@ tests:
             name: config
             secret:
               secretName: common-test-config
-  #- it: should set persistentVolumeClaim volume
-  #  set:
-  #    persistence:
-  #      config:
-  #        type: pvc
-  #  asserts:
-  #    - contains:
-  #        path: spec.template.spec.volumes
-  #        content:
-  #          name: config
-  #          persistentVolumeClaim:
-  #            claimName: common-test-config
+  - it: should set persistentVolumeClaim volume
+    set:
+      persistence:
+        config:
+          enabled: true
+          type: pvc
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            persistentVolumeClaim:
+              claimName: common-test-config
+        documentIndex: 0
+      - isKind:
+          of: PersistentVolumeClaim
+        documentIndex: 1
   - it: should set nfs volume
     set:
       persistence:
