@@ -60,6 +60,16 @@ entries:
   utils:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2022-11-11T06:26:45.306470521Z"
+    description: A Helm chart for Kubernetes
+    digest: 898b1f2ae642f7dabdebe2bbd5b358f9c25efb1cf3aaf07293cd767766d29a1a
+    name: utils
+    type: application
+    urls:
+    - https://github.com/jasonb5/homelab/releases/download/utils-0.1.1/utils-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2022-11-10T09:38:30.679173527Z"
     description: A Helm chart for Kubernetes
     digest: 594c30cfeec73fe5d0e37896c12a5f17daf2622870f4b433729cd0f1e170bc12
@@ -68,4 +78,4 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/utils-0.1.0/utils-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-11T05:58:30.42526873Z"
+generated: "2022-11-11T06:26:45.306486321Z"
