@@ -38,6 +38,39 @@ tests:
           value:
             limits:
               cpu: 2
+  - it: should set default readinessProbe
+    set:
+      services:
+        http:
+          port: 80
+    documentIndex: 0
+    asserts:
+      - isNotNull:
+          path: spec.template.spec.containers[0].readinessProbe
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value: 
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 80
+  - it: should override default readinessProbe
+    set:
+      services:
+        http:
+          port: 80
+      readinessProbe:
+        successThreshold: 5
+    documentIndex: 0
+    asserts:
+      - isNotNull:
+          path: spec.template.spec.containers[0].readinessProbe
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value: 
+            initialDelaySeconds: 5
+            successThreshold: 5
+            tcpSocket:
+              port: 80
   - it: should set readinessProbe
     set:
       readinessProbe:

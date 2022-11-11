@@ -25,7 +25,9 @@ should match snapshot:
         spec:
           containers:
           - image: ubuntu:20.04
+            livenessProbe: {}
             name: common-test
+            readinessProbe: {}
   2: |
     apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy

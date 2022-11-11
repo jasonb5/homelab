@@ -49,14 +49,19 @@
   imagePullPolicy: {{ . }}
   {{- end }}
   {{- end }}
-  {{- if .Values.livenessProbe }}
-  livenessProbe:
-  {{- toYaml .Values.livenessProbe | nindent 4 }}
-  {{- else if .Values.services }}
+  {{- $defaultProbe := dict }}
+  {{- if .Values.services }}
   {{- $service := get .Values.services ((keys .Values.services) | first) }}
-  livenessProbe:
-  {{- toYaml (dict "tcpSocket" (dict "port" $service.port)) | nindent 4 }}
+  {{- $defaultProbe = dict "tcpSocket" (dict "port" $service.port) }}
   {{- end }}
+  {{- if .Values.livenessProbe }}
+  {{- $defaultProbe = mustMerge .Values.livenessProbe $defaultProbe }}
+  {{- if hasKey $defaultProbe "httpGet" }}
+  {{- $defaultProbe = omit $defaultProbe "tcpSocket" }}
+  {{- end }}
+  {{- end }}
+  livenessProbe: 
+  {{- toYaml $defaultProbe | nindent 4 }}
   {{- with .Values.services }}
   ports:
   {{- range $key, $value := . }}
@@ -70,14 +75,19 @@
     {{- end }}
   {{- end }}
   {{- end }}
-  {{- if .Values.readinessProbe }}
-  readinessProbe:
-  {{- toYaml .Values.readinessProbe | nindent 4 }}
-  {{- else if .Values.services }}
+  {{- $defaultProbe := dict }}
+  {{- if .Values.services }}
   {{- $service := get .Values.services ((keys .Values.services) | first) }}
-  readinessProbe:
-  {{- toYaml (dict "tcpSocket" (dict "port" $service.port)) | nindent 4 }}
+  {{- $defaultProbe = dict "tcpSocket" (dict "port" $service.port) "initialDelaySeconds" 5 }}
   {{- end }}
+  {{- if .Values.readinessProbe }}
+  {{- $defaultProbe = mustMerge .Values.readinessProbe $defaultProbe }}
+  {{- if hasKey $defaultProbe "httpGet" }}
+  {{- $defaultProbe = omit $defaultProbe "tcpSocket" }}
+  {{- end }}
+  {{- end }}
+  readinessProbe:
+  {{- toYaml $defaultProbe | nindent 4 }}
   {{- with .Values.resources }}
   resources:
   {{- toYaml . | nindent 4 }}

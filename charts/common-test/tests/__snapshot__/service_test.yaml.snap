@@ -34,6 +34,7 @@ should match snapshot:
               name: http
               protocol: TCP
             readinessProbe:
+              initialDelaySeconds: 5
               tcpSocket:
                 port: 80
   2: |

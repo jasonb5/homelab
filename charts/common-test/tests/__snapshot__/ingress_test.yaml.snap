@@ -33,6 +33,7 @@ should set single path:
             - containerPort: 80
               name: http
             readinessProbe:
+              initialDelaySeconds: 5
               tcpSocket:
                 port: 80
   2: |
