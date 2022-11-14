@@ -75,6 +75,21 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/common-test-0.1.0/common-test-0.1.0.tgz
     version: 0.1.0
+  jellyfin:
+  - apiVersion: v2
+    appVersion: 10.8.7
+    created: "2022-11-14T00:33:23.58229992Z"
+    dependencies:
+    - name: common
+      repository: https://jasonb5.github.io/homelab/
+      version: 0.1.6
+    description: A Helm chart for Kubernetes
+    digest: 9cd4d8980d835a22c37b9cf66fb1c51d8ca7a7cc2345a8f7dea1414014a7a296
+    name: jellyfin
+    type: application
+    urls:
+    - https://github.com/jasonb5/homelab/releases/download/jellyfin-0.1.0/jellyfin-0.1.0.tgz
+    version: 0.1.0
   utils:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -96,4 +111,19 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/utils-0.1.0/utils-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-11T08:38:20.5050423Z"
+  vaultwarden:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-11-14T00:33:23.745139024Z"
+    dependencies:
+    - name: common
+      repository: https://jasonb5.github.io/homelab/
+      version: 0.1.6
+    description: A Helm chart for Kubernetes
+    digest: f7dd054f99b5295cd2eef6af3ac55eafe769d34356a8a6389f46d56ba9116f3f
+    name: vaultwarden
+    type: application
+    urls:
+    - https://github.com/jasonb5/homelab/releases/download/vaultwarden-0.1.0/vaultwarden-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-11-14T00:33:23.745170026Z"
