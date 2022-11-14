@@ -4,6 +4,7 @@ locals {
       vmid = 500
       target_node = "blackhole" 
       desc = "k3s server"
+      bios = "seabios"
       memory = 16384
       cores = 6
       macaddr = "ca:10:3f:9a:2b:f6"
@@ -15,6 +16,7 @@ locals {
       vmid = 501
       target_node = "hyperion"
       desc = "k3s agent"
+      bios = "seabios"
       memory = 16384
       cores = 30
       macaddr = "4e:58:39:92:c1:fb"
@@ -26,6 +28,7 @@ locals {
       vmid = 502
       target_node = "hyperion"
       desc = "Omada SDN controller"
+      bios = "seabios"
       memory = 1024
       cores = 1
       macaddr = "be:b5:4d:f3:74:0c"
@@ -37,6 +40,7 @@ locals {
       vmid = 503
       target_node = "hyperion"
       desc = "Pi-hole"
+      bios = "seabios"
       memory = 1024
       cores = 1
       macaddr = "fe:b5:3d:a3:10:1c"
@@ -48,6 +52,7 @@ locals {
       vmid = 504
       target_node = "blackhole"
       desc = "home assistant"
+      bios = "ovmf"
       memory = 2048
       cores = 2
       macaddr = "1a:03:1b:0c:70:05"
@@ -65,6 +70,7 @@ resource "proxmox_vm_qemu" "vm" {
   target_node = each.value.target_node
   vmid = each.value.vmid
   desc = each.value.desc
+  bios = each.value.bios
   startup = "order=2"
   oncreate = false
   agent = 1
