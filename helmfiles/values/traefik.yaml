@@ -30,6 +30,10 @@ ports:
       domains:
       - main: "*.angrydonkey.io"
 
+providers:
+  kubernetesCRD:
+    allowCrossNamespace: true
+
 persistence:
   enabled: true
 
