@@ -1,15 +1,10 @@
-hostNetwork: true
-
 persistence:
-  config:
+  data:
     enabled: true
-    size: 32G
 
-  media:
-    enabled: true
-    type: nfs
-    server: 192.168.55.53
-    path: /mnt/user/media
+env:
+  SIGNUPS_ALLOWED: "false"
+  ADMIN_TOKEN: ref+vault://homelab/vaultwarden/#admin_token 
 
 extraObjects:
   - |
@@ -23,9 +18,9 @@ extraObjects:
         - websecure
       routes:
       - kind: Rule
-        match: Host(`jellyfin.angrydonkey.io`)
+        match: Host(`vaultwarden.angrydonkey.io`)
         services:
         - kind: Service
-          name: jellyfin-http
+          name: vaultwarden-http
           namespace: default
-          port: 8096
+          port: 80
