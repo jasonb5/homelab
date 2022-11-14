@@ -1,21 +1,18 @@
 image:
-  repository: linuxserver/jellyfin
-  tag: 10.8.7
+  repository: vaultwarden/server
+  tags: 1.26.0
 
 env:
   TZ: America/Los_Angeles
 
 services:
   http:
-    port: 8096
+    port: 80
 
 ingress:
   http:
     enabled: false
 
 persistence:
-  config:
-    enabled: false
-
-  media:
+  data:
     enabled: false
