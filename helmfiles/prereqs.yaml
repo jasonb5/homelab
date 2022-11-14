@@ -3,6 +3,8 @@ repositories:
   url: https://charts.longhorn.io
 - name: traefik
   url: https://helm.traefik.io/traefik
+- name: homelab
+  url: https://jasonb5.github.io/homelab/
 
 releases:
   - name: longhorn
@@ -20,16 +22,14 @@ releases:
     version: 18.0.0
     values:
       - values/traefik.yaml
-    wait: true
+      - utils:
+          ingressRoutes:
+            - host: longhorn.angrydonkey.io
+              namespace: longhorn-system
+              serviceName: longhorn-frontend
+              port: 80
+    dependencies:
+      - chart: homelab/utils
+        version: 0.1.1
     needs:
     - longhorn-system/longhorn
-  - name: longhorn-post
-    namespace: longhorn-system
-    chart: charts/common
-    version: 0.1.0
-    values:
-      - ingressRoutes:
-          longhorn:
-            service: longhorn-frontend
-            namespace: longhorn-system
-            port: 80
