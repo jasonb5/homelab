@@ -33,4 +33,4 @@
     --agree-tos
     --dns-cloudflare
     --dns-cloudflare-credentials /etc/certbot/cloudflare.ini
-    -d pihole.angrydonkey.io
+    -d "{{ ansible_facts['fqdn'] }}"

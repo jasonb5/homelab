@@ -58,6 +58,10 @@
     replace: '\1='
 - name: Restart pihole dns
   shell: pihole restartdns
+- name: Install lighttpd openssl
+  apt:
+    name: lighttpd-mod-openssl
+    state: present
 - name: Create combined.pem
   shell: >
     cat

@@ -23,3 +23,10 @@
     - role: pihole
       tags:
         - pihole
+- name: Apply docker role
+  hosts: docker
+  become: true
+  roles:
+    - role: docker
+      tags:
+        - docker
