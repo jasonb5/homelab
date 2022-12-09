@@ -1,8 +1,6 @@
-.PHONY: ansible-init
-ansible-init:
-	. $(PWD)/setup.sh && \
-		cd ansible/ && \
-		ansible-playbook -i hosts.yaml init.yaml
+SHELL = /bin/bash
+
+CURL_CMD = curl -sSLO
 
 .PHONY: terraform-init
 terraform-init:
@@ -38,65 +36,81 @@ renew-cert:
 		ssh-add -D && \
 		ssh-add ~/.ssh/id_homelab
 
-.PHONY: ubuntu-focal-cloudimg
-ubuntu-focal-cloudimg: public-key
-	test -e ubuntu-20.04-server-cloudimg-amd64.img || \
-		curl -LO http://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64.img
-	test -e ubuntu-20.04-cloudimg.img || rm ubuntu-20.04-cloudimg.img
-	cp ubuntu-20.04-server-cloudimg-amd64.img ubuntu-20.04-cloudimg.img
-	sudo virt-customize -a ubuntu-20.04-cloudimg.img --install qemu-guest-agent
-	sudo virt-customize -a ubuntu-20.04-cloudimg.img --upload ssh_ca.pub:/etc/ssh/ssh_ca.pub
-	sudo virt-customize -a ubuntu-20.04-cloudimg.img --run-command "echo 'TrustedUserCAKeys /etc/ssh/ssh_ca.pub' >> /etc/ssh/sshd_config"
-	sudo virt-customize -a ubuntu-20.04-cloudimg.img --run-command "echo 'Acquire::http::Proxy \"http://192.168.55.53:3142\";' >> /etc/apt/apt.conf.d/proxy.conf"
-	scp ubuntu-20.04-cloudimg.img root@charon.angrydonkey.io:/mnt/user/proxmox-backup/template/iso
-
-.PHONY: haos
-haos: public-key
-	test -e haos_ova-9.2.qcow2.xz || \
-		curl -sSLO https://github.com/home-assistant/operating-system/releases/download/9.2/haos_ova-9.2.qcow2.xz
-	test -e haos_ova-9.2.qcow2 || \
-		7z x haos_ova-9.2.qcow2.xz
-	cp haos_ova-9.2.qcow2 haos_ova-9.2.img
-	scp haos_ova-9.2.img root@charon.angrydonkey.io:/mnt/user/proxmox-backup/template/iso
-
-.PHONY: proxmox-haos-template
-proxmox-haos-template: TARGET=blackhole
-proxmox-haos-template: ID=9000
-proxmox-haos-template:
-	ssh root@$(TARGET).angrydonkey.io qm create $(ID) \
-		--name haos-template
-	ssh root@$(TARGET).angrydonkey.io qm importdisk $(ID) \
-		/mnt/pve/backup/template/iso/haos_ova-9.2.img local-lvm
-	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
+.PHONY: proxmox-template
+proxmox-template: USER=root
+proxmox-template: DOMAIN?=angrydonkey.io
+proxmox-template: TARGET?=blackhole
+proxmox-template: HOST?=$(TARGET).$(DOMAIN)
+proxmox-template: ID?=9000
+proxmox-template: FILENAME?=ubuntu-20.04-cloudimg.img
+proxmox-template: TEMPLATE_NAME?=ubuntu-focal-20.04
+proxmox-template:
+	ssh $(USER)@$(HOST) qm create $(ID) \
+		--name $(TEMPLATE_NAME)
+	ssh $(USER)@$(HOST) qm importdisk $(ID) \
+		/mnt/pve/backup/template/iso/$(FILENAME) local-lvm
+	ssh $(USER)@$(HOST) qm set $(ID) \
 		--net0 virtio,bridge=vmbr0
-	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
+	ssh $(USER)@$(HOST) qm set $(ID) \
 		--scsihw virtio-scsi-single \
 		--scsi0 local-lvm:vm-$(ID)-disk-0
-	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
+	ssh $(USER)@$(HOST) qm set $(ID) \
 		--boot order=scsi0 \
 		--tablet 0 \
 		--bios ovmf \
 		--agent 1 \
 		--machine q35 \
 		--cpu host
-	ssh root@$(TARGET).angrydonkey.io qm template $(ID)
+	ssh $(USER)@$(HOST) qm template $(ID)
 
-.PHONY: proxmox-cloudimg-template
-proxmox-cloudimg-template: TARGET=blackhole
-proxmox-cloudimg-template: ID=9000
-proxmox-cloudimg-template:
-	ssh root@$(TARGET).angrydonkey.io qm create $(ID) \
-		--name ubuntu-focal-template
-	ssh root@$(TARGET).angrydonkey.io qm importdisk $(ID) \
-		/mnt/pve/backup/template/iso/ubuntu-20.04-cloudimg.img local-lvm
-	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
-		--net0 virtio,bridge=vmbr0
-	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
-		--scsihw virtio-scsi-pci \
-		--virtio0 local-lvm:vm-$(ID)-disk-0
-	ssh root@$(TARGET).angrydonkey.io qm set $(ID) \
-		--boot order=virtio0 \
-		--agent 1 \
-		--machine q35 \
-		--cpu host
-	ssh root@$(TARGET).angrydonkey.io qm template $(ID)
+.PHONY: ubuntu-focal-cloudimg
+ubuntu-focal-cloudimg: FLAVOR?=focal
+ubuntu-focal-cloudimg: VERSION?=20.04
+ubuntu-focal-cloudimg: FILENAME=ubuntu-$(VERSION)-server-cloudimg-amd64.img
+ubuntu-focal-cloudimg: CUSTOMIZED_FILENAME=ubuntu-$(VERSION)-cloudimg.img
+ubuntu-focal-cloudimg: URL=https://cloud-images.ubuntu.com/releases/$(FLAVOR)/release/$(FILENAME)
+ubuntu-focal-cloudimg: APT_PROXY?=http://10.50.20.181:3142
+ubuntu-focal-cloudimg: USER?=root
+ubuntu-focal-cloudimg: TARGET?=charon.angrydonkey.io
+ubuntu-focal-cloudimg: public-key
+	set +x
+	test -e $(FILENAME) || \
+		$(CURL_CMD) $(URL)
+	test ! -e $(CUSTOMIZED_FILENAME) || \
+		rm $(CUSTOMIZED_FILENAME)
+	cp $(FILENAME) $(CUSTOMIZED_FILENAME)
+	sudo virt-customize -a $(CUSTOMIZED_FILENAME) --install qemu-guest-agent
+	sudo virt-customize -a $(CUSTOMIZED_FILENAME) --upload ssh_ca.pub:/etc/ssh/ssh_ca.pub
+	sudo virt-customize -a $(CUSTOMIZED_FILENAME) --run-command "echo 'TrustedUserCAKeys /etc/ssh/ssh_ca.pub' >> /etc/ssh/sshd_config"
+	sudo virt-customize -a $(CUSTOMIZED_FILENAME) --run-command "echo 'Acquire::http::Proxy \"$(APT_PROXY)\";' >> /etc/apt/apt.conf.d/proxy.conf"
+	scp $(CUSTOMIZED_FILENAME) $(USER)@$(TARGET):/mnt/user/proxmox-backup/template/iso
+
+.PHONY: proxmox-ubuntu-focal
+proxmox-ubuntu-focal:
+	$(MAKE) proxmox-template
+
+.PHONY: haos
+haos-image: VERSION=9.3
+haos-image: ARCHIVED_FILENAME=haos_ova-$(VERSION).qcow2.xz
+haos-image: FILENAME=$(basename $(ARCHIVED_FILENAME))
+haos-image: FILENAME_IMG=$(basename $(FILENAME)).img
+haos-image: URL=https://github.com/home-assistant/operating-system/releases/download/$(VERSION)/$(ARCHIVED_FILENAME)
+haos-image: USER?=root
+haos-image: TARGET?=charon.angrydonkey.io
+haos-image: public-key
+	test -e $(FILENAME_IMG) || \
+		$(CURL_CMD) $(URL) && \
+		7z x $(ARCHIVED_FILENAME) && \
+		rm $(ARCHIVED_FILENAME) && \
+		mv $(FILENAME) $(FILENAME_IMG)
+	scp $(FILENAME_IMG) $(USER)@$(TARGET):/mnt/user/proxmox-backup/template/iso
+
+PHONY: proxmox-haos
+proxmox-haos: ID?=9001
+proxmox-haos: FILENAME=haos_ova-9.3.img
+proxmox-haos: TEMPLATE_NAME=haos-template
+proxmox-haos:
+	$(MAKE) proxmox-ubuntu-focal \
+		ID=$(ID) \
+		FILENAME=$(FILENAME) \
+		TEMPLATE_NAME=$(TEMPLATE_NAME)
