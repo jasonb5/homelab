@@ -12,8 +12,20 @@ locals {
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
     }
-    k3s-node2 = {
+    homeassistant = {
       vmid = 501
+      target_node = "blackhole"
+      desc = "home assistant"
+      bios = "ovmf"
+      memory = 2048
+      cores = 2
+      macaddr = "1a:03:1b:0c:70:05"
+      disk_size = "32G"
+      clone = "haos-template"
+      disk_type = "scsi"
+    }
+    k3s-node2 = {
+      vmid = 600
       target_node = "hyperion"
       desc = "k3s agent"
       bios = "seabios"
@@ -24,20 +36,8 @@ locals {
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
     }
-    omada = {
-      vmid = 502
-      target_node = "hyperion"
-      desc = "Omada SDN controller"
-      bios = "seabios"
-      memory = 1024
-      cores = 1
-      macaddr = "be:b5:4d:f3:74:0c"
-      disk_size = "16G"
-      clone = "ubuntu-focal-template"
-      disk_type = "virtio"
-    }
     pihole = {
-      vmid = 503
+      vmid = 601
       target_node = "hyperion"
       desc = "Pi-hole"
       bios = "seabios"
@@ -48,17 +48,41 @@ locals {
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
     }
-    homeassistant = {
-      vmid = 504
-      target_node = "blackhole"
-      desc = "home assistant"
-      bios = "ovmf"
-      memory = 2048
+    k3s-node3 = {
+      vmid = 700
+      target_node = "deimos"
+      desc = "k3s agent"
+      bios = "seabios"
+      memory = 3072
+      cores = 3
+      macaddr = "16:16:5d:a8:b9:d6"
+      disk_size = "128G"
+      clone = "ubuntu-focal-template"
+      disk_type = "virtio"
+    }
+    omada = {
+      vmid = 701
+      target_node = "deimos"
+      desc = "Omada SDN controller"
+      bios = "seabios"
+      memory = 3072
       cores = 2
-      macaddr = "1a:03:1b:0c:70:05"
-      disk_size = "32G"
-      clone = "haos-template"
-      disk_type = "scsi"
+      macaddr = "be:b5:4d:f3:74:0c"
+      disk_size = "16G"
+      clone = "ubuntu-focal-template"
+      disk_type = "virtio"
+    }
+    pihole-backup1 = {
+      vmid = 702
+      target_node = "deimos"
+      desc = "Pi-hole"
+      bios = "seabios"
+      memory = 1024
+      cores = 1
+      macaddr = "f2:15:38:bd:74:f9"
+      disk_size = "16G"
+      clone = "ubuntu-focal-template"
+      disk_type = "virtio"
     }
   }
 }
