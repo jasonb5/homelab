@@ -43,7 +43,8 @@ proxmox-template: TARGET?=blackhole
 proxmox-template: HOST?=$(TARGET).$(DOMAIN)
 proxmox-template: ID?=9000
 proxmox-template: FILENAME?=ubuntu-20.04-cloudimg.img
-proxmox-template: TEMPLATE_NAME?=ubuntu-focal-20.04
+proxmox-template: TEMPLATE_NAME?=ubuntu-focal-template
+proxmox-template: BIOS?=seabios
 proxmox-template:
 	ssh $(USER)@$(HOST) qm create $(ID) \
 		--name $(TEMPLATE_NAME)
@@ -53,11 +54,11 @@ proxmox-template:
 		--net0 virtio,bridge=vmbr0
 	ssh $(USER)@$(HOST) qm set $(ID) \
 		--scsihw virtio-scsi-single \
-		--scsi0 local-lvm:vm-$(ID)-disk-0
+		--virtio0 local-lvm:vm-$(ID)-disk-0
 	ssh $(USER)@$(HOST) qm set $(ID) \
-		--boot order=scsi0 \
+		--boot order=virtio0 \
 		--tablet 0 \
-		--bios ovmf \
+		--bios $(BIOS) \
 		--agent 1 \
 		--machine q35 \
 		--cpu host
@@ -113,4 +114,5 @@ proxmox-haos:
 	$(MAKE) proxmox-ubuntu-focal \
 		ID=$(ID) \
 		FILENAME=$(FILENAME) \
-		TEMPLATE_NAME=$(TEMPLATE_NAME)
+		TEMPLATE_NAME=$(TEMPLATE_NAME) \
+		BIOS=ovmf
