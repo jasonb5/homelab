@@ -4,25 +4,14 @@ locals {
       vmid = 500
       target_node = "blackhole" 
       desc = "k3s server"
-      bios = "seabios"
+      bios = "ovmf"
       memory = 16384
       cores = 6
       macaddr = "ca:10:3f:9a:2b:f6"
-      disk_size = "512G"
+      disk_size = "128G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
-    }
-    homeassistant = {
-      vmid = 501
-      target_node = "blackhole"
-      desc = "home assistant"
-      bios = "ovmf"
-      memory = 2048
-      cores = 2
-      macaddr = "1a:03:1b:0c:70:05"
-      disk_size = "32G"
-      clone = "haos-template"
-      disk_type = "scsi"
+      bridge = "vmbr0"
     }
     k3s-node2 = {
       vmid = 600
@@ -32,11 +21,12 @@ locals {
       memory = 16384
       cores = 30
       macaddr = "4e:58:39:92:c1:fb"
-      disk_size = "512G"
+      disk_size = "128G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
+      bridge = "vmbr0"
     }
-    pihole = {
+    pihole1 = {
       vmid = 601
       target_node = "hyperion"
       desc = "Pi-hole"
@@ -47,6 +37,20 @@ locals {
       disk_size = "16G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
+      bridge = "vmbr0"
+    }
+    homeassistant = {
+      vmid = 602
+      target_node = "hyperion"
+      desc = "home assistant"
+      bios = "ovmf"
+      memory = 2048
+      cores = 2
+      macaddr = "1a:03:1b:0c:70:05"
+      disk_size = "32G"
+      clone = "haos-template"
+      disk_type = "virtio"
+      bridge = "vmbr1"
     }
     k3s-node3 = {
       vmid = 700
@@ -59,6 +63,7 @@ locals {
       disk_size = "128G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
+      bridge = "vmbr0"
     }
     omada = {
       vmid = 701
@@ -71,8 +76,9 @@ locals {
       disk_size = "16G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
+      bridge = "vmbr0"
     }
-    pihole-backup1 = {
+    pihole2 = {
       vmid = 702
       target_node = "deimos"
       desc = "Pi-hole"
@@ -83,6 +89,7 @@ locals {
       disk_size = "16G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
+      bridge = "vmbr0"
     }
   }
 }
@@ -111,7 +118,7 @@ resource "proxmox_vm_qemu" "vm" {
   network {
     model = "virtio"
     macaddr = each.value.macaddr
-    bridge = "vmbr0"
+    bridge = each.value.bridge
     firewall = true
   }
 
