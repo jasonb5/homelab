@@ -1,36 +1,36 @@
 - name: Install certbot snap
-  snap:
+  ansible.builtin.snap:
     classic: true
     name: certbot
     state: present
 - name: Trust certbot plugin
-  command: snap set certbot trust-plugin-with-root=ok
+  ansible.builtin.command: snap set certbot trust-plugin-with-root=ok
 - name: Install certbot-dns-cloudflare plugin
-  snap:
+  ansible.builtin.snap:
     classic: true
     name: certbot-dns-cloudflare
     state: present
 - name: Create symlink
-  file:
+  ansible.builtin.file:
     src: /snap/bin/certbot
     dest: /usr/bin/certbot
     state: link
 - name: Make /etc/certbot
-  file:
+  ansible.builtin.file:
     path: /etc/certbot
     state: directory
 - name: Create cloudflare.ini
-  copy:
+  ansible.builtin.copy:
     dest: /etc/certbot/cloudflare.ini
     content: |
       dns_cloudflare_api_token = {{ lookup('community.hashi_vault.vault_kv2_get', 'cloudflare', engine_mount_point='homelab').data.data.token }}
     mode: 0600
 - name: Obtain certificate
   command: >
-    certbot certonly 
-    -n 
+    certbot certonly
+    -n
     -m "{{ lookup('community.hashi_vault.vault_kv2_get', 'cloudflare', engine_mount_point='homelab').data.data.email }}"
     --agree-tos
     --dns-cloudflare
     --dns-cloudflare-credentials /etc/certbot/cloudflare.ini
-    -d "{{ ansible_facts['fqdn'] }}"
+    -d "{{ ansible_facts['hostname'] }}.angrydonkey.io"

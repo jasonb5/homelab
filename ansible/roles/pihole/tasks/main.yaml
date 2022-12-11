@@ -1,89 +1,84 @@
 - name: Install unbound
-  apt:
+  ansible.builtin.apt:
     name: unbound
     state: present
-- name: Copy pi-hole.conf
-  copy:
+    update_cache: true
+- name: Copy configuration
+  ansible.builtin.copy:
+    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
     src: files/pi-hole.conf
-    dest: /etc/unbound/unbound.conf.d
-- name: Restart unbound
-  systemd:
+- name: Restart unbound service
+  ansible.builtin.systemd:
     name: unbound
     state: restarted
     enabled: true
-- name: mkdir /etc/pihole
-  file:
+- name: Download pihole installer
+  ansible.builtin.get_url:
+    mode: '0744'
+    dest: /root/pihole-installer.sh
+    url: https://install.pi-hole.net
+- name: Create /etc/pihole
+  ansible.builtin.file:
     path: /etc/pihole
     state: directory
-- name: Check if setupVars.conf exists
-  stat:
-    path: /etc/pihole/setupVars.conf
-  register: check_setupvars
 - name: Create setupVars.conf
   vars:
     pihole: "{{ lookup('community.hashi_vault.vault_kv2_get', 'pihole', engine_mount_point='homelab').data.data }}"
-  copy:
+  ansible.builtin.copy:
     dest: /etc/pihole/setupVars.conf
     content: |
-      WEBPASSWORD={{ pihole.password|hash('sha256')|hash('sha256') }}
-      PIHOLE_DNS_1=8.8.8.8
-      PIHOLE_DNS_2=8.8.4.4
+      WEBPASSWORD={{ pihole.password | hash('sha256') | hash('sha256') }}
+      PIHOLE_DNS_1=127.0.0.1#5335
       INSTALL_WEB=true
-  when: not check_setupvars.stat.exists
-- name: Check if installer exists
-  stat:
-    path: /tmp/pihole.sh
-  register: check_installer
-- name: Download pi-hole installer
-  get_url:
-    dest: /tmp/pihole.sh
-    url: https://install.pi-hole.net
-    mode: 0755
-  when: not check_installer.stat.exists
+- name: Stop/disable systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+- name: Remove /etc/resolv.conf
+  ansible.builtin.file:
+    path: /etc/resolv.conf
+    state: absent
+- name: Create new /etc/resolv.conf
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver 10.50.20.1
+      search angrydonkey.io
 - name: Install pi-hole
-  environment:
-    PIHOLE_SKIP_OS_CHECK: true
-  shell: /tmp/pihole.sh --unattended
-  ignore_errors: true
-  timeout: 30
-- name: Replace PIHOLE_DNS_1
-  replace:
-    path: /etc/pihole/setupVars.conf
-    regexp: '(.*PIHOLE_DNS_1)=.*'
-    replace: '\1=127.0.0.1#5335'
-- name: Replace PIHOLE_DNS_2
-  replace:
-    path: /etc/pihole/setupVars.conf
-    regexp: '(.*PIHOLE_DNS_2)=.*'
-    replace: '\1='
-- name: Restart pihole dns
-  shell: pihole restartdns
-- name: Install lighttpd openssl
-  apt:
-    name: lighttpd-mod-openssl
-    state: present
-- name: Create combined.pem
-  shell: >
-    cat
-    /etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/privkey.pem
-    /etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/cert.pem
-    | tee /etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/combined.pem
-- name: Chown live directory
-  file:
-    recurse: true
-    path: /etc/letsencrypt/live
-    owner: www-data
-- name: Create external.conf
-  copy:
+  ansible.builtin.shell: >
+    /root/pihole-installer.sh
+    --unattended
+- name: Create certbot deploy hook
+  ansible.builtin.copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/lighttpd
+    content: |
+      cat \
+      /etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/privkey.pem \
+      /etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/cert.pem | \
+      tee /etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/combined.pem
+
+      systemctl restart lighttpd
+    mode: '0744'
+  register: deploy_hook
+- name: Execute deploy script first time
+  ansible.builtin.shell: /etc/letsencrypt/renewal-hooks/deploy/lighttpd
+  when: deploy_hook['changed']
+- name: Add lighttpd ssl
+  ansible.builtin.copy:
     dest: /etc/lighttpd/external.conf
     content: |
       $HTTP["host"] == "{{ ansible_facts['hostname'] }}.angrydonkey.io" {
-        setenv.add-evnironment = ("fqdn" => "true")
+        setenv.add-environment = ("fqdn" => "true")
 
         $SERVER["socket"] == ":443" {
           ssl.engine = "enable"
           ssl.pemfile = "/etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/combined.pem"
           ssl.ca-file = "/etc/letsencrypt/live/{{ ansible_facts['hostname'] }}.angrydonkey.io/fullchain.pem"
+          ssl.honor-cipher-order = "enable"
+          ssl.cipher-list = "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH"
+          ssl.use-sslv2 = "disable"
+          ssl.use-sslv3 = "disable"
         }
 
         $HTTP["scheme"] == "http" {
@@ -92,7 +87,9 @@
           }
         }
       }
-- name: Restart lighttpd
-  systemd:
+  register: lighttpd_ssl
+- name: Restart lighttpd service
+  ansible.builtin.systemd:
     name: lighttpd
     state: restarted
+  when: lighttpd_ssl['changed']

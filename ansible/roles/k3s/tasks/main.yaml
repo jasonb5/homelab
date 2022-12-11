@@ -1,66 +1,41 @@
-- name: Download K3S insall script
-  get_url:
+- name: Download install script
+  ansible.builtin.get_url:
+    mode: '0744'
+    dest: /root/k3s-installer.sh
     url: https://get.k3s.io
-    dest: /tmp/k3s-installer.sh
-    mode: '0700'
-- name: Install common packages
-  apt:
-    name: nfs-common
-    state: present
-- name: Install K3S server
-  block:
-    - name: Install K3S server
-      environment:
-        INSTALL_K3S_VERSION: v1.24.7+k3s1
-      shell: >
-        /tmp/k3s-installer.sh
+- block:
+    - name: Install k3s server
+      ansible.builtin.shell: >
+        /root/k3s-installer.sh
         --disable traefik
         --disable local-storage
         --disable metrics-server
-    - name: Slurp K3S token
-      slurp:
+    - name: Read join token
+      ansible.builtin.slurp:
         src: /var/lib/rancher/k3s/server/node-token
-      register: k3s_token
+      register: k3s_node_token
     - name: Copy k3s.yaml
-      fetch:
+      ansible.builtin.fetch:
+        src: /etc/rancher/k3s/k3s.yaml
         dest: "{{ lookup('env', 'HOME') }}/.kube/config"
         flat: true
-        src: /etc/rancher/k3s/k3s.yaml
-    - name: Update K3S server address
+    - name: Update k3s server address
       become: false
       delegate_to: localhost
-      replace:
+      ansible.builtin.replace:
         path: "{{ lookup('env', 'HOME') }}/.kube/config"
         regexp: 127.0.0.1
         replace: "{{ ansible_facts['default_ipv4']['address'] }}"
   when: "'k3s_server' in group_names"
-- name: Install K3S agent
-  environment:
-    K3S_URL: "https://{{ hostvars[groups['k3s_server']|first]['ansible_default_ipv4']['address'] }}:6443"
-    K3S_TOKEN: "{{ hostvars[groups['k3s_server']|first]['k3s_token']['content']|b64decode|trim }}"
-    INSTALL_K3S_VERSION: v1.24.7+k3s1
-  command: /tmp/k3s-installer.sh
+- block:
+    - name: Get server hostvars
+      ansible.builtin.set_fact:
+        k3s_server_hostvars: "{{ hostvars[groups['k3s_server'] | first] }}"
+    - name: Join node to cluster
+      environment:
+        K3S_URL: "https://{{ k3s_server_hostvars['ansible_facts']['default_ipv4']['address'] }}:6443"
+        K3S_TOKEN: "{{ k3s_server_hostvars['k3s_node_token']['content'] | b64decode | trim }}"
+      ansible.builtin.shell: /root/k3s-installer.sh
   when: "'k3s_agent' in group_names"
-- name: Install GPU
-  block:
-    - name: Install Nvidia apt key
-      apt_key:
-        url: https://nvidia.github.io/libnvidia-container/gpgkey
-        state: present
-    - name: Install Nvidia apt source
-      get_url:
-        url: https://nvidia.github.io/libnvidia-container/ubuntu20.04/libnvidia-container.list
-        dest: /etc/apt/sources.list.d/nvidia-container-toolkit.list
-    - name: Install Nvidia packages
-      apt:
-        name:
-          - nvidia-headless-470-server
-          - nvidia-utils-470-server
-          - nvidia-container-toolkit
-        update_cache: true
-        state: present
-    - name: Restart K3S service
-      systemd:
-        name: k3s
-        state: restarted
+- import_tasks: nvidia.yaml
   when: "'k3s_gpu' in group_names"

@@ -1,32 +1,25 @@
 ---
-- name: Apply k3s role
-  become: true
+- name: Install k3s
   hosts: k3s
+  become: true
   roles:
     - role: k3s
-      tags:
-        - k3s
-- name: Apply omada role
-  hosts: omada
-  become: true
-  roles:
-    - role: omada
-      tags:
-        - omada
-- name: Apply pihole role
+  tags: k3s
+- name: Install pihole
   hosts: pihole
   become: true
   roles:
     - role: certbot
-      tags:
-        - certbot
+      tags: certbot-install
     - role: pihole
-      tags:
-        - pihole
-- name: Apply docker role
-  hosts: docker
+      tags: pihole-Install
+  tags: pihole
+- name: Install Omada SDN Controller
+  hosts: omada 
   become: true
   roles:
-    - role: docker
-      tags:
-        - docker
+    - role: certbot
+      tags: certbot-install
+    - role: omada
+      tags: omada-install
+  tags: omada
