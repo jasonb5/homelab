@@ -46,3 +46,10 @@
   when: "'k3s_agent' in group_names"
 - import_tasks: nvidia.yaml
   when: "'k3s_gpu' in group_names"
+- name: Label nodes
+  become: false
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.shell: "kubectl label node {{ item | split('.') | first }} {{ hostvars[item]['vars']['labels'] }}"
+  loop: "{{ groups['k3s'] }}"
+  tags: label
