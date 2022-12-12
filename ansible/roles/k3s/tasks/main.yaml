@@ -9,6 +9,8 @@
     url: https://get.k3s.io
 - block:
     - name: Install k3s server
+      environment:
+        INSTALL_K3S_VERSION: v1.24.8+k3s1
       ansible.builtin.shell: >
         /root/k3s-installer.sh
         --disable traefik
@@ -39,6 +41,7 @@
       environment:
         K3S_URL: "https://{{ k3s_server_hostvars['ansible_facts']['default_ipv4']['address'] }}:6443"
         K3S_TOKEN: "{{ k3s_server_hostvars['k3s_node_token']['content'] | b64decode | trim }}"
+        INSTALL_K3S_VERSION: v1.24.8+k3s1
       ansible.builtin.shell: /root/k3s-installer.sh
   when: "'k3s_agent' in group_names"
 - import_tasks: nvidia.yaml
