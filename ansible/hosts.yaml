@@ -4,11 +4,11 @@ all:
       children:
         k3s_server:
           hosts:
-            k3s-node1.angrydonkey.io:
+            k3s-node3.angrydonkey.io:
         k3s_agent:
           hosts:
+            k3s-node1.angrydonkey.io:
             k3s-node2.angrydonkey.io:
-            k3s-node3.angrydonkey.io:
         k3s_gpu:
           hosts:
             k3s-node1.angrydonkey.io:
