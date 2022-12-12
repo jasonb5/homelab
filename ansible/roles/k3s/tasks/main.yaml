@@ -1,3 +1,7 @@
+- name: Install packages
+  ansible.builtin.apt:
+    name: nfs-client
+    state: present
 - name: Download install script
   ansible.builtin.get_url:
     mode: '0744'
