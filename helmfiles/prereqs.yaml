@@ -28,6 +28,7 @@ releases:
               namespace: longhorn-system
               serviceName: longhorn-frontend
               port: 80
+    disableValidationOnInstall: true
     dependencies:
       - chart: homelab/utils
         version: 0.1.1
