@@ -1,29 +1,12 @@
 repositories:
-- name: nvdp
-  url: https://nvidia.github.io/k8s-device-plugin
 - name: homelab
   url: https://jasonb5.github.io/homelab/
 
 releases:
-  - name: nvidia-device-plugin
-    namespace: nvidia-device-plugin
+  - name: nvidia-gpu-operator
+    namespace: gpu-operator
     createNamespace: true
-    chart: nvdp/nvidia-device-plugin
-    version: 0.12.3
     values:
-      - gfd:
-          enabled: true
-        runtimeClassName: nvidia
-      - utils:
-          extraObjects:
-            - apiVersion: node.k8s.io/v1
-              kind: RuntimeClass
-              metadata:
-                name: nvidia
-              handler: nvidia
-    dependencies:
-    - chart: homelab/utils
-      version: 0.1.0
   - name: jellyfin
     namespace: default
     chart: homelab/jellyfin
