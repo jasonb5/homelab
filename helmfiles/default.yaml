@@ -1,12 +1,24 @@
 repositories:
 - name: homelab
   url: https://jasonb5.github.io/homelab/
+- name: nvidia
+  url: https://helm.ngc.nvidia.com/nvidia
 
 releases:
   - name: nvidia-gpu-operator
     namespace: gpu-operator
     createNamespace: true
+    chart: nvidia/gpu-operator
+    version: v22.9.0
+    disableValidationOnInstall: true
     values:
+      - driver:
+          enabled: false
+        toolkit:
+          enabled: false
+        devicePlugin:
+          config:
+            name: time-slicing-config
   - name: jellyfin
     namespace: default
     chart: homelab/jellyfin
