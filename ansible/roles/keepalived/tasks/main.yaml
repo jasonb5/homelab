@@ -1,0 +1,15 @@
+- name: Install keepalived
+  ansible.builtin.apt:
+    name: keepalived
+    state: present
+- name: Template config
+  vars:
+    keepalived_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'pihole', engine_mount_point='homelab').data.data.keepalived_password }}"
+  ansible.builtin.template:
+    dest: /etc/keepalived/keepalived.conf
+    src: templates/keepalived.conf.j2
+- name: Start/enable service
+  ansible.builtin.systemd:
+    name: keepalived
+    state: started
+    enabled: true

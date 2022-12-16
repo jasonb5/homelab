@@ -19,6 +19,12 @@ all:
           hosts:
             k3s-node1.angrydonkey.io:
     pihole:
+      vars:
+        unbound: false
+        upstream_dns: 10.50.20.1
+        master: pihole1.angrydonkey.io
+        keepalived:
+          vip: 10.50.20.240/24
       hosts:
         pihole1.angrydonkey.io:
         pihole2.angrydonkey.io:

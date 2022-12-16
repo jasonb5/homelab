@@ -9,10 +9,12 @@
   hosts: pihole
   become: true
   roles:
+    - role: keepalived
+      tags: keepalived-install
     - role: certbot
       tags: certbot-install
     - role: pihole
-      tags: pihole-Install
+      tags: pihole-install
   tags: pihole
 - name: Install Omada SDN Controller
   hosts: omada 

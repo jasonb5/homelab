@@ -1,0 +1,30 @@
+vrrp_instance VI_1 {
+  state {{ 'MASTER' if inventory_hostname == master else 'BACKUP' }}
+
+  interface {{ ansible_facts['default_ipv4']['interface'] }}
+
+  unicast_src_ip {{ ansible_facts['default_ipv4']['address'] }}
+
+  {% set group = group_names | first -%}
+
+  unicast_peer {
+{% for peer in groups[group] %}
+{% if peer != inventory_hostname %}
+    {{ hostvars[peer]['ansible_default_ipv4']['address'] }}
+{% endif %}
+{% endfor %}
+  }
+
+  virtual_router_id 50
+  priority {{ '150' if inventory_hostname == master else '100' }}
+  advert_int 1
+  
+  authentication {
+    auth_type PASS
+    auth_pass {{ keepalived_password }}
+  }
+
+  virtual_ipaddress {
+    {{ keepalived['vip'] }}
+  }
+}

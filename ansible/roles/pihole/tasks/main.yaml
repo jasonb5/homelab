@@ -1,17 +1,20 @@
-- name: Install unbound
-  ansible.builtin.apt:
-    name: unbound
-    state: present
-    update_cache: true
-- name: Copy configuration
-  ansible.builtin.copy:
-    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
-    src: files/pi-hole.conf
-- name: Restart unbound service
-  ansible.builtin.systemd:
-    name: unbound
-    state: restarted
-    enabled: true
+- name: Install and configure unbound 
+  block:
+  - name: Install unbound
+    ansible.builtin.apt:
+      name: unbound
+      state: present
+      update_cache: true
+  - name: Copy configuration
+    ansible.builtin.copy:
+      dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+      src: files/pi-hole.conf
+  - name: Restart unbound service
+    ansible.builtin.systemd:
+      name: unbound
+      state: restarted
+      enabled: true
+  when: unbound is defined and unbound
 - name: Download pihole installer
   ansible.builtin.get_url:
     mode: '0744'
@@ -28,7 +31,11 @@
     dest: /etc/pihole/setupVars.conf
     content: |
       WEBPASSWORD={{ pihole.password | hash('sha256') | hash('sha256') }}
+      {% if unbound is defined and unbound %}
       PIHOLE_DNS_1=127.0.0.1#5335
+      {% elif upstream_dns is defined %}
+      PIHOLE_DNS_1={{ upstream_dns }}
+      {% endif %}
       INSTALL_WEB=true
 - name: Stop/disable systemd-resolved
   ansible.builtin.systemd:
@@ -93,3 +100,50 @@
     name: lighttpd
     state: restarted
   when: lighttpd_ssl['changed']
+- name: Copy ssh keys
+  become: false
+  ansible.builtin.copy:
+    src: "{{ lookup('env', 'HOME') + '/.ssh/' + item }}"
+    dest: "${HOME}/.ssh/{{ item }}"
+    mode: '0600'
+  loop:
+    - id_homelab
+    - id_homelab.pub
+- name: Register ssh key
+  become: false
+  ansible.builtin.copy:
+    dest: "~/.ssh/config"
+    content: |
+      IdentityFile ~/.ssh/id_homelab
+- name: Authorize ssh key
+  become: false
+  ansible.posix.authorized_key:
+    user: titters
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_homelab.pub') }}"
+- name: Create gravity-sync directory
+  ansible.builtin.file:
+    path: /etc/gravity-sync
+    state: directory
+- name: Create gravity-sync config
+  # only works when there are two servers
+  ansible.builtin.copy:
+    dest: /etc/gravity-sync/gravity-sync.conf 
+    content: |
+      {% set group = group_names | first -%}
+      {% for peer in groups[group] %}
+      {% if peer != inventory_hostname %}
+      REMOTE_HOST='{{ hostvars[peer]['ansible_default_ipv4']['address'] }}'
+      {% endif %}
+      {% endfor %}
+      REMOTE_USER='titters'
+- name: Download install script
+  ansible.builtin.get_url:
+    dest: /root/gs-install.sh
+    url: https://raw.githubusercontent.com/vmstan/gs-install/main/gs-install.sh
+    mode: '0755'
+- name: Install gravity-sync 
+  ansible.builtin.shell: /root/gs-install.sh
+- name: Automate gravity-sync
+  ansible.builtin.shell: gravity-sync auto quad
+  when: inventory_hostname == master
