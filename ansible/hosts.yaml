@@ -21,10 +21,10 @@ all:
     pihole:
       vars:
         unbound: false
-        upstream_dns: 10.50.20.1
+        upstream_dns: 192.168.55.1
         master: pihole1.angrydonkey.io
         keepalived:
-          vip: 10.50.20.240/24
+          vip: 192.168.55.240/24
       hosts:
         pihole1.angrydonkey.io:
         pihole2.angrydonkey.io:

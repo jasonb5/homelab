@@ -50,7 +50,7 @@
   ansible.builtin.copy:
     dest: /etc/resolv.conf
     content: |
-      nameserver 10.50.20.1
+      nameserver {{ upstream_dns }}
       search angrydonkey.io
 - name: Install pi-hole
   ansible.builtin.shell: >
