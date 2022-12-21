@@ -1,0 +1,10 @@
+apiVersion: v2
+name: {{app_name}}
+description: {{app_description}}
+type: application
+version: 0.1.0
+appVersion: "{{app_version}}"
+dependencies:
+  - name: common
+    version: {{ common_version }}
+    repository: https://jasonb5.github.io/homelab/
