@@ -12,13 +12,10 @@ releases:
     version: v22.9.0
     disableValidationOnInstall: true
     values:
-      - driver:
-          enabled: false
-        toolkit:
-          enabled: false
-        devicePlugin:
-          config:
-            name: time-slicing-config
+      - values/gpu-operator.yaml
+    dependencies:
+    - chart: homelab/utils
+      version: 0.1.1
   - name: jellyfin
     namespace: default
     chart: homelab/jellyfin

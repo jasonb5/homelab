@@ -1,0 +1,22 @@
+driver:
+  enabled: false
+toolkit:
+  enabled: false
+devicePlugin:
+  config:
+    name: time-slicing-config
+utils:
+  extraObjects:
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: time-slicing-config
+        namespace: gpu-operator
+      data:
+        gtx-1070: |-
+          version: v1
+          sharing:
+            timeSlicing:
+              resources:
+              - name: nvidia.com/gpu
+                replicas: 4
