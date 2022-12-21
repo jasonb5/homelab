@@ -1,0 +1,22 @@
+persistence:
+  data:
+    enabled: true
+
+extraObjects:
+  - |
+    apiVersion: traefik.containo.us/v1alpha1
+    kind: IngressRoute
+    metadata:
+      name: gotify
+      namespace: default
+    spec:
+      entryPoints:
+        - websecure
+      routes:
+      - kind: Rule
+        match: Host(`gotify.angrydonkey.io`)
+        services:
+        - kind: Service
+          name: gotify-http
+          namespace: default
+          port: 80

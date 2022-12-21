@@ -30,6 +30,13 @@ releases:
     values:
       - values/common.yaml
       - values/vaultwarden.yaml
+  - name: gotify
+    namespace: default
+    chart: ../charts/gotify
+    version: 0.1.0
+    values:
+      - values/common.yaml
+      - values/gotify.yaml
 
 # these are processed before releases in this state file
 # ensuring longhorn CRDs are available
