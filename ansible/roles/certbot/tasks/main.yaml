@@ -34,3 +34,7 @@
     --dns-cloudflare
     --dns-cloudflare-credentials /etc/certbot/cloudflare.ini
     -d "{{ ansible_facts['hostname'] }}.angrydonkey.io"
+    --expand
+    {% for domain in extra_domains %}
+    -d "{{ domain }}"
+    {% endfor %}

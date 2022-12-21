@@ -20,6 +20,8 @@ all:
             k3s-node1.angrydonkey.io:
     pihole:
       vars:
+        extra_domains:
+          - pihole.angrydonkey.io
         unbound: false
         upstream_dns: 192.168.55.1
         master: pihole1.angrydonkey.io
