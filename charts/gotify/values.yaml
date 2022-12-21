@@ -1,0 +1,35 @@
+image:
+  repository: gotify/server
+
+env:
+  TZ: America/Los_Angeles
+
+services:
+  http:
+    port: 80
+
+ingress:
+  http:
+    enabled: false
+
+persistence:
+  data:
+    enabled: false
+
+extraObjects: []
+  # - apiVersion: traefik.containo.us/v1alpha1
+  #   kind: IngressRoute
+  #   metadata:
+  #     name: gotify
+  #     namespace: default
+  #   spec:
+  #     entryPoints:
+  #       - websecure
+  #     routes:
+  #     - kind: Rule
+  #       match: Host(`gotify.angrydonkey.io`)
+  #       services:
+  #       - kind: Service
+  #         name: gotify-http
+  #         namespace: default
+  #         port: 80
