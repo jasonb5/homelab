@@ -3,6 +3,8 @@ templates:
 tests:
   - it: should match snapshot
     set:
+      image:
+        repository: homelab
       configMaps:
         config:
           path: /data

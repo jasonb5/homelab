@@ -66,6 +66,8 @@ tests:
           value: traefik
   - it: should set single path
     set:
+      image:
+        repository: homelab
       services:
         http:
           port: 80

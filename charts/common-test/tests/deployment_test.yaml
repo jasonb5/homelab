@@ -2,6 +2,9 @@ templates:
   - app.yaml
 tests:
   - it: should match snapshot
+    set:
+      image:
+        repository: homelab
     asserts:
       - matchSnapshot: {}
   - it: should set label
