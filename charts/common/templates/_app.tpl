@@ -6,8 +6,6 @@
 
 {{- if eq .type "deployment" }}
 {{- include "common.deployment" (dict "Values" . "Release" $.Release "Chart" $.Chart) }}
-{{- else }}
-{{ fail (printf "%s is not valid" .type) }}
 {{- end }}
 
 {{- with .persistence }}

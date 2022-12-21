@@ -44,7 +44,7 @@
   {{- end }}
   {{- end }}
   {{- with .Values.image }}
-  image: {{ .repository }}:{{ .tag }}
+  image: {{ .repository }}:{{ default $.Chart.Version .tag }}
   {{- with .pullPolicy }}
   imagePullPolicy: {{ . }}
   {{- end }}

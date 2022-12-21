@@ -1,0 +1,12 @@
+templates:
+  - app.yaml
+tests:
+  - it: should match snapshot
+    set:
+      type: null
+
+      configMaps:
+        config:
+          TZ: America/Los_Angeles
+    asserts:
+      - matchSnapshot: {}
