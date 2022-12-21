@@ -75,6 +75,21 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/common-test-0.1.0/common-test-0.1.0.tgz
     version: 0.1.0
+  gotify:
+  - apiVersion: v2
+    appVersion: 2.2.0
+    created: "2022-12-21T02:09:48.070190089Z"
+    dependencies:
+    - name: common
+      repository: https://jasonb5.github.io/homelab/
+      version: 0.1.6
+    description: a simple server for sending and receiving messages
+    digest: c6822e9c9d0aa88e5b9d6fd8e6dd263e3d60b769fef61023f9bfffa404d39727
+    name: gotify
+    type: application
+    urls:
+    - https://github.com/jasonb5/homelab/releases/download/gotify-0.1.0/gotify-0.1.0.tgz
+    version: 0.1.0
   jellyfin:
   - apiVersion: v2
     appVersion: 10.8.7
@@ -126,4 +141,4 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/vaultwarden-0.1.0/vaultwarden-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-14T00:33:23.745170026Z"
+generated: "2022-12-21T02:09:48.070207689Z"
