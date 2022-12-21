@@ -21,8 +21,8 @@ env: {}
 envFrom: []
 
 image:
-  repository: ubuntu
-  tag: latest
+  repository:
+  tag:
   pullPolicy:
 
 livenessProbe: {}
