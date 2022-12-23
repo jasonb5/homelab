@@ -1,0 +1,58 @@
+hub:
+  config:
+    Authenticator:
+      admin_users:
+        - titters
+      allowed_users:
+        - titters
+
+    NativeAuthenticator:
+      check_common_password: true
+      enable_signup: true
+      open_signup: true
+      ask_email_on_signup: true
+      allow_2fa: false
+
+    JupyterHub:
+      authenticator_class: nativeauthenticator.NativeAuthenticator
+
+singleuser:
+  image:
+    name: jupyter/base-notebook
+    tag: latest
+
+  profileList:
+    - display_name: "Base Notebook"
+      description: "jupyter/minimal-notebook adds command-line tools useful when working in Jupyter applications."
+      default: true
+    - display_name: "Scipy Notebook"
+      description: "jupyter/scipy-notebook includes popular packages from the scientific Python ecosystem."
+      kubespawner_override:
+        image: jupyter/scipy-notebook:latest
+    - display_name: "Tensorflow Notebook"
+      description: "jupyter/tensorflow-notebook includes popular Python deep learning libraries."
+      kubespawner_override:
+        image: jupyter/tensorflow-notebook:latest
+    - display_name: "Tensorflow Notebook with GTX 1070"
+      description: "jupyter/tensorflow-notebook includes popular Python deep learning libraries."
+      kubespawner_override:
+        image: jupyter/tensorflow-notebook:latest
+        extra_resource_limits:
+          nvidia.com/gpu: "1"
+    - display_name: "Datascience Notebook"
+      description: "jupyter/datascience-notebook includes libraries for data analysis from the Julia, Python, and R communities."
+      kubespawner_override:
+        image: jupyter/datascience-notebook:latest
+    - display_name: "Pyspark Notebook"
+      description: "jupyter/pyspark-notebook includes Python support for Apache Spark."
+      kubespawner_override:
+        image: jupyter/pyspark-notebook:latest
+
+  storage:
+    capacity: 16Gi
+
+prePuller:
+  hook:
+    enabled: false
+  continuous:
+    enabled: false

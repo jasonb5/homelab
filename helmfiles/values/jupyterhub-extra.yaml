@@ -1,0 +1,18 @@
+type: null
+extraObjects:
+  - apiVersion: traefik.containo.us/v1alpha1
+    kind: IngressRoute
+    metadata:
+      name: jupyterhub
+      namespace: default
+    spec:
+      entryPoints:
+        - websecure
+      routes:
+      - kind: Rule
+        match: Host(`jupyterhub.angrydonkey.io`)
+        services:
+        - kind: Service
+          name: proxy-public
+          namespace: default
+          port: 80
