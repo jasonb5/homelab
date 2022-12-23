@@ -22,7 +22,7 @@ all:
       vars:
         extra_domains:
           - pihole.angrydonkey.io
-        unbound: false
+        unbound: true
         upstream_dns: 192.168.55.1
         master: pihole1.angrydonkey.io
         keepalived:
