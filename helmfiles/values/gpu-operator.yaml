@@ -5,7 +5,8 @@ toolkit:
 devicePlugin:
   config:
     name: time-slicing-config
-utils:
+common-utils:
+  type: null
   extraObjects:
     - apiVersion: v1
       kind: ConfigMap

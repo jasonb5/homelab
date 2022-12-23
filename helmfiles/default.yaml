@@ -3,8 +3,24 @@ repositories:
   url: https://jasonb5.github.io/homelab/
 - name: nvidia
   url: https://helm.ngc.nvidia.com/nvidia
+- name: jupyterhub
+  url: https://jupyterhub.github.io/helm-chart
 
 releases:
+  - name: jupyterhub
+    namespace: default
+    chart: jupyterhub/jupyterhub
+    version: 2.0.0
+    values:
+      - values/jupyterhub.yaml
+  - name: jupyterhub-extra
+    namespace: default
+    chart: ../charts/common-utils
+    version: 0.1.0
+    values:
+      - values/jupyterhub-extra.yaml
+    needs:
+      - default/jupyterhub
   - name: nvidia-gpu-operator
     namespace: gpu-operator
     createNamespace: true
@@ -14,8 +30,8 @@ releases:
     values:
       - values/gpu-operator.yaml
     dependencies:
-    - chart: homelab/utils
-      version: 0.1.1
+    - chart: ../charts/common-utils
+      version: 0.1.0
   - name: jellyfin
     namespace: default
     chart: homelab/jellyfin
