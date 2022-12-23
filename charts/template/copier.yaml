@@ -13,4 +13,4 @@ app_version:
 common_version:
   type: str
   help: What is the version of the common chart?
-  default: 0.1.6
+  default: 0.1.9
