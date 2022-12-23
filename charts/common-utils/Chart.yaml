@@ -1,0 +1,10 @@
+apiVersion: v2
+name: common-utils
+description: Common application chart for use as a chart dependency
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: common
+    version: 0.1.9
+    repository: https://jasonb5.github.io/homelab/
