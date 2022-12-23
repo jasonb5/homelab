@@ -102,6 +102,21 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/common-test-0.1.0/common-test-0.1.0.tgz
     version: 0.1.0
+  common-utils:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-12-23T05:59:41.511986674Z"
+    dependencies:
+    - name: common
+      repository: https://jasonb5.github.io/homelab/
+      version: 0.1.9
+    description: Common application chart for use as a chart dependency
+    digest: 3b100771a7c66c1a1ebaf6b2301f3bd50e5dc8620bb8d2a0c43b0b5b34dbb82d
+    name: common-utils
+    type: application
+    urls:
+    - https://github.com/jasonb5/homelab/releases/download/common-utils-0.1.0/common-utils-0.1.0.tgz
+    version: 0.1.0
   gotify:
   - apiVersion: v2
     appVersion: 2.2.0
@@ -168,4 +183,4 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/vaultwarden-0.1.0/vaultwarden-0.1.0.tgz
     version: 0.1.0
-generated: "2022-12-21T18:09:11.886968361Z"
+generated: "2022-12-23T05:59:41.512091276Z"
