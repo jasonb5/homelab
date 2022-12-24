@@ -12,12 +12,11 @@ persistence:
     path: /mnt/user/media
 
 extraObjects:
-  - |
-    apiVersion: traefik.containo.us/v1alpha1
+  - apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
     metadata:
-      name: {{ include "common.name" . }}
-      namespace: {{ .Release.Namespace }}
+      name: jellyfin
+      namespace: default
     spec:
       entryPoints:
         - websecure
