@@ -1,0 +1,35 @@
+image:
+  repository: lissy93/dashy
+
+env:
+  TZ: America/Los_Angeles
+
+services:
+  http:
+    port: 80
+
+ingress:
+  http:
+    enabled: false
+
+persistence:
+  public:
+    enabled: false
+
+extraObjects: []
+  # - apiVersion: traefik.containo.us/v1alpha1
+  #   kind: IngressRoute
+  #   metadata:
+  #     name: dashy
+  #     namespace: default
+  #   spec:
+  #     entryPoints:
+  #       - websecure
+  #     routes:
+  #     - kind: Rule
+  #       match: Host(`dashy.angrydonkey.io`)
+  #       services:
+  #       - kind: Service
+  #         name: dashy-http
+  #         namespace: default
+  #         port: 8080

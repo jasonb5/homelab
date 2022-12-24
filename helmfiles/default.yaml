@@ -7,6 +7,13 @@ repositories:
   url: https://jupyterhub.github.io/helm-chart
 
 releases:
+  - name: dashy
+    namespace: default
+    chart: ../charts/dashy
+    version: 0.1.0
+    values:
+      - values/common.yaml
+      - values/dashy.yaml
   - name: jupyterhub
     namespace: default
     chart: jupyterhub/jupyterhub
