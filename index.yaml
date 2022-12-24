@@ -117,6 +117,21 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/common-utils-0.1.0/common-utils-0.1.0.tgz
     version: 0.1.0
+  dashy:
+  - apiVersion: v2
+    appVersion: 2.1.1
+    created: "2022-12-24T03:33:31.337371905Z"
+    dependencies:
+    - name: common
+      repository: https://jasonb5.github.io/homelab/
+      version: 0.1.9
+    description: The Ultimate Homepage for your Homelab.
+    digest: 63804864280e4581b7ea071c1750c0230701837ccf088dafeefd80792f377323
+    name: dashy
+    type: application
+    urls:
+    - https://github.com/jasonb5/homelab/releases/download/dashy-0.1.0/dashy-0.1.0.tgz
+    version: 0.1.0
   gotify:
   - apiVersion: v2
     appVersion: 2.2.0
@@ -183,4 +198,4 @@ entries:
     urls:
     - https://github.com/jasonb5/homelab/releases/download/vaultwarden-0.1.0/vaultwarden-0.1.0.tgz
     version: 0.1.0
-generated: "2022-12-23T05:59:41.512091276Z"
+generated: "2022-12-24T03:33:31.337424306Z"
