@@ -1,6 +1,4 @@
 repositories:
-- name: homelab
-  url: https://jasonb5.github.io/homelab/
 - name: nvidia
   url: https://helm.ngc.nvidia.com/nvidia
 - name: jupyterhub
