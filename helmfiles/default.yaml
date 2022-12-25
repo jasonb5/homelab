@@ -41,14 +41,14 @@ releases:
       version: 0.1.0
   - name: jellyfin
     namespace: default
-    chart: homelab/jellyfin
+    chart: ../charts/jellyfin
     version: 0.1.0
     values:
       - values/common.yaml
       - values/jellyfin.yaml
   - name: vaultwarden
     namespace: default
-    chart: homelab/vaultwarden
+    chart: ../charts/vaultwarden
     version: 0.1.0
     values:
       - values/common.yaml
