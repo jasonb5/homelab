@@ -1,0 +1,131 @@
+version: '3'
+
+tasks:
+  image-ubuntu-focal:
+    deps: [public-key]
+    vars:
+      URL: https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64.img
+      SSH_USER: root
+      TARGET: blackhole
+      TARGET_FILENAME: ubuntu-20.04-cloudimg.img
+      DOMAIN: angrydonkey.io
+    cmds:
+      - curl -sfLO {{.URL}}
+      - sudo virt-customize -a $(basename {{.URL}}) --install qemu-guest-agent
+      - sudo virt-customize -a $(basename {{.URL}}) --upload ssh_ca.pub:/etc/ssh/ssh_ca.pub
+      - sudo virt-customize -a $(basename {{.URL}}) --run-command "echo 'TrustedUserCAKeys /etc/ssh/ssh_ca.pub' >> /etc/ssh/sshd_config"
+      - scp $(basename {{.URL}}) {{.SSH_USER}}:{{.TARGET}}.{{.DOMAIN}}:/mnt/user/proxmox-backup/template/iso/{{.TARGET_FILENAME}
+
+  image-haos:
+    vars:
+      URL: https://github.com/home-assistant/operating-system/releases/download/9.3/haos_ova-9.3.qcow2.xz
+      SSH_USER: root
+      TARGET: blackhole
+      TARGET_FILENAME: haos_ova-9.3.img
+      DOMAIN: angrydonkey.io
+    cmds:
+      - curl -sfLO {{.URL}}
+      - 7z x $(basename {{.URL}}) 
+      - rm $(basename {{.URL}})
+      - scp $(basename {{.URL}} | sed "s/.xz//") {{.SSH_USER}}:{{.TARGET}}.{{.DOMAIN}}:/mnt/user/proxmox-backup/template/iso/{{.TARGET_FILENAME}}
+
+  proxmox-template-haos:
+    cmds:
+      - task: proxmox-template
+        vars:
+          ID: 9001
+          TEMPLATE_NAME: haos-template
+          FILENAME: haos_ova-9.3.img
+          BIOS: ovmf
+
+  proxmox-template-ubuntu-focal:
+    cmds:
+      - task: proxmox-template
+        vars:
+          ID: 9000
+          TEMPLATE_NAME: ubuntu-focal-template
+          FILENAME: ubuntu-20.04-cloudimg,img
+          BIOS: seabios
+
+  proxmox-template:
+    vars:
+      SSH_USER: '{{default "root" .SSH_USER}}'
+      TARGET: '{{default "blackhole" .TARGET}}'
+      DOMAIN: '{{default "angrydonkey.io" .DOMAIN}}'
+    cmds:
+      - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm create {{.ID}} --name {{.TEMPLATE_NAME}}
+      - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm importdisk {{.ID}} /mnt/pve/backup/template/iso/{{.FILENAME}} local-lvm
+      - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm set {{.ID}} --net0 virtio,bridge=vmbr0
+      - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm set {{.ID}} --scsihw virtio-scsi-single --virtio0 local-lvm:vm-{{.ID}}-disk-0
+      - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm set {{.ID}} --boot order=virtio0 --tablet 0 --bios {{.BIOS}} --agent 1 --machine q35 --cpu host
+      - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm template {{.ID}}
+
+  renew-cert:
+    dotenv: ['setup.sh']
+    cmds:
+      - vault login -method=userpass username=$VAULT_USERNAME password=$VAULT_PASSWORD
+      - unset VAULT_TOKEN && vault write -field=signed_key ssh/sign/ssh-user public_key=@/home/titters/.ssh/id_homelab.pub valid_principals="root,titters" >/home/titters/.ssh/id_homelab-cert.pub
+      - ssh-add -D
+      - ssh-add ~/.ssh/id_homelab
+
+  public-key:
+    dotenv: ['setup.sh']
+    cmds:
+      - vault login -method=userpass username=$VAULT_USERNAME password=$VAULT_PASSWORD
+      - vault read -field=public_key ssh/config/ca >${PWD}/ssh_ca.pub
+    status:
+      - test -f ${PWD}/ssh_ca.pub
+
+  setup-env:
+    cmds:
+      - task: createCondaEnv
+      - task: downloadKubectl
+      - task: downloadHelmfile
+      - task: downloadHelm
+
+  createCondaEnv:
+    cmds:
+      - mamba create -n infra --yes python=3.9 terraform vault copier
+    status:
+      - test -d ${HOME}/conda/envs/infra
+
+  downloadKubectl:
+    cmds:
+      - task: download
+        vars:
+          URL: https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl
+          OUTPUT: /usr/local/bin/kubectl
+
+  downloadHelmfile:
+    cmds:
+      - task: downloadTar
+        vars:
+          URL: https://github.com/helmfile/helmfile/releases/download/v0.149.0/helmfile_0.149.0_linux_arm64.tar.gz
+          EXCLUDES: --exclude=LICENSE --exclude=README.md
+          OUTPUT: /usr/local/bin/helmfile
+
+  downloadHelm:
+    cmds:
+      - task: downloadTar
+        vars:
+          URL: https://get.helm.sh/helm-v3.10.3-linux-amd64.tar.gz
+          EXCLUDES: --exclude=LICENSE --exclude=README.md
+          EXTRA: --strip-components=1
+          OUPUT: /usr/local/bin/helm
+
+  download:
+    cmds:
+      - sudo curl -sfL -o {{.OUTPUT}} {{.URL}}
+      - sudo chown root:root {{.OUTPUT}}
+      - sudo chmod 0755 {{.OUTPUT}}
+    status:
+      - test -f {{.OUTPUT}}
+
+  downloadTar:
+    cmds:
+      - curl -sfL -o - {{.URL}} | sudo tar -xzf - {{.EXCLUDES}} {{.EXTRA}} -C /usr/local/bin
+      - sudo chown root:root {{.OUTPUT}}
+      - sudo chmod 0755 {{.OUTPUT}}
+    status:
+      - test -f {{.OUTPUT}}
+
