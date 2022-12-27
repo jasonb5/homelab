@@ -107,7 +107,7 @@ tasks:
           URL: https://get.helm.sh/helm-v3.10.3-linux-amd64.tar.gz
           EXCLUDES: --exclude=LICENSE --exclude=README.md
           EXTRA: --strip-components=1
-          OUPUT: /usr/local/bin/helm
+          OUTPUT: /usr/local/bin/helm
 
   download:
     cmds:
