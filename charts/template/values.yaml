@@ -1,0 +1,14 @@
+image:
+  repository:
+
+persistence:
+  config:
+    enabled: false
+
+services:
+  http:
+    port:
+
+ingress:
+  http:
+    enabled: false
