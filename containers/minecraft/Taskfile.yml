@@ -1,0 +1,10 @@
+version: '3'
+
+env:
+  NAME: minecraft
+  VERSION:
+    sh: tbump current-version
+
+includes:
+  docker:
+    taskfile: ../Taskfile.yml

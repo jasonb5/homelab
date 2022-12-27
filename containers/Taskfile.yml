@@ -1,0 +1,23 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task -l
+    silent: true
+
+  publish:
+    desc: Publish container
+    cmds:
+      - task: build
+      - task: push
+
+  build:
+    desc: Builds container
+    cmds:
+      - docker build -t jasonb87/{{.NAME}}:{{.VERSION}} .
+
+  push:
+    desc: Push container to hub,docker.com
+    cmds:
+      - docker push jasonb87/{{.NAME}}:{{.VERSION}}
