@@ -1,0 +1,29 @@
+image:
+  repository: jasonb87/minecraft
+  tag: 0.1.0
+
+env:
+  INSTALLER_PATH: "..."
+  INSTALL_PATH: "/modpack"
+
+containerSecurityContext:
+  privileged: true
+
+# initialDelaySeconds needs to be high for startup
+readinessProbe:
+  initialDelaySeconds: 480
+
+livenessProbe:
+  initialDelaySeconds: 480
+
+persistence:
+  modpack:
+    enabled: false
+
+services:
+  http:
+    port: 25565
+
+ingress:
+  http:
+    enabled: false

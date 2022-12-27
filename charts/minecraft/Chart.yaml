@@ -1,0 +1,10 @@
+apiVersion: v2
+name: minecraft
+description: A chart for deploying CurseForge modpacks.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: common
+    version: 0.1.9
+    repository: file://../common
