@@ -70,7 +70,7 @@ locals {
       target_node = "deimos"
       desc = "k3s agent"
       bios = "seabios"
-      memory = 3072
+      memory = 8192
       cores = 3
       macaddr = "16:16:5d:a8:b9:d6"
       disk_size = "128G"
