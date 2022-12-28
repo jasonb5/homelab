@@ -13,19 +13,6 @@ locals {
       disk_type = "virtio"
       bridge = "vmbr0"
     }
-    dev = {
-      vmid = 501
-      target_node = "blackhole" 
-      desc = "development machine"
-      bios = "seabios"
-      memory = 8192
-      cores = 4
-      macaddr = "62:79:ea:72:e7:32"
-      disk_size = "64G"
-      clone = "ubuntu-focal-template"
-      disk_type = "virtio"
-      bridge = "vmbr0"
-    }
     k3s-node2 = {
       vmid = 600
       target_node = "hyperion"
