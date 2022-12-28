@@ -11,3 +11,15 @@ tests:
           protocol: TCP
     asserts:
       - matchSnapshot: {}
+  - it: should change type
+    set:
+      image:
+        repository: homelab
+      services:
+        http:
+          type: LoadBalancer
+    asserts:
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        documentIndex: 1
