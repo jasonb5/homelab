@@ -1,0 +1,17 @@
+env:
+  INSTALLER_PATH: "/data/minecraft/modpacks/Not+Too+Complicated2-1.5.1-server.zip"
+
+persistence:
+  modpack:
+    enabled: true
+    size: 16G
+
+  data:
+    enabled: true
+    type: nfs
+    server: 192.168.55.181
+    path: /mnt/user/backup
+
+services:
+  http:
+    type: LoadBalancer

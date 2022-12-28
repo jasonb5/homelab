@@ -5,6 +5,13 @@ repositories:
   url: https://jupyterhub.github.io/helm-chart
 
 releases:
+  - name: minecraft-ntc2
+    namespace: default
+    chart: ../charts/minecraft
+    version: 0.1.0
+    values:
+      - values/common.yaml
+      - values/minecraft-ntc2.yaml
   - name: dashy
     namespace: default
     chart: ../charts/dashy
