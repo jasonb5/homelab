@@ -4,11 +4,24 @@ locals {
       vmid = 500
       target_node = "blackhole" 
       desc = "k3s server"
-      bios = "ovmf"
+      bios = "seabios"
       memory = 16384
       cores = 6
       macaddr = "ca:10:3f:9a:2b:f6"
       disk_size = "128G"
+      clone = "ubuntu-focal-template"
+      disk_type = "virtio"
+      bridge = "vmbr0"
+    }
+    pihole1 = {
+      vmid = 501
+      target_node = "blackhole"
+      desc = "Pi-hole"
+      bios = "seabios"
+      memory = 1024
+      cores = 1
+      macaddr = "fe:b5:3d:a3:10:1c"
+      disk_size = "16G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
       bridge = "vmbr0"
@@ -22,19 +35,6 @@ locals {
       cores = 30
       macaddr = "4e:58:39:92:c1:fb"
       disk_size = "128G"
-      clone = "ubuntu-focal-template"
-      disk_type = "virtio"
-      bridge = "vmbr0"
-    }
-    pihole1 = {
-      vmid = 601
-      target_node = "hyperion"
-      desc = "Pi-hole"
-      bios = "seabios"
-      memory = 1024
-      cores = 1
-      macaddr = "fe:b5:3d:a3:10:1c"
-      disk_size = "16G"
       clone = "ubuntu-focal-template"
       disk_type = "virtio"
       bridge = "vmbr0"
