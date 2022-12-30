@@ -33,17 +33,6 @@ releases:
       - values/jupyterhub-extra.yaml
     needs:
       - default/jupyterhub
-  - name: nvidia-gpu-operator
-    namespace: gpu-operator
-    createNamespace: true
-    chart: nvidia/gpu-operator
-    version: v22.9.0
-    disableValidationOnInstall: true
-    values:
-      - values/gpu-operator.yaml
-    dependencies:
-    - chart: ../charts/common-utils
-      version: 0.1.0
   - name: jellyfin
     namespace: default
     chart: ../charts/jellyfin
