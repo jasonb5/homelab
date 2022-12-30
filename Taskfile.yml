@@ -102,7 +102,7 @@ tasks:
     cmds:
       - task: downloadTar
         vars:
-          URL: https://github.com/helmfile/helmfile/releases/download/v0.149.0/helmfile_0.149.0_linux_arm64.tar.gz
+          URL: https://github.com/helmfile/helmfile/releases/download/v0.149.0/helmfile_0.149.0_linux_amd64.tar.gz
           EXCLUDES: --exclude=LICENSE --exclude=README.md
           OUTPUT: /usr/local/bin/helmfile
 
