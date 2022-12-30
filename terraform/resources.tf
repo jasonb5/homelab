@@ -39,19 +39,6 @@ locals {
       disk_type = "virtio"
       bridge = "vmbr0"
     }
-    homeassistant = {
-      vmid = 602
-      target_node = "hyperion"
-      desc = "home assistant"
-      bios = "ovmf"
-      memory = 2048
-      cores = 2
-      macaddr = "1a:03:1b:0c:70:05"
-      disk_size = "32G"
-      clone = "haos-template"
-      disk_type = "virtio"
-      bridge = "vmbr1"
-    }
     k3s-node3 = {
       vmid = 700
       target_node = "deimos"
@@ -88,6 +75,19 @@ locals {
       macaddr = "f2:15:38:bd:74:f9"
       disk_size = "16G"
       clone = "ubuntu-focal-template"
+      disk_type = "virtio"
+      bridge = "vmbr0"
+    }
+    homeassistant = {
+      vmid = 703
+      target_node = "deimos"
+      desc = "home assistant"
+      bios = "ovmf"
+      memory = 2048
+      cores = 2
+      macaddr = "1a:03:1b:0c:70:05"
+      disk_size = "32G"
+      clone = "haos-template"
       disk_type = "virtio"
       bridge = "vmbr0"
     }
