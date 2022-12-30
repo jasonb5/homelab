@@ -1,6 +1,10 @@
 version: '3'
 
 tasks:
+  default:
+    cmds:
+      - task -a
+
   image-ubuntu-focal:
     deps: [public-key]
     vars:
@@ -20,20 +24,22 @@ tasks:
     vars:
       URL: https://github.com/home-assistant/operating-system/releases/download/9.3/haos_ova-9.3.qcow2.xz
       SSH_USER: root
-      TARGET: blackhole
+      TARGET: charon
       TARGET_FILENAME: haos_ova-9.3.img
       DOMAIN: angrydonkey.io
     cmds:
-      - curl -sfLO {{.URL}}
+      - task: download
+        vars:
+          URL: "{{.URL}}"
+          OUTPUT:
+            sh: echo "${PWD}/$(basename {{.URL}})"
       - 7z x $(basename {{.URL}}) 
-      - rm $(basename {{.URL}})
-      - scp $(basename {{.URL}} | sed "s/.xz//") {{.SSH_USER}}:{{.TARGET}}.{{.DOMAIN}}:/mnt/user/proxmox-backup/template/iso/{{.TARGET_FILENAME}}
+      - scp $(basename {{.URL}} | sed "s/.xz//") {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}}:/mnt/user/proxmox-backup/template/iso
 
   proxmox-template-haos:
     cmds:
       - task: proxmox-template
         vars:
-          ID: 9001
           TEMPLATE_NAME: haos-template
           FILENAME: haos_ova-9.3.img
           BIOS: ovmf
@@ -42,7 +48,6 @@ tasks:
     cmds:
       - task: proxmox-template
         vars:
-          ID: 9000
           TEMPLATE_NAME: ubuntu-focal-template
           FILENAME: ubuntu-20.04-cloudimg,img
           BIOS: seabios
@@ -52,6 +57,7 @@ tasks:
       SSH_USER: '{{default "root" .SSH_USER}}'
       TARGET: '{{default "blackhole" .TARGET}}'
       DOMAIN: '{{default "angrydonkey.io" .DOMAIN}}'
+      ID: '{{default 9000 .ID}}'
     cmds:
       - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm create {{.ID}} --name {{.TEMPLATE_NAME}}
       - ssh {{.SSH_USER}}@{{.TARGET}}.{{.DOMAIN}} qm importdisk {{.ID}} /mnt/pve/backup/template/iso/{{.FILENAME}} local-lvm
