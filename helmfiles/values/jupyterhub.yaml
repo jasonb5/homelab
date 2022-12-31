@@ -33,12 +33,6 @@ singleuser:
       description: "jupyter/tensorflow-notebook includes popular Python deep learning libraries."
       kubespawner_override:
         image: jupyter/tensorflow-notebook:latest
-    - display_name: "Tensorflow Notebook with GTX 1070"
-      description: "jupyter/tensorflow-notebook includes popular Python deep learning libraries."
-      kubespawner_override:
-        image: jupyter/tensorflow-notebook:latest
-        extra_resource_limits:
-          nvidia.com/gpu: "1"
     - display_name: "Datascience Notebook"
       description: "jupyter/datascience-notebook includes libraries for data analysis from the Julia, Python, and R communities."
       kubespawner_override:
