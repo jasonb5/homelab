@@ -1,6 +1,4 @@
 repositories:
-- name: nvidia
-  url: https://helm.ngc.nvidia.com/nvidia
 - name: jupyterhub
   url: https://jupyterhub.github.io/helm-chart
 
