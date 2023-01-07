@@ -26,19 +26,19 @@ locals {
       disk_type = "virtio"
       bridge = "vmbr0"
     }
-    k3s-node2 = {
-      vmid = 600
-      target_node = "hyperion"
-      desc = "k3s agent"
-      bios = "seabios"
-      memory = 24576
-      cores = 30
-      macaddr = "4e:58:39:92:c1:fb"
-      disk_size = "128G"
-      clone = "ubuntu-focal-template"
-      disk_type = "virtio"
-      bridge = "vmbr0"
-    }
+    # k3s-node2 = {
+    #   vmid = 600
+    #   target_node = "hyperion"
+    #   desc = "k3s agent"
+    #   bios = "seabios"
+    #   memory = 24576
+    #   cores = 30
+    #   macaddr = "4e:58:39:92:c1:fb"
+    #   disk_size = "128G"
+    #   clone = "ubuntu-focal-template"
+    #   disk_type = "virtio"
+    #   bridge = "vmbr0"
+    # }
     k3s-node3 = {
       vmid = 700
       target_node = "deimos"
