@@ -10,6 +10,9 @@ releases:
     createNamespace: true
     chart: longhorn/longhorn
     version: 1.3.2
+    values:
+      - persistence:
+          defaultClassReplicaCount: 2
     wait: true
   - name: traefik
     namespace: default
