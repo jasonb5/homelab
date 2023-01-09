@@ -18,19 +18,20 @@ releases:
       - values/common.yaml
       - values/dashy.yaml
   - name: jupyterhub
-    namespace: default
+    namespace: jupyterhub
+    createNamespace: true
     chart: jupyterhub/jupyterhub
     version: 2.0.0
     values:
       - values/jupyterhub.yaml
   - name: jupyterhub-extra
-    namespace: default
+    namespace: jupyterhub
     chart: ../charts/common-utils
     version: 0.1.0
     values:
       - values/jupyterhub-extra.yaml
     needs:
-      - default/jupyterhub
+      - jupyterhub/jupyterhub
   - name: jellyfin
     namespace: default
     chart: ../charts/jellyfin

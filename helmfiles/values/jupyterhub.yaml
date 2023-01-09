@@ -16,15 +16,6 @@ hub:
     JupyterHub:
       authenticator_class: nativeauthenticator.NativeAuthenticator
 
-    CryptKeeper:
-      keys:
-        - ref+vault://homelab/jupyterhub/#crypt_keeper
-
-  cookieSecret: ref+vault://homelab/jupyterhub/#cookie_secret
-
-proxy:
-  secretToken: ref+vault://homelab/jupyterhub/#proxy_secret_token
-
 singleuser:
   image:
     name: jupyter/base-notebook

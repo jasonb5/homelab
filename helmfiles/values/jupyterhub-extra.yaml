@@ -4,7 +4,7 @@ extraObjects:
     kind: IngressRoute
     metadata:
       name: jupyterhub
-      namespace: default
+      namespace: jupyterhub
     spec:
       entryPoints:
         - websecure
@@ -14,5 +14,5 @@ extraObjects:
         services:
         - kind: Service
           name: proxy-public
-          namespace: default
+          namespace: jupyterhub
           port: 80
