@@ -13,5 +13,6 @@ ingress:
     enabled: false
 
 persistence:
-  public:
+  app:
     enabled: false
+    mountPath: /app/public

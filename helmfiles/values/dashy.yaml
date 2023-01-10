@@ -1,8 +1,44 @@
 persistence:
-  public:
+  app:
     enabled: true
 
+sidecars:
+  codeserver:
+    enabled: true
+
+    env:
+      TZ: America/Los_Angeles
+      PROXY_DOMAIN: code.dashy.angrydonkey.io
+      DEFAULT_WORKSPACE: /dashy
+      PUID: "911"
+      GUID: "911"
+
+    services:
+      code:
+        port: 8443
+
+    persistence:
+      app:
+        enabled: true
+        mountPath: /dashy
+
 extraObjects:
+  - apiVersion: traefik.containo.us/v1alpha1
+    kind: IngressRoute
+    metadata:
+      name: dashy-code
+      namespace: default
+    spec:
+      entryPoints:
+        - websecure
+      routes:
+      - kind: Rule
+        match: Host(`dashy-code.angrydonkey.io`)
+        services:
+        - kind: Service
+          name: dashy-code
+          namespace: default
+          port: 8443
   - apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
     metadata:
