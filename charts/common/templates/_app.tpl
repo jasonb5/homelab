@@ -1,6 +1,7 @@
 {{- define "common.app" }}
 {{- include "common.setup" . }}
 {{- include "common.vpn" . }}
+{{- include "common.codeserver" . }}
 
 {{- range (concat (list .Values) .Values.extraWorkloads) }}
 

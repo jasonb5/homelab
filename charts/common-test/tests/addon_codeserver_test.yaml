@@ -1,0 +1,15 @@
+templates:
+  - app.yaml
+tests:
+  - it: should match snapshot
+    set:
+      image:
+        repository: homelab
+      persistence:
+        data:
+          enabled: true
+      sidecars:
+        codeserver:
+          enabled: true
+    asserts:
+      - matchSnapshot: {}

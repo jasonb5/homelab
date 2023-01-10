@@ -66,6 +66,19 @@ extraObjects: []
 extraObjects2: []
 
 sidecars:
+  codeserver:
+    enabled: false
+
+    image:
+      repository: linuxserver/code-server
+      tag: amd64-4.9.1
+
+    persistence: {}
+
+    services:
+      http:
+        port: 8443
+
   vpn:
     enabled: false
 
