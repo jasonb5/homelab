@@ -13,6 +13,16 @@ releases:
     values:
       - persistence:
           defaultClassReplicaCount: 2
+      - common-utils:
+          type: null
+          secrets:
+            longhorn-s3:
+              AWS_ACCESS_KEY_ID: Vz4Hez0ECCX0wflZ
+              AWS_SECRET_ACCESS_KEY: tH2vyynlHOKseieGEWiwl0b8o0FghnK3
+              AWS_ENDPOINTS: https://minio.angrydonkey.io
+    dependencies:
+      - chart: ../charts/common-utils
+        version: 0.1.0
     wait: true
   - name: traefik
     namespace: default
