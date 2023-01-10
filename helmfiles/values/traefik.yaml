@@ -53,3 +53,23 @@ extraObjects:
     stringData:
       token: ref+vault://homelab/cloudflare/#token
     type: Opaque
+
+common-utils:
+  type: null
+  extraObjects:
+    - apiVersion: traefik.containo.us/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: longhorn
+        namespace: longhorn-system
+      spec:
+        entryPoints:
+          - websecure
+        routes:
+        - kind: Rule
+          match: Host(`longhorn.angrydonkey.io`)
+          services:
+          - kind: Service
+            name: longhorn-frontend
+            namespace: longhorn-system
+            port: 80
