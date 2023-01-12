@@ -1,0 +1,35 @@
+common-utils:
+  type: null
+  extraObjects:
+    - apiVersion: traefik.containo.us/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: alertmanager
+        namespace: default
+      spec:
+        entryPoints:
+          - websecure
+        routes:
+        - kind: Rule
+          match: Host(`alertmanager.angrydonkey.io`)
+          services:
+          - kind: Service
+            name: prometheus-alertmanager
+            namespace: default
+            port: 9093
+    - apiVersion: traefik.containo.us/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: prometheus
+        namespace: default
+      spec:
+        entryPoints:
+          - websecure
+        routes:
+        - kind: Rule
+          match: Host(`prometheus.angrydonkey.io`)
+          services:
+          - kind: Service
+            name: prometheus-server
+            namespace: default
+            port: 80

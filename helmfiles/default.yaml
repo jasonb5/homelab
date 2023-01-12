@@ -58,3 +58,4 @@ releases:
 # ensuring longhorn CRDs are available
 helmfiles:
 - path: prereqs.yaml
+- path: monitoring.yaml
