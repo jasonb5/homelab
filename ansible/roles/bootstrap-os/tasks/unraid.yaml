@@ -1,0 +1,10 @@
+---
+- name: copy trusted user ca keys
+  ansible.builtin.copy:
+    src: trusted-user-ca-keys.pem
+    dest: /boot/config/ssh/trusted-user-ca-keys.pem
+- name: amend sshd_config
+  ansible.builtin.lineinfile:
+    path: /boot/config/ssh/sshd_config
+    insertafter: "EOF"
+    line: TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem

@@ -1,0 +1,9 @@
+---
+- name: bootstrap vault ssh client signer
+  hosts: localhost
+  roles:
+    - vault/ssh-client-signer
+- name: bootstrap os
+  hosts: baremetal
+  roles:
+    - bootstrap-os
