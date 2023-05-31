@@ -1,0 +1,3 @@
+[submodule "private"]
+	path = private
+	url = https://gitea.angrydonkey.io/titters/homelab-private
