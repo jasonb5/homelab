@@ -1,0 +1,70 @@
+---
+- name: check for CA for signing client keys
+  ansible.builtin.stat:
+    path: "{{ vault_ca_path }}"
+  register: vault_ca_check
+- block:
+  - name: generate CA keypair
+    ignore_errors: true
+    community.hashi_vault.vault_write:
+      path: ssh-client-signer/config/ca
+      data:
+        generate_signing_key: true
+  - name: read CA public key
+    community.hashi_vault.vault_read:
+      path: ssh-client-signer/config/ca#public_key
+    register: vault_ca_public_key
+  - name: check artifact directory
+    ansible.builtin.stat:
+      path: "{{ artifact_dir }}"
+    register: artifact_dir_check
+  - name: make artifact directory
+    ansible.builtin.file:
+      path: "{{ artifact_dir }}"
+      state: "directory"
+    when: not artifact_dir_check.stat.exists
+  - name: write CA public key
+    ansible.builtin.copy:
+      dest: "{{ vault_ca_path }}"
+      content: "{{ vault_ca_public_key.data.data.public_key }}"
+  when: not vault_ca_check.stat.exists
+- name: create role for signing client keys
+  community.hashi_vault.vault_write:
+    path: ssh-client-signer/roles/my-role
+    data:
+      algorithm_signer: "rsa-sha2-256"
+      allow_user_certificates: true
+      allowed_users: "root"
+      allowed_extensions: "permit-pty,permit-port-forwarding"
+      default_extensions:
+        permit-pty: ""
+      key_type: "ca"
+      default_user: "root"
+      ttl: "24h"
+- name: check client signed public key
+  ansible.builtin.stat:
+    path: "{{ vault_client_keypair_path }}-cert.pub"
+  register: client_keypair_check
+- block:
+  - name: generate client keypair
+    community.crypto.openssh_keypair:
+      path: "{{ vault_client_keypair_path }}"
+      passphrase: "{{ lookup('community.hashi_vault.vault_kv2_get', 'keypair', engine_mount_point='homelab', username=vault_username, password=vault_password).data.data.passphrase }}"
+  - name: sign client public key
+    community.hashi_vault.vault_write:
+      path: ssh-client-signer/sign/my-role
+      data:
+        public_key: "{{ lookup('ansible.builtin.file', vault_client_keypair_path + '.pub') }}"
+        valid_principals: "root"
+        extensions:
+          permit-pty: ""
+          permit-port-forwarding: ""
+    register: signed_public_key
+  - name: write signed client public key
+    ansible.builtin.copy:
+      dest: "{{ vault_client_keypair_path }}-cert.pub"
+      content: "{{ signed_public_key.data.data.signed_key }}"
+      mode: 0600
+  - name: register client keypair
+    shell: ssh-add "{{ vault_client_keypair_path }}"
+  when: not client_keypair_check.stat.exists
