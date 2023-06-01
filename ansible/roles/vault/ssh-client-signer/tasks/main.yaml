@@ -1,0 +1,54 @@
+---
+- name: check trusted-user-ca-keys.pem
+  ansible.builtin.stat:
+    path: trusted-user-ca-keys.pem
+  register: user_ca_keys
+- name: generate and write trusted-user-ca-keys.pem
+  block:
+  - name: generate signing key
+    ignore_errors: true
+    community.hashi_vault.vault_write:
+      path: ssh-client-signer/config/ca
+      data:
+        data:
+          generate_signing_key: true
+  - name: read public key
+    community.hashi_vault.vault_read:
+      path: ssh-client-signer/config/ca
+    register: signer_config_ca
+  - name: write public key
+    ansible.builtin.copy:
+      dest: trusted-user-ca-keys.pem
+      content: "{{ signer_config_ca.data.data.public_key }}"
+  when: user_ca_keys.failed
+- name: create role
+  community.hashi_vault.vault_write:
+    path: ssh-client-signer/roles/my-role
+    data:
+      algorithm_signer: "rsa-sha2-256"
+      allow_user_certificates: "true"
+      allowed_users: "*"
+      allowed_extensions: "permit-pty,permit-port-forwarding"
+      default_extensions:
+        permit-pty: ""
+      key_type: "ca"
+      default_user: "titters"
+      ttl: "30m0s"
+- name: create homelab key pair
+  community.crypto.openssh_keypair:
+    path: ~/.ssh/id_homelab
+    passphrase: "{{ lookup('hashi_vault', 'secret=homelab/data/baremetal:keypair_password auth_method=userpass username='+vault_username+' password='+vault_password) }}"
+  register: homelab_keypair
+- name: write role public key
+  community.hashi_vault.vault_write:
+    path: ssh-client-signer/sign/my-role#signed_key
+    data:
+      public_key: "{{homelab_keypair.public_key}}"
+      valid_principals: "root"
+  register: signed_cert
+- name: write signed certificate
+  ansible.builtin.copy:
+    dest: ~/.ssh/id_homelab-cert.pub
+    content: "{{ signed_cert.data.data.signed_key }}"
+- name: register certificate
+  ansible.builtin.shell: ssh-add ~/.ssh/id_homelab
