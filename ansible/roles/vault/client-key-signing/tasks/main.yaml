@@ -45,26 +45,25 @@
   ansible.builtin.stat:
     path: "{{ vault_client_keypair_path }}-cert.pub"
   register: client_keypair_check
-- block:
-  - name: generate client keypair
-    community.crypto.openssh_keypair:
-      path: "{{ vault_client_keypair_path }}"
-      passphrase: "{{ lookup('community.hashi_vault.vault_kv2_get', 'keypair', engine_mount_point='homelab', username=vault_username, password=vault_password).data.data.passphrase }}"
-  - name: sign client public key
-    community.hashi_vault.vault_write:
-      path: ssh-client-signer/sign/my-role
-      data:
-        public_key: "{{ lookup('ansible.builtin.file', vault_client_keypair_path + '.pub') }}"
-        valid_principals: "root"
-        extensions:
-          permit-pty: ""
-          permit-port-forwarding: ""
-    register: signed_public_key
-  - name: write signed client public key
-    ansible.builtin.copy:
-      dest: "{{ vault_client_keypair_path }}-cert.pub"
-      content: "{{ signed_public_key.data.data.signed_key }}"
-      mode: 0600
-  - name: register client keypair
-    shell: ssh-add "{{ vault_client_keypair_path }}"
+- name: generate client keypair
+  community.crypto.openssh_keypair:
+    path: "{{ vault_client_keypair_path }}"
+    passphrase: "{{ lookup('community.hashi_vault.vault_kv2_get', 'keypair', engine_mount_point='homelab', username=vault_username, password=vault_password).data.data.passphrase }}"
   when: not client_keypair_check.stat.exists
+- name: sign client public key
+  community.hashi_vault.vault_write:
+    path: ssh-client-signer/sign/my-role
+    data:
+      public_key: "{{ lookup('ansible.builtin.file', vault_client_keypair_path + '.pub') }}"
+      valid_principals: "root"
+      extensions:
+        permit-pty: ""
+        permit-port-forwarding: ""
+  register: signed_public_key
+- name: write signed client public key
+  ansible.builtin.copy:
+    dest: "{{ vault_client_keypair_path }}-cert.pub"
+    content: "{{ signed_public_key.data.data.signed_key }}"
+    mode: 0600
+- name: register client keypair
+  shell: ssh-add {{ vault_client_keypair_path }}
