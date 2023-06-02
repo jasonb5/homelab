@@ -1,7 +1,0 @@
----
-- name: handle unraid 
-  include_tasks: unraid.yaml
-  when: ansible_facts['kernel']|regex_search('.*-Unraid$')
-- name: handle debian
-  include_tasks: debian.yaml
-  when: ansible_facts['os_family'] == "Debian"
