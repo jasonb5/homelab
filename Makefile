@@ -91,6 +91,19 @@ modify-image:
 			sudo virt-customize -a $(OUTPUT_FILE) --install qemu-guest-agent && \
 			sudo virt-customize -a $(OUTPUT_FILE) --append-line '/etc/ssh/sshd_config:TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem')
 
+.PHONY: tool-helm
+tool-helm: URL = https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
+tool-helm: OUTPUT_DIR = /usr/local/bin/
+tool-helm: TAR_ARGS = --exclude='LICENSE' --exclude='README*' --strip-components 1 
+tool-helm: download
+	helm plugin install https://github.com/helm-unittest/helm-unittest.git || true
+
+.PHONY: tool-helmfile
+tool-helmfile: URL = https://github.com/helmfile/helmfile/releases/download/v0.154.0/helmfile_0.154.0_linux_amd64.tar.gz
+tool-helmfile: OUTPUT_DIR = /usr/local/bin/
+tool-helmfile: TAR_ARGS = --exclude='LICENSE' --exclude='README*'
+tool-helmfile: download
+
 remove_ext = $(subst $(suffix $(1)),,$(1))
 find_ext = $(foreach EXT,.xz .tar,$(findstring $(EXT),$(1)))
 parse_filename = $(if $(or $(strip $(call find_ext,$(1)))),$(call remove_ext,$(1)),$(1))
@@ -114,3 +127,4 @@ download:
 	[ -e "$(CACHE_DIR)" ] || mkdir -p $(CACHE_DIR)
 	[ -e "$(CACHE_FILE)" ] || curl -L -o $(CACHE_FILE) $(URL)
 	[ -n "$(shell echo $(CACHE_FILE) | grep .xz)" ] && xz -dk $(CACHE_FILE) || true
+	[ -n "$(shell echo $(CACHE_FILE) | grep .tar.gz)" ] && tar -tvf $(CACHE_FILE); sudo tar -xvf $(CACHE_FILE) $(TAR_ARGS) $(if OUTPUT_DIR,-C $(OUTPUT_DIR),) || true
