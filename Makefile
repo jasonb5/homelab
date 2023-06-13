@@ -1,8 +1,40 @@
 CACHE_DIR ?= $(PWD)/cache
 
+CONDA_DIR ?= $(HOME)/conda
+CONDA_ENV_DIR = $(CONDA_DIR)/envs
+CONDA_ACTIVATE = . $(CONDA_DIR)/etc/profile.d/conda.sh
+
 .PHONY: bootstrap
 bootstrap:
-	ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep ansible)" ] || \
+		mamba create -n ansible "python<=3.10"
+
+	$(CONDA_ACTIVATE); \
+		conda activate ansible; \
+		mamba install -y ansible hvac sshpass; \
+		ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+
+.PHONY: deploy-kubernetes
+deploy-kubernetes:
+	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
+		mamba create -n kubespray "python<=3.10"
+
+	$(CONDA_ACTIVATE); \
+		conda activate kubespray; \
+		pip install -r kubespray/kubespray/requirements-2.12.txt; \
+		cd kubespray/kubespray; \
+		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
+
+.PHONY: destroy-kubernetes
+destroy-kubernetes:
+	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
+		mamba create -n kubespray "python<=3.10"
+
+	$(CONDA_ACTIVATE); \
+		conda activate kubespray; \
+		pip install -r kubespray/kubespray/requirements-2.12.txt; \
+		cd kubespray/kubespray; \
+		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
 
 .PHONY: blackhole.angrydonkey.io-9000-ubuntu-jammy
 blackhole.angrydonkey.io-9000-ubuntu-jammy:

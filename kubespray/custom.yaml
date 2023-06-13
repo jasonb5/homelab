@@ -1,0 +1,25 @@
+ansible_user: root
+
+kubectl_localhost: true
+kubeconfig_localhost: true
+
+kube_proxy_strict_arp: true
+
+metallb_enabled: true
+metallb_speaker_enabled: true
+
+metallb_config:
+  address_pools:
+    primary:
+      ip_range:
+        - 192.168.55.150-192.168.55.200
+      auto_assign: true
+
+  layer2:
+    - primary
+
+kubelet_status_update_frequency: "4s"
+kube_controller_node_monitor_grace_period: "20s"
+kube_controller_node_monitor_period: "2s"
+kube_apiserver_pod_eviction_not_ready_timeout_seconds: 30
+kube_apiserver_pod_eviction_unreachable_timeout_seconds: 30
