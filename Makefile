@@ -1,8 +1,40 @@
 CACHE_DIR ?= $(PWD)/cache
 
+CONDA_DIR ?= $(HOME)/conda
+CONDA_ENV_DIR = $(CONDA_DIR)/envs
+CONDA_ACTIVATE = . $(CONDA_DIR)/etc/profile.d/conda.sh
+
 .PHONY: bootstrap
 bootstrap:
-	ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep ansible)" ] || \
+		mamba create -n ansible "python<=3.10"
+
+	$(CONDA_ACTIVATE); \
+		conda activate ansible; \
+		mamba install -y ansible hvac sshpass; \
+		ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+
+.PHONY: deploy-kubernetes
+deploy-kubernetes:
+	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
+		mamba create -n kubespray "python<=3.10"
+
+	$(CONDA_ACTIVATE); \
+		conda activate kubespray; \
+		pip install -r kubespray/kubespray/requirements-2.12.txt; \
+		cd kubespray/kubespray; \
+		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
+
+.PHONY: destroy-kubernetes
+destroy-kubernetes:
+	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
+		mamba create -n kubespray "python<=3.10"
+
+	$(CONDA_ACTIVATE); \
+		conda activate kubespray; \
+		pip install -r kubespray/kubespray/requirements-2.12.txt; \
+		cd kubespray/kubespray; \
+		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
 
 .PHONY: blackhole.angrydonkey.io-9000-ubuntu-jammy
 blackhole.angrydonkey.io-9000-ubuntu-jammy:
@@ -59,6 +91,19 @@ modify-image:
 			sudo virt-customize -a $(OUTPUT_FILE) --install qemu-guest-agent && \
 			sudo virt-customize -a $(OUTPUT_FILE) --append-line '/etc/ssh/sshd_config:TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem')
 
+.PHONY: tool-helm
+tool-helm: URL = https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
+tool-helm: OUTPUT_DIR = /usr/local/bin/
+tool-helm: TAR_ARGS = --exclude='LICENSE' --exclude='README*' --strip-components 1 
+tool-helm: download
+	helm plugin install https://github.com/helm-unittest/helm-unittest.git || true
+
+.PHONY: tool-helmfile
+tool-helmfile: URL = https://github.com/helmfile/helmfile/releases/download/v0.154.0/helmfile_0.154.0_linux_amd64.tar.gz
+tool-helmfile: OUTPUT_DIR = /usr/local/bin/
+tool-helmfile: TAR_ARGS = --exclude='LICENSE' --exclude='README*'
+tool-helmfile: download
+
 remove_ext = $(subst $(suffix $(1)),,$(1))
 find_ext = $(foreach EXT,.xz .tar,$(findstring $(EXT),$(1)))
 parse_filename = $(if $(or $(strip $(call find_ext,$(1)))),$(call remove_ext,$(1)),$(1))
@@ -82,3 +127,4 @@ download:
 	[ -e "$(CACHE_DIR)" ] || mkdir -p $(CACHE_DIR)
 	[ -e "$(CACHE_FILE)" ] || curl -L -o $(CACHE_FILE) $(URL)
 	[ -n "$(shell echo $(CACHE_FILE) | grep .xz)" ] && xz -dk $(CACHE_FILE) || true
+	[ -n "$(shell echo $(CACHE_FILE) | grep .tar.gz)" ] && tar -tvf $(CACHE_FILE); sudo tar -xvf $(CACHE_FILE) $(TAR_ARGS) $(if OUTPUT_DIR,-C $(OUTPUT_DIR),) || true

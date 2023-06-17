@@ -1,3 +1,6 @@
 [submodule "private"]
 	path = private
 	url = https://gitea.angrydonkey.io/titters/homelab-private
+[submodule "kubespray/kubespray"]
+	path = kubespray/kubespray
+	url = https://github.com/kubernetes-sigs/kubespray
