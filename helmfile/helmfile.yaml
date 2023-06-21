@@ -1,0 +1,41 @@
+repositories:
+  - name: longhorn
+    url: https://charts.longhorn.io
+  - name: traefik
+    url: https://traefik.github.io/charts
+  - name: nvidia
+    url: https://helm.ngc.nvidia.com/nvidia
+
+templates:
+  production:
+    namespace: production
+    missingFileHandler: Warn
+    values:
+    - config/{{`{{ .Release.Name }}`}}/values.yaml
+
+releases:
+- name: gpu-operator
+  namespace: gpu-operator
+  chart: nvidia/gpu-operator
+  version: v23.3.2
+  inherit:
+  - template: production
+  disableValidationOnInstall: true
+- name: traefik
+  chart: traefik/traefik
+  version: 23.1.0
+  inherit:
+  - template: production
+  disableValidationOnInstall: true
+  dependencies:
+  - chart: ../../charts/charts/common-test
+    version: 0.1.0
+- name: longhorn
+  namespace: longhorn-system
+  chart: longhorn/longhorn
+  version: 1.4.2
+  inherit:
+  - template: production
+  dependencies:
+  - chart: ../../charts/charts/common-test
+    version: 0.1.0

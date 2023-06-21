@@ -1,0 +1,44 @@
+persistence:
+  defaultClass: false
+
+defaultSettings:
+  backupTarget: s3://longhorn@minio/
+  backupTargetCredentialSecret: longhorn-s3
+  defaultReplicaCount: 2
+  removeSnapshotsDuringFilesystemTrim: true
+
+ingress:
+  enabled: true
+  host: longhorn.angrydonkey.io
+
+common-test:
+  workload:
+  extras:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: longhorn-s3
+      type: Opaque
+      stringData:
+        AWS_ACCESS_KEY_ID: ref+vault://homelab/k8s/longhorn#aws_access_key_id
+        AWS_SECRET_ACCESS_KEY: ref+vault://homelab/k8s/longhorn#aws_secret_access_key
+        AWS_ENDPOINTS: https://s3.angrydonkey.io
+    - apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: longhorn-daily-backup
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "true"
+      provisioner: driver.longhorn.io
+      allowVolumeExpansion:  true
+      reclaimPolicy: Delete
+      volumeBindingMode: Immediate
+      parameters:
+        numberOfReplicas: "2"
+        staleReplicaTimeout: "30"
+        recurringJobSelector: '[
+          {
+            "name": "daily-backup",
+            "isGroup": true
+          }
+        ]'

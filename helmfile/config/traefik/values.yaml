@@ -1,0 +1,62 @@
+deployment:
+  initContainers:
+    - name: volume-permission
+      image: busybox:latest
+        # command: ["/bin/sleep", "infinity"]
+      command: ["sh", "-c", "echo $(id -u):$(id -g); ls -la /data; touch /data/acme.json; chmod -v 600 /data/acme.json"]
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 65532
+        runAsUser: 65532
+        fsGroup: 65532
+      volumeMounts:
+        - name: data
+          mountPath: /data
+
+podSecurityContext:
+  fsGroup: 65532
+
+envFrom:
+  - secretRef:
+      name: traefik-cf
+
+ports:
+  web:
+    redirectTo: websecure
+
+  websecure:
+    tls:
+      enabled: true
+      certResolver: "letsencrypt"
+      domains:
+        - main: "*.angrydonkey.io"
+
+ingressRoute:
+  dashboard:
+    entryPoints: ["websecure"]
+
+logs:
+  general:
+    level: DEBUG
+
+persistence:
+  enabled: true
+
+certResolvers:
+  letsencrypt:
+    email: ref+vault://homelab/k8s/traefik#cf_api_email
+    dnsChallenge:
+      provider: cloudflare
+    storage: /data/acme.json
+
+common-test:
+  workload:
+  extras:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: traefik-cf
+      type: Opaque
+      stringData:
+        CF_API_EMAIL: ref+vault://homelab/k8s/traefik#cf_api_email
+        CF_DNS_API_TOKEN: ref+vault://homelab/k8s/traefik#cf_dns_api_token
