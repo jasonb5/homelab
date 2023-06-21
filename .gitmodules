@@ -4,3 +4,6 @@
 [submodule "kubespray/kubespray"]
 	path = kubespray/kubespray
 	url = https://github.com/kubernetes-sigs/kubespray
+[submodule "charts"]
+	path = charts
+	url = https://github.com/jasonb5/charts
