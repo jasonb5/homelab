@@ -4,6 +4,14 @@ CONDA_DIR ?= $(HOME)/conda
 CONDA_ENV_DIR = $(CONDA_DIR)/envs
 CONDA_ACTIVATE = . $(CONDA_DIR)/etc/profile.d/conda.sh
 
+.PHONY: new-template
+new-template:
+	@make -C charts/ new-template OUTPUT_DIR=$(PWD)/charts/charts
+
+.PHONY: new-private-template
+new-private-template:
+	@make -C charts/ new-template OUTPUT_DIR=$(PWD)/private/charts
+
 .PHONY: bootstrap
 bootstrap:
 	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep ansible)" ] || \
