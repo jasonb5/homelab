@@ -147,6 +147,7 @@ upload:
 download:
 	[ -e "$(CACHE_DIR)" ] || mkdir -p $(CACHE_DIR)
 	[ -e "$(CACHE_FILE)" ] || curl -L -o $(CACHE_FILE) $(URL)
-	[ -n "$(shell echo $(CACHE_FILE) | grep .zip)" ] && sudo unzip $(CACHE_FILE) $(if OUTPUT_DIR,-d $(OUTPUT_DIR)) || true
-	[ -n "$(shell echo $(CACHE_FILE) | grep .xz)" ] && xz -dk $(CACHE_FILE) || true
-	[ -n "$(shell echo $(CACHE_FILE) | grep .tar.gz)" ] && tar -tvf $(CACHE_FILE); sudo tar -xvf $(CACHE_FILE) $(TAR_ARGS) $(if OUTPUT_DIR,-C $(OUTPUT_DIR),) || true
+	[ -n "$(shell echo $(CACHE_FILE) | grep .zip)" ] && sudo unzip $(CACHE_FILE) $(if $(OUTPUT_DIR),-d $(OUTPUT_DIR)) || true
+	[ -n "$(shell echo $(CACHE_FILE) | grep .tar.xz)" ] && sudo tar -xJf $(CACHE_FILE) $(TAR_ARGS) $(if $(OUTPUT_DIR),-C $(OUTPUT_DIR),) || true
+	[ -n "$(shell echo $(CACHE_FILE) | grep -E '\/[^.]*\.xz')" ] && xz -dk $(CACHE_FILE) || true
+	[ -n "$(shell echo $(CACHE_FILE) | grep .tar.gz)" ] && sudo tar -xvf $(CACHE_FILE) $(TAR_ARGS) $(if $(OUTPUT_DIR),-C $(OUTPUT_DIR),) || true
