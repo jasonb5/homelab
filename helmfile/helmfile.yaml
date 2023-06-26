@@ -26,6 +26,13 @@ releases:
   inherit:
   - template: production
   disableValidationOnInstall: true
+  dependencies:
+  - chart: ../charts/charts/common-test
+    version: 0.1.0
+  hooks:
+  - events: ["postsync"]
+    command: "kubectl"
+    args: ["-n", "gpu-operator", "patch", "clusterpolicy/cluster-policy", "--type", "merge", "-p", "{'spec': {'devicePlugin': {'config': {'name': 'time-slicing-config', 'default': 'any'}}}}"]
 - name: traefik
   chart: traefik/traefik
   version: 23.1.0
