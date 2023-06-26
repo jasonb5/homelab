@@ -1,0 +1,72 @@
+hub:
+  config:
+    Authenticator:
+      admin_users:
+        - titters
+
+    ConfigurableHTTPProxy:
+      auth_token: isfNZJmp9Q1Oo5TObyia3KmTPJK7JzrY8taDWlLCdOYClE58OQTgMTmIFwgGln9Y
+
+    JupyterHub:
+      cookie_secret: HWu5ZABRFYSUzN862g3mOr8IxCRI3jhHzi3VX0Qbk8mli4UvmGnf37tfy6OPndJBCg==
+
+    CryptKeeper:
+      keys:
+      - 06zTUyce0RpNNfSwgOIkwFtd8CSu7Dvq3ZCED4BefAcTXiU9lIDPn8kQVs8Fq6oYCg==
+
+singleuser:
+  image:
+    name: jupyter/minimal-notebook
+    tag: latest
+
+  defaultUrl: /lab
+
+  extraEnv:
+    JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
+
+  profileList:
+    - display_name: "Minimal notebook"
+      description: "Minimal notebook"
+      default: true
+      kubespawner_override:
+        extra_resource_limits:
+          nvidia.com/gpu: "1"
+
+  storage:
+    capacity: 16Gi
+
+    extraVolumes:
+      - name: shm-volume
+        emptyDir:
+          medium: Memory
+    extraVolumeMounts:
+      - name: shm-volume
+        mountPath: /dev/shm
+
+  extraFiles:
+    jupyter_notebook_config.json:
+      mountPath: /etc/jupyter/jupyter_notebook_config.json
+      data:
+        MappingKernelManager:
+          cull_idle_timeout: 1200
+          cull_interval: 120
+          cull_connected: true
+          cull_busy: false
+
+ingress:
+  enabled: true
+  hosts:
+    - jupyterhub.angrydonkey.io
+  pathType: ImplementationSpecific
+
+prePuller:
+  hook:
+    enabled: false
+
+  continuous:
+    enabled: false
+
+cull:
+  enabled: true
+  users: true
+  adminUsers: true

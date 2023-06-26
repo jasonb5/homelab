@@ -5,6 +5,8 @@ repositories:
     url: https://traefik.github.io/charts
   - name: nvidia
     url: https://helm.ngc.nvidia.com/nvidia
+  - name: jupyterhub
+    url: https://jupyterhub.github.io/helm-chart/
 
 templates:
   production:
@@ -14,6 +16,11 @@ templates:
     - config/{{`{{ .Release.Name }}`}}/values.yaml
 
 releases:
+- name: jupyterhub
+  chart: jupyterhub/jupyterhub
+  version: 2.0.0
+  inherit:
+  - template: production
 - name: jellyfin
   chart: ../charts/charts/jellyfin
   version: 0.1.0
