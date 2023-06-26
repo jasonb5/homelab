@@ -44,3 +44,6 @@ releases:
   dependencies:
   - chart: ../charts/charts/common-test
     version: 0.1.0
+
+helmfiles:
+- ../private/helmfile.yaml
