@@ -16,6 +16,11 @@ templates:
     - config/{{`{{ .Release.Name }}`}}/values.yaml
 
 releases:
+- name: gotify
+  chart: ../charts/charts/gotify
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: jupyterhub
   chart: jupyterhub/jupyterhub
   version: 2.0.0
