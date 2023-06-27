@@ -8,7 +8,7 @@ hub:
       auth_token: isfNZJmp9Q1Oo5TObyia3KmTPJK7JzrY8taDWlLCdOYClE58OQTgMTmIFwgGln9Y
 
     JupyterHub:
-      cookie_secret: HWu5ZABRFYSUzN862g3mOr8IxCRI3jhHzi3VX0Qbk8mli4UvmGnf37tfy6OPndJBCg==
+      cookie_secret: a7ef6a657296ec8cd8d9948e5caca170ccfe2f3d6d29cf466005597a754748a8
 
     CryptKeeper:
       keys:
@@ -32,6 +32,9 @@ singleuser:
         extra_resource_limits:
           nvidia.com/gpu: "1"
 
+  cloudMetadata:
+    blockWithIptables: false
+
   storage:
     capacity: 16Gi
 
@@ -39,9 +42,21 @@ singleuser:
       - name: shm-volume
         emptyDir:
           medium: Memory
+      - name: archive-volume
+        nfs:
+          server: 192.168.55.20
+          path: /mnt/user/archive
+      - name: backup-volume
+        nfs:
+          server: 192.168.55.20
+          path: /mnt/user/backup
     extraVolumeMounts:
       - name: shm-volume
         mountPath: /dev/shm
+      - name: archive-volume
+        mountPath: /home/jovyan/archive
+      - name: backup-volume
+        mountPath: /home/jovyan/backup
 
   extraFiles:
     jupyter_notebook_config.json:
@@ -52,6 +67,9 @@ singleuser:
           cull_interval: 120
           cull_connected: true
           cull_busy: false
+
+  networkPolicy:
+    enabled: false
 
 ingress:
   enabled: true
@@ -70,3 +88,7 @@ cull:
   enabled: true
   users: true
   adminUsers: true
+
+scheduling:
+  userScheduler:
+    enabled: false
