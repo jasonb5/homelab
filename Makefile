@@ -119,12 +119,6 @@ tool-helmfile: OUTPUT_DIR = /usr/local/bin/
 tool-helmfile: TAR_ARGS = --exclude='LICENSE' --exclude='README*'
 tool-helmfile: download
 
-.PHONY: tool-helm-docs
-tool-helm-docs: URL = https://github.com/norwoodj/helm-docs/releases/download/v1.11.0/helm-docs_1.11.0_Linux_x86_64.tar.gz
-tool-helm-docs: OUTPUT_DIR = /usr/local/bin/
-tool-helm-docs: TAR_ARGS = --exclude LICENSE --exclude README.md
-tool-helm-docs: download
-
 remove_ext = $(subst $(suffix $(1)),,$(1))
 find_ext = $(foreach EXT,.xz .tar,$(findstring $(EXT),$(1)))
 parse_filename = $(if $(or $(strip $(call find_ext,$(1)))),$(call remove_ext,$(1)),$(1))
