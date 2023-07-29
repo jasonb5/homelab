@@ -33,6 +33,17 @@ deploy-kubernetes:
 		cd kubespray/kubespray; \
 		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
 
+.PHONY: upgrade-kubernetes
+upgrade-kubernetes:
+	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
+		mamba create -n kubespray "python<=3.10"
+
+	$(CONDA_ACTIVATE); \
+		conda activate kubespray; \
+		pip install -r kubespray/kubespray/requirements-2.12.txt; \
+		cd kubespray/kubespray; \
+		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -e upgrade_cluster_setup=true cluster.yml
+
 .PHONY: destroy-kubernetes
 destroy-kubernetes:
 	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
