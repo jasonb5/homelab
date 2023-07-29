@@ -18,6 +18,11 @@ templates:
     - config/{{`{{ .Release.Name }}`}}/values.yaml
 
 releases:
+- name: jellyfin
+  chart: common/jellyfin
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: gotify
   chart: common/gotify
   version: 0.1.0
@@ -26,11 +31,6 @@ releases:
 - name: jupyterhub
   chart: jupyterhub/jupyterhub
   version: 2.0.0
-  inherit:
-  - template: production
-- name: jellyfin
-  chart: ../charts/charts/jellyfin
-  version: 0.1.0
   inherit:
   - template: production
 - name: gpu-operator

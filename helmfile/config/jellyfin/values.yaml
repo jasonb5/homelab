@@ -1,11 +1,16 @@
 nodeSelector:
   area: rack
 
-resources:
+hostNetwork: true
 
-service:
-  default:
-    enabled: true
+resources:
+  limits:
+    cpu: 4
+    memory: 4Gi
+
+networkPolicy:
+  egress:
+    - {}
 
 ingress:
   default:
