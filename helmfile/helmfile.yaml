@@ -7,6 +7,8 @@ repositories:
     url: https://helm.ngc.nvidia.com/nvidia
   - name: jupyterhub
     url: https://jupyterhub.github.io/helm-chart/
+  - name: common
+    url: https://jasonb5.github.io/charts
 
 templates:
   production:
@@ -17,7 +19,7 @@ templates:
 
 releases:
 - name: gotify
-  chart: ../charts/charts/gotify
+  chart: common/gotify
   version: 0.1.0
   inherit:
   - template: production
@@ -39,7 +41,7 @@ releases:
   - template: production
   disableValidationOnInstall: true
   dependencies:
-  - chart: ../charts/charts/common-test
+  - chart: common/common-test
     version: 0.1.0
   hooks:
   - events: ["postsync"]
@@ -52,7 +54,7 @@ releases:
   - template: production
   disableValidationOnInstall: true
   dependencies:
-  - chart: ../charts/charts/common-test
+  - chart: common/common-test
     version: 0.1.0
 - name: longhorn
   namespace: longhorn-system
@@ -61,7 +63,7 @@ releases:
   inherit:
   - template: production
   dependencies:
-  - chart: ../charts/charts/common-test
+  - chart: common/common-test
     version: 0.1.0
 
 helmfiles:

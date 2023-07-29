@@ -2,17 +2,20 @@ secret:
   default:
     GOTIFY_DEFAULTUSER_PASS: ref+vault://homelab/k8s/gotify#password
 
-env:
-  GOTIFY_DEFAULTUSER_NAME: "titters"
-
 envFrom:
   default: secret
 
-service:
-  default:
-    enabled: true
+securityContext:
+  capabilities:
+    add:
+      - NET_BIND_SERVICE
 
 ingress:
   default:
     enabled: true
     host: gotify.angrydonkey.io
+
+persistence:
+  config:
+    enabled: true
+    size: 1Gi
