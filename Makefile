@@ -12,21 +12,28 @@ new-template:
 new-private-template:
 	@make -C charts/ new-template OUTPUT_DIR=$(PWD)/private/charts
 
-.PHONY: bootstrap
-bootstrap:
+.PHONY: install-ansible
+install-ansible:
 	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep ansible)" ] || \
 		mamba create -n ansible "python<=3.10"
 
+.PHONY: bootstrap
+bootstrap: install-ansible
 	$(CONDA_ACTIVATE); \
 		conda activate ansible; \
 		mamba install -y ansible hvac sshpass; \
 		ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
 
-.PHONY: deploy-kubernetes
-deploy-kubernetes:
-	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
-		mamba create -n kubespray "python<=3.10"
+.PHONY: kubeconfig-kubernetes
+kubeconfig-kubernetes:
+	$(CONDA_ACTIVATE); \
+		conda activate kubespray; \
+		pip install -r kubespray/kubespray/requirements-2.12.txt; \
+		cd kubespray/kubespray; \
+		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -t client cluster.yml
 
+.PHONY: deploy-kubernetes
+deploy-kubernetes: install-ansible
 	$(CONDA_ACTIVATE); \
 		conda activate kubespray; \
 		pip install -r kubespray/kubespray/requirements-2.12.txt; \
@@ -34,10 +41,7 @@ deploy-kubernetes:
 		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
 
 .PHONY: upgrade-kubernetes
-upgrade-kubernetes:
-	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
-		mamba create -n kubespray "python<=3.10"
-
+upgrade-kubernetes: install-ansible
 	$(CONDA_ACTIVATE); \
 		conda activate kubespray; \
 		pip install -r kubespray/kubespray/requirements-2.12.txt; \
@@ -45,10 +49,7 @@ upgrade-kubernetes:
 		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -e upgrade_cluster_setup=true cluster.yml
 
 .PHONY: destroy-kubernetes
-destroy-kubernetes:
-	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep kubespray)" ] || \
-		mamba create -n kubespray "python<=3.10"
-
+destroy-kubernetes: install-ansible
 	$(CONDA_ACTIVATE); \
 		conda activate kubespray; \
 		pip install -r kubespray/kubespray/requirements-2.12.txt; \

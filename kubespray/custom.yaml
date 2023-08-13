@@ -1,6 +1,6 @@
 ansible_user: root
 
-kubectl_localhost: true
+# kubectl_localhost: true
 kubeconfig_localhost: true
 
 kube_proxy_strict_arp: true
