@@ -20,7 +20,7 @@ ingress:
 persistence:
   config:
     enabled: true
-    size: 16Gi
+    size: 64Gi
 
   data:
     enabled: true
