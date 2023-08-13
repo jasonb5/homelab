@@ -20,12 +20,12 @@ templates:
 releases:
 - name: jellyfin
   chart: common/jellyfin
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: gotify
   chart: common/gotify
-  version: 0.1.0
+  version: 0.1.2
   inherit:
   - template: production
 - name: jupyterhub
