@@ -7,7 +7,7 @@ repositories:
     url: https://helm.ngc.nvidia.com/nvidia
   - name: jupyterhub
     url: https://jupyterhub.github.io/helm-chart/
-  - name: common
+  - name: homelab
     url: https://jasonb5.github.io/charts
 
 templates:
@@ -31,7 +31,7 @@ releases:
   - template: production
   disableValidationOnInstall: true
   dependencies:
-  - chart: common/common-test
+  - chart: homelab/common-test
     version: 0.1.0
   hooks:
   - events: ["postsync"]
@@ -44,7 +44,7 @@ releases:
   - template: production
   disableValidationOnInstall: true
   dependencies:
-  - chart: common/common-test
+  - chart: homelab/common-test
     version: 0.1.0
 - name: longhorn
   namespace: longhorn-system
@@ -53,7 +53,7 @@ releases:
   inherit:
   - template: production
   dependencies:
-  - chart: common/common-test
+  - chart: homelab/common-test
     version: 0.1.0
 
 helmfiles:

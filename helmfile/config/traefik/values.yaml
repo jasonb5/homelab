@@ -50,13 +50,12 @@ certResolvers:
     storage: /data/acme.json
 
 common-test:
-  workload:
-  extras:
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: traefik-cf
-      type: Opaque
-      stringData:
-        CF_API_EMAIL: ref+vault://homelab/k8s/traefik#cf_api_email
-        CF_DNS_API_TOKEN: ref+vault://homelab/k8s/traefik#cf_dns_api_token
+  extrasObjects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: traefik-cf
+    type: Opaque
+    stringData:
+      CF_API_EMAIL: ref+vault://homelab/k8s/traefik#cf_api_email
+      CF_DNS_API_TOKEN: ref+vault://homelab/k8s/traefik#cf_dns_api_token
