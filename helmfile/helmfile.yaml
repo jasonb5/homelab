@@ -56,5 +56,5 @@ releases:
   - chart: homelab/common-test
     version: 0.1.0
 
-helmfiles:
-- ../private/helmfile.yaml
+# helmfiles:
+# - ../private/helmfile.yaml
