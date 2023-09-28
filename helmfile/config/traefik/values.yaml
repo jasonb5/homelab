@@ -50,7 +50,7 @@ certResolvers:
     storage: /data/acme.json
 
 common-test:
-  extrasObjects:
+  extraObjects:
   - apiVersion: v1
     kind: Secret
     metadata:
