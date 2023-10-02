@@ -2,6 +2,7 @@ all:
   children:
     baremetal:
       hosts:
-        blackhole.angrydonkey.io:
-        charon.angrydonkey.io:
+        callisto.angrydonkey.io:
         deimos.angrydonkey.io:
+        ceres.angrydonkey.io:
+        charon.angrydonkey.io:
