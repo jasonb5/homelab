@@ -8,10 +8,6 @@ CONDA_ACTIVATE = . $(CONDA_DIR)/etc/profile.d/conda.sh
 new-template:
 	@make -C charts/ new-template OUTPUT_DIR=$(PWD)/charts/charts
 
-.PHONY: new-private-template
-new-private-template:
-	@make -C charts/ new-template OUTPUT_DIR=$(PWD)/private/charts
-
 .PHONY: install-ansible
 install-ansible:
 	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep ansible)" ] || \
