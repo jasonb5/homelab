@@ -27,13 +27,25 @@ locals {
     "k8s-02" = {
       vmid = 6002
       desc = "Kubernetes worker"
-      target_node = "blackhole"
+      target_node = "callisto"
       clone = "template-ubuntu-jammy"
       memory = 8192
       cores = 8
       macaddr = "02:b2:e2:13:6d:ac"
       disk1 = {
         size = "192G" 
+      }
+    }
+    "pihole-01" = {
+      vmid = 6010
+      desc = "Pi-hole primary"
+      target_node = "callisto"
+      clone = "template-ubuntu-jammy"
+      memory = 1024
+      cores = 1
+      macaddr = "ca:00:25:6d:2b:e0"
+      disk1 = {
+        size = "8G"
       }
     }
   }
@@ -101,7 +113,7 @@ resource "proxmox_vm_qemu" "cloud-vm" {
 
   os_type = "cloud-init"
   ipconfig0 = "ip=dhcp"
-  
+
   network {
     model = "virtio"
     macaddr = each.value.macaddr

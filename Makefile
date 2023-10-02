@@ -4,10 +4,6 @@ CONDA_DIR ?= $(HOME)/conda
 CONDA_ENV_DIR = $(CONDA_DIR)/envs
 CONDA_ACTIVATE = . $(CONDA_DIR)/etc/profile.d/conda.sh
 
-.PHONY: new-template
-new-template:
-	@make -C charts/ new-template OUTPUT_DIR=$(PWD)/charts/charts
-
 .PHONY: install-ansible
 install-ansible:
 	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep ansible)" ] || \
@@ -17,7 +13,7 @@ install-ansible:
 bootstrap: install-ansible
 	$(CONDA_ACTIVATE); \
 		conda activate ansible; \
-		mamba install -y ansible hvac sshpass; \
+		mamba install -y ansible hvac sshpass six; \
 		ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
 
 .PHONY: kubeconfig-kubernetes
@@ -52,8 +48,8 @@ destroy-kubernetes: install-ansible
 		cd kubespray/kubespray; \
 		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
 
-.PHONY: blackhole.angrydonkey.io-9000-ubuntu-jammy
-blackhole.angrydonkey.io-9000-ubuntu-jammy:
+.PHONY: callisto.angrydonkey.io-9000-ubuntu-jammy
+callisto.angrydonkey.io-9000-ubuntu-jammy:
 	$(MAKE) CALLING=$@ $(subst $() $(),-,$(wordlist 3,20,$(subst -, ,$@)))
 
 .PHONY: deimos.angrydonkey.io-9001-ubuntu-jammy
@@ -126,6 +122,11 @@ tool-helmfile: URL = https://github.com/helmfile/helmfile/releases/download/v0.1
 tool-helmfile: OUTPUT_DIR = /usr/local/bin/
 tool-helmfile: TAR_ARGS = --exclude='LICENSE' --exclude='README*'
 tool-helmfile: download
+
+.PHONY: tool-terraform
+tool-terraform: URL = https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+tool-terraform: OUTPUT_DIR = /usr/local/bin/
+tool-terraform: download
 
 remove_ext = $(subst $(suffix $(1)),,$(1))
 find_ext = $(foreach EXT,.xz .tar,$(findstring $(EXT),$(1)))
