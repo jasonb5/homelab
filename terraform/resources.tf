@@ -63,6 +63,8 @@ resource "proxmox_vm_qemu" "cloud" {
   agent = lookup(each.value, "agent", 1)
 
   os_type = "cloud-init"
+  ciuser = "root"
+  cipassword = data.vault_kv_secret_v2.password.data.password
   ipconfig0 = "ip=dhcp"
 
   network {
