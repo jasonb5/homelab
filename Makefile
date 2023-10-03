@@ -4,6 +4,10 @@ CONDA_DIR ?= $(HOME)/conda
 CONDA_ENV_DIR = $(CONDA_DIR)/envs
 CONDA_ACTIVATE = . $(CONDA_DIR)/etc/profile.d/conda.sh
 
+.PHONY: terraform
+terraform:
+	terraform -chdir=terraform apply -var="host_config_file=$(PWD)/hosts.json"
+
 .PHONY: create-env
 create-env:
 	name="$(word 1, $(subst -, ,$(NAME)))"; \

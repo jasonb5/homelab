@@ -1,58 +1,5 @@
-locals {
-  vms = {
-    "homeassistant" = {
-      vmid = 6000
-      desc = "Home Assistant OS"
-      target_node = "deimos"
-      clone = "template-haos"
-      memory = 2048
-      cores = 2
-      macaddr = "7a:1d:0e:8d:7f:59"
-      bios = "ovmf"
-    }
-  }
-  cloud-vms = {
-    "k8s-01" = {
-      vmid = 6001
-      desc = "Kubernetes control plane"
-      target_node = "deimos"
-      clone = "template-ubuntu-jammy"
-      memory = 8192
-      cores = 4
-      macaddr = "02:06:24:ba:26:f0"
-      disk1 = {
-        size = "192G" 
-      }
-    }
-    "k8s-02" = {
-      vmid = 6002
-      desc = "Kubernetes worker"
-      target_node = "callisto"
-      clone = "template-ubuntu-jammy"
-      memory = 8192
-      cores = 8
-      macaddr = "02:b2:e2:13:6d:ac"
-      disk1 = {
-        size = "192G" 
-      }
-    }
-    "pihole-01" = {
-      vmid = 6010
-      desc = "Pi-hole primary"
-      target_node = "callisto"
-      clone = "template-ubuntu-jammy"
-      memory = 1024
-      cores = 1
-      macaddr = "ca:00:25:6d:2b:e0"
-      disk1 = {
-        size = "8G"
-      }
-    }
-  }
-}
-
 resource "proxmox_vm_qemu" "vm" {
-  for_each = local.vms
+  for_each = jsondecode(data.local_file.hosts.content).vm
 
   name = each.key
   target_node = each.value.target_node
@@ -65,7 +12,7 @@ resource "proxmox_vm_qemu" "vm" {
   bios = lookup(each.value, "bios", "seabios")
   scsihw = "virtio-scsi-pci"
   agent = lookup(each.value, "agent", 1)
-  
+
   network {
     model = "virtio"
     macaddr = each.value.macaddr
@@ -96,8 +43,8 @@ resource "proxmox_vm_qemu" "vm" {
   }
 }
 
-resource "proxmox_vm_qemu" "cloud-vm" {
-  for_each = local.cloud-vms
+resource "proxmox_vm_qemu" "cloud" {
+  for_each = jsondecode(data.local_file.hosts.content).cloud
 
   name = each.key
   target_node = each.value.target_node
