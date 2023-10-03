@@ -50,6 +50,12 @@ deploy: WORKING_DIR = kubespray/kubespray
 deploy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
 deploy: kubespray-env run
 
+.PHONY: scale
+scale: ENV = "kubespray"
+scale: WORKING_DIR = kubespray/kubespray
+scale: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" playbooks/facts.yaml; \
+	ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" --limit=$(NODE) scale.yml
+
 .PHONY: upgrade
 upgrade: ENV = "kubespray"
 upgrade: WORKING_DIR = kubespray/kubespray
