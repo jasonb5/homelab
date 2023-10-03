@@ -7,6 +7,7 @@ resource "proxmox_vm_qemu" "vm" {
   desc = each.value.desc
   clone = each.value.clone
   full_clone = true
+  qemu_os = lookup(each.value, "os", "l26")
   memory = each.value.memory
   cores = each.value.cores
   bios = lookup(each.value, "bios", "seabios")
@@ -24,10 +25,11 @@ resource "proxmox_vm_qemu" "vm" {
     for_each = (lookup(each.value, "disk1", "false") != "false") ? { enabled = true } : {}
 
     content {
-      type = "virtio"
+      type = lookup(each.value.disk1, "type", "virtio")
       storage = "local-lvm"
       size = each.value.disk1.size
-      file = "vm-${each.value.vmid}-disk-0"
+      file = lookup(each.value.disk1, "file", "")
+      # file = "vm-${each.value.vmid}-disk-0"
     }
   }
 
@@ -35,10 +37,11 @@ resource "proxmox_vm_qemu" "vm" {
     for_each = (lookup(each.value, "disk2", "false") != "false") ? { enabled = true } : {}
 
     content {
-      type = "virtio"
+      type = lookup(each.value.disk1, "type", "virtio")
       storage = "local-lvm"
       size = each.value.disk2.size
-      file = "vm-${each.value.vmid}-disk-1"
+      file = lookup(each.value.disk1, "file", "")
+      # file = "vm-${each.value.vmid}-disk-1"
     }
   }
 }
@@ -52,6 +55,7 @@ resource "proxmox_vm_qemu" "cloud" {
   desc = each.value.desc
   clone = each.value.clone
   full_clone = true
+  qemu_os = lookup(each.value, "os", "l26")
   memory = each.value.memory
   cores = each.value.cores
   bios = lookup(each.value, "bios", "seabios")
@@ -72,10 +76,10 @@ resource "proxmox_vm_qemu" "cloud" {
     for_each = (lookup(each.value, "disk1", "false") != "false") ? { enabled = true } : {}
 
     content {
-      type = "virtio"
+      type = lookup(each.value.disk1, "type", "virtio")
       storage = "local-lvm"
       size = each.value.disk1.size
-      file = "vm-${each.value.vmid}-disk-0"
+      # file = "vm-${each.value.vmid}-disk-0"
     }
   }
 
@@ -83,10 +87,10 @@ resource "proxmox_vm_qemu" "cloud" {
     for_each = (lookup(each.value, "disk2", "false") != "false") ? { enabled = true } : {}
 
     content {
-      type = "virtio"
+      type = lookup(each.value.disk1, "type", "virtio")
       storage = "local-lvm"
       size = each.value.disk2.size
-      file = "vm-${each.value.vmid}-disk-1"
+      # file = "vm-${each.value.vmid}-disk-1"
     }
   }
 }
