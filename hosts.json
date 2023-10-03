@@ -1,20 +1,9 @@
 {
-  "vm": {
-    "homeassistant": {
-      "vmid": "6000",
-      "desc": "Home Assistant OS",
-      "target_node": "deimos",
-      "clone": "template-haos",
-      "memory": "2048",
-      "cores": "2",
-      "macaddr": "7a:1d:0e:8d:7f:59",
-      "bios": "ovmf"
-    }
-  },
+  "vm": {},
   "cloud": {
     "k8s-01": {
-      "vmid": "6001",
-      "desc": "Kubernetes control plane",
+      "vmid": "6000",
+      "desc": "Kubernetes control plane/worker/etcd",
       "target_node": "deimos",
       "clone": "template-ubuntu-jammy",
       "memory": "8192",
@@ -25,13 +14,25 @@
       }
     },
     "k8s-02": {
-      "vmid": "6002",
-      "desc": "Kubernetes worker",
+      "vmid": "6001",
+      "desc": "Kubernetes control plane/worker/etcd",
       "target_node": "callisto",
       "clone": "template-ubuntu-jammy",
       "memory": "8192",
       "cores": "8",
       "macaddr": "02:b2:e2:13:6d:ac",
+      "disk1": {
+        "size": "192G" 
+      }
+    },
+    "k8s-03": {
+      "vmid": "6002",
+      "desc": "Kubernetes control plane/worker/etcd",
+      "target_node": "ceres",
+      "clone": "template-ubuntu-jammy",
+      "memory": "8192",
+      "cores": "4",
+      "macaddr": "4a:c0:00:e9:28:93",
       "disk1": {
         "size": "192G" 
       }
