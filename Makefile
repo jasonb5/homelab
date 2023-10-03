@@ -70,6 +70,10 @@ deimos.angrydonkey.io-9001-ubuntu-jammy:
 deimos.angrydonkey.io-9002-haos:
 	$(MAKE) CALLING=$@ $(subst $() $(),-,$(wordlist 3,20,$(subst -, ,$@)))
 
+.PHONY: ceres.angrydonkey.io-9003-ubuntu-jammy
+ceres.angrydonkey.io-9003-ubuntu-jammy:
+	$(MAKE) CALLING=$@ $(subst $() $(),-,$(wordlist 3,20,$(subst -, ,$@)))
+
 ubuntu-jammy haos proxmox-vm: TARGET_HOST = $(word 1, $(subst -, ,$(CALLING)))
 ubuntu-jammy haos proxmox-vm: ID = $(word 2, $(subst -, ,$(CALLING)))
 
@@ -153,8 +157,8 @@ download upload modify-image proxmox-vm: OUTPUT_FILE = $(CACHE_DIR)/$(FILENAME)
 .PHONY: upload
 upload:
 	[ -e "$(OUTPUT_FILE)" ] || cp $(DOWNLOAD_FILE) $(OUTPUT_FILE)
-	[ -z "$(shell ssh root@blackhole.angrydonkey.io ls /mnt/pve/iso/template/iso | grep $(FILENAME))" ] && \
-		scp $(OUTPUT_FILE) root@blackhole.angrydonkey.io:/mnt/pve/iso/template/iso/ || true
+	[ -z "$(shell ssh root@callisto.angrydonkey.io ls /mnt/pve/iso/template/iso | grep $(FILENAME))" ] && \
+		scp $(OUTPUT_FILE) root@callisto.angrydonkey.io:/mnt/pve/iso/template/iso/ || true
 
 .PHONY: download
 download:
