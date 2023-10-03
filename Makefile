@@ -4,49 +4,59 @@ CONDA_DIR ?= $(HOME)/conda
 CONDA_ENV_DIR = $(CONDA_DIR)/envs
 CONDA_ACTIVATE = . $(CONDA_DIR)/etc/profile.d/conda.sh
 
-.PHONY: install-ansible
-install-ansible:
-	[ -n "$$($(CONDA_ACTIVATE); conda env list | grep ansible)" ] || \
-		mamba create -n ansible "python<=3.10"
+.PHONY: create-env
+create-env:
+	name="$(word 1, $(subst -, ,$(NAME)))"; \
+		[ -n "$$($(CONDA_ACTIVATE); conda env list | grep $${name})" ] || \
+			mamba create -n $${name} --yes $(ARGS)
+
+.PHONY: homelab-env
+homelab-env:
+	@make create-env NAME=$@ ARGS='"python<3.10" ansible hvac sshpass six bcrypt'
+
+.PHONY: kubespray-env
+kubespray-env:
+	@make create-env NAME=$@ ARGS='python'
+	$(CONDA_ACTIVATE); \
+		conda activate kubespray; \
+		while read requirement; do mamba install --yes -q $$requirement; done < kubespray/kubespray/requirements-2.12.txt; \
+		pip install -r kubespray/kubespray/requirements-2.12.txt
+
+.PHONY: run
+run:
+	$(CONDA_ACTIVATE); \
+		conda activate $(ENV); \
+		pushd $(if $(WORKING_DIR),$(WORKING_DIR),"."); \
+		$(CMD)
 
 .PHONY: bootstrap
-bootstrap: install-ansible
-	$(CONDA_ACTIVATE); \
-		conda activate ansible; \
-		mamba install -y ansible hvac sshpass six; \
-		ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+bootstrap: ENV = "homelab"
+bootstrap: CMD = ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+bootstrap: homelab-env run
 
-.PHONY: kubeconfig-kubernetes
-kubeconfig-kubernetes:
-	$(CONDA_ACTIVATE); \
-		conda activate kubespray; \
-		pip install -r kubespray/kubespray/requirements-2.12.txt; \
-		cd kubespray/kubespray; \
-		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -t client cluster.yml
+.PHONY: kubeconfig
+kubeconfig: ENV = "kubespray"
+kubeconfig: WORKING_DIR = kubespray/kubespray
+kubeconfig: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -t client cluster.yml
+kubeconfig: kubespray-env run
 
-.PHONY: deploy-kubernetes
-deploy-kubernetes: install-ansible
-	$(CONDA_ACTIVATE); \
-		conda activate kubespray; \
-		pip install -r kubespray/kubespray/requirements-2.12.txt; \
-		cd kubespray/kubespray; \
-		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
+.PHONY: deploy
+deploy: ENV = "kubespray"
+deploy: WORKING_DIR = kubespray/kubespray
+deploy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
+deploy: kubespray-env run
 
-.PHONY: upgrade-kubernetes
-upgrade-kubernetes: install-ansible
-	$(CONDA_ACTIVATE); \
-		conda activate kubespray; \
-		pip install -r kubespray/kubespray/requirements-2.12.txt; \
-		cd kubespray/kubespray; \
-		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -e upgrade_cluster_setup=true cluster.yml
+.PHONY: upgrade
+upgrade: ENV = "kubespray"
+upgrade: WORKING_DIR = kubespray/kubespray
+upgrade: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -e upgrade_cluster_setup=true cluster.yml
+upgrade: kubespray-env run
 
-.PHONY: destroy-kubernetes
-destroy-kubernetes: install-ansible
-	$(CONDA_ACTIVATE); \
-		conda activate kubespray; \
-		pip install -r kubespray/kubespray/requirements-2.12.txt; \
-		cd kubespray/kubespray; \
-		ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
+.PHONY: destroy
+destroy: ENV = "kubespray"
+destroy: WORKING_DIR = kubespray/kubespray
+destroy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
+destroy: kubespray-env run
 
 .PHONY: callisto.angrydonkey.io-9000-ubuntu-jammy
 callisto.angrydonkey.io-9000-ubuntu-jammy:
