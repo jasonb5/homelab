@@ -15,4 +15,4 @@ common-test:
             failRequestsGreaterThanOne: false
             resources:
               - name: nvidia.com/gpu
-                replicas: 4
+                replicas: 8

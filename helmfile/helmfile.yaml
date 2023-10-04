@@ -20,13 +20,13 @@ templates:
 releases:
 - name: jupyterhub
   chart: jupyterhub/jupyterhub
-  version: 2.0.0
+  version: 3.1.0
   inherit:
   - template: production
 - name: gpu-operator
   namespace: gpu-operator
   chart: nvidia/gpu-operator
-  version: v23.3.2
+  version: v23.6.1
   inherit:
   - template: production
   disableValidationOnInstall: true
@@ -36,10 +36,10 @@ releases:
   hooks:
   - events: ["postsync"]
     command: "kubectl"
-    args: ["-n", "gpu-operator", "patch", "clusterpolicy/cluster-policy", "--type", "merge", "-p", "{'spec': {'devicePlugin': {'config': {'name': 'time-slicing-config', 'default': 'any'}}}}"]
+    args: ["-n", "gpu-operator", "patch", "clusterpolicy/cluster-policy", "--type", "merge", "--patch-file", "patches/gpu-operator.yaml"]
 - name: traefik
   chart: traefik/traefik
-  version: 23.1.0
+  version: 24.0.0
   inherit:
   - template: production
   disableValidationOnInstall: true
@@ -49,12 +49,9 @@ releases:
 - name: longhorn
   namespace: longhorn-system
   chart: longhorn/longhorn
-  version: 1.4.2
+  version: 1.5.1
   inherit:
   - template: production
   dependencies:
   - chart: homelab/common-test
     version: 0.1.0
-
-# helmfiles:
-# - ../private/helmfile.yaml
