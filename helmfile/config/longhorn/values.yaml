@@ -4,7 +4,7 @@ persistence:
 defaultSettings:
   backupTarget: s3://longhorn@minio/
   backupTargetCredentialSecret: longhorn-s3
-  defaultReplicaCount: 2
+  defaultReplicaCount: 3
   removeSnapshotsDuringFilesystemTrim: true
 
 ingress:
@@ -25,7 +25,7 @@ common-test:
   - apiVersion: storage.k8s.io/v1
     kind: StorageClass
     metadata:
-      name: longhorn-daily-backup
+      name: longhorn-hourly-snapshot
       annotations:
         storageclass.kubernetes.io/is-default-class: "true"
     provisioner: driver.longhorn.io
@@ -33,11 +33,11 @@ common-test:
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
     parameters:
-      numberOfReplicas: "2"
+      numberOfReplicas: "3"
       staleReplicaTimeout: "30"
       recurringJobSelector: '[
         {
-          "name": "daily-backup",
+          "name": "hourly-snapshot",
           "isGroup": true
         }
       ]'
