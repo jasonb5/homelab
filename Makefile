@@ -43,12 +43,16 @@ kubeconfig: ENV = "kubespray"
 kubeconfig: WORKING_DIR = kubespray/kubespray
 kubeconfig: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -t client cluster.yml
 kubeconfig: kubespray-env run
+	[ -e "~/.kube" ] || mkdir -p ~/.kube
+	cp kubespray/artifacts/admin.conf ~/.kube/config
 
 .PHONY: deploy
 deploy: ENV = "kubespray"
 deploy: WORKING_DIR = kubespray/kubespray
 deploy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
 deploy: kubespray-env run
+	[ -e "~/.kube" ] || mkdir -p ~/.kube
+	cp kubespray/artifacts/admin.conf ~/.kube/config
 
 .PHONY: scale
 scale: ENV = "kubespray"
@@ -67,6 +71,12 @@ destroy: ENV = "kubespray"
 destroy: WORKING_DIR = kubespray/kubespray
 destroy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
 destroy: kubespray-env run
+
+.PHONY: ubuntu-jammy-upload
+ubuntu-jammy-upload:
+	@make callisto.angrydonkey.io-9000-ubuntu-jammy || exit 0
+	@make deimos.angrydonkey.io-9001-ubuntu-jammy || exit 0
+	@make ceres.angrydonkey.io-9003-ubuntu-jammy || exit 0
 
 .PHONY: callisto.angrydonkey.io-9000-ubuntu-jammy
 callisto.angrydonkey.io-9000-ubuntu-jammy:
@@ -93,6 +103,10 @@ ubuntu-jammy: MODIFY = base-
 ubuntu-jammy: download modify-image upload proxmox-vm proxmox-template
 	ssh root@$(TARGET_HOST) qm set $(ID) --ide2 local-lvm:cloudinit
 	ssh root@$(TARGET_HOST) qm set $(ID) --serial0 socket --vga serial0
+
+.PHONY: clean-ubuntu-jammy
+clean-ubuntu-jammy: URL = https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+clean-ubuntu-jammy: clean
 
 .PHONY: haos
 haos: URL = https://github.com/home-assistant/operating-system/releases/download/10.2/haos_ova-10.2.qcow2.xz
@@ -122,15 +136,25 @@ proxmox-template:
 modify-image:
 	[ -e "$(OUTPUT_FILE)" ] || \
 		(cp $(CACHE_FILE) $(OUTPUT_FILE) && \
-			sudo virt-customize -a $(OUTPUT_FILE) --copy-in ansible/artifacts/trusted-user-ca-keys.pem:/etc/ssh/ && \
-			sudo virt-customize -a $(OUTPUT_FILE) --run-command 'chmod 0600 /etc/ssh/trusted-user-ca-keys.pem' && \
-			sudo virt-customize -a $(OUTPUT_FILE) --install qemu-guest-agent && \
-			sudo virt-customize -a $(OUTPUT_FILE) --append-line '/etc/ssh/sshd_config:TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem')
+			sudo virt-customize -a $(OUTPUT_FILE) --copy-in ansible/artifacts/trusted-user-ca-keys.pem:/etc/ssh/ \
+				--run-command 'chmod 0600 /etc/ssh/trusted-user-ca-keys.pem' \
+				--update --install qemu-guest-agent \
+				--append-line '/etc/ssh/sshd_config:TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem')
 
 .PHONY: tool-vault
 tool-vault: URL = https://releases.hashicorp.com/vault/1.13.3/vault_1.13.3_linux_amd64.zip
 tool-vault: OUTPUT_DIR = /usr/local/bin/
 tool-vault: download
+
+.PHONY: tool-terraform
+tool-terraform: URL = https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+tool-terraform: OUTPUT_DIR = /usr/local/bin/
+tool-terraform: download
+
+.PHONY: tool-kubectl
+tool-kubectl: URL = https://dl.k8s.io/release/$(shell curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+tool-kubectl: OUTPUT_DIR = /usr/local/bin/
+tool-kubectl: download
 
 .PHONY: tool-helm
 tool-helm: URL = https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
@@ -147,22 +171,21 @@ tool-helmfile: OUTPUT_DIR = /usr/local/bin/
 tool-helmfile: TAR_ARGS = --exclude='LICENSE' --exclude='README*'
 tool-helmfile: download
 
-.PHONY: tool-terraform
-tool-terraform: URL = https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
-tool-terraform: OUTPUT_DIR = /usr/local/bin/
-tool-terraform: download
-
 remove_ext = $(subst $(suffix $(1)),,$(1))
 find_ext = $(foreach EXT,.xz .tar,$(findstring $(EXT),$(1)))
 parse_filename = $(if $(or $(strip $(call find_ext,$(1)))),$(call remove_ext,$(1)),$(1))
 rename_ext = $(if $(findstring $(firstword $(1)),$(2)),$(subst $(firstword $(1)),$(lastword $(1)),$(2)),$(2))
 
-download upload modify-image proxmox-vm: _URL_FILENAME = $(lastword $(subst /, ,$(URL)))
-download upload modify-image proxmox-vm: _FILENAME = $(call parse_filename,$(_URL_FILENAME))
-download upload modify-image proxmox-vm: FILENAME = $(if $(RENAME_EXT),$(call rename_ext,$(RENAME_EXT),$(_FILENAME)),$(_FILENAME))
-download upload modify-image proxmox-vm: CACHE_FILE = $(CACHE_DIR)/$(if $(MODIFY),$(MODIFY)$(_URL_FILENAME),$(_URL_FILENAME))
-download upload modify-image proxmox-vm: DOWNLOAD_FILE = $(CACHE_DIR)/$(_FILENAME)
-download upload modify-image proxmox-vm: OUTPUT_FILE = $(CACHE_DIR)/$(FILENAME)
+download upload clean modify-image proxmox-vm: _URL_FILENAME = $(lastword $(subst /, ,$(URL)))
+download upload clean modify-image proxmox-vm: _FILENAME = $(call parse_filename,$(_URL_FILENAME))
+download upload clean modify-image proxmox-vm: FILENAME = $(if $(RENAME_EXT),$(call rename_ext,$(RENAME_EXT),$(_FILENAME)),$(_FILENAME))
+download upload clean modify-image proxmox-vm: CACHE_FILE = $(CACHE_DIR)/$(if $(MODIFY),$(MODIFY)$(_URL_FILENAME),$(_URL_FILENAME))
+download upload clean modify-image proxmox-vm: DOWNLOAD_FILE = $(CACHE_DIR)/$(_FILENAME)
+download upload clean modify-image proxmox-vm: OUTPUT_FILE = $(CACHE_DIR)/$(FILENAME)
+
+.PHONY: clean
+clean:
+	ssh root@callisto.angrydonkey.io rm /mnt/pve/iso/template/iso/$(FILENAME)
 
 .PHONY: upload
 upload:

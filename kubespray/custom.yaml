@@ -1,19 +1,26 @@
 ansible_user: root
 
-# kubectl_localhost: true
 kubeconfig_localhost: true
 
+kube_proxy_mode: ipvs
 kube_proxy_strict_arp: true
+
+kube_vip_enabled: true
+kube_vip_controlplane_enabled: true
+kube_vip_address: 192.168.55.149
+loadbalancer_apiserver:
+  address: "{{ kube_vip_address }}"
+kube_vip_arp_enabled: true
+kube_vip_lb_enabled: true
 
 metallb_enabled: true
 metallb_speaker_enabled: true
-
 metallb_config:
   address_pools:
     primary:
       ip_range:
         - 192.168.55.150-192.168.55.200
-      auto_assign: true
+      auto_assign: false
 
   layer2:
     - primary
