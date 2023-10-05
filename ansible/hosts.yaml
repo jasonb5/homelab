@@ -1,8 +1,17 @@
 all:
   children:
+    vms:
+      children:
+        hosts:
+          charon.angrydonkey.io:
     baremetal:
       hosts:
         callisto.angrydonkey.io:
         deimos.angrydonkey.io:
         ceres.angrydonkey.io:
-        charon.angrydonkey.io:
+      children:
+        kubernetes:
+          hosts:
+            k8s-01.angrydonkey.io:
+            k8s-02.angrydonkey.io:
+            k8s-03.angrydonkey.io:
