@@ -2,8 +2,16 @@
   gather_facts: false
   roles:
     - vault/client-key-signing
-- hosts: baremetal
+- hosts: all
   vars:
     ansible_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'baremetal', engine_mount_point='homelab', username=vault_username, password=vault_password).data.data.password }}"
   roles:
     - bootstrap
+- hosts: kubernetes
+  tasks:
+  - ansible.builtin.apt:
+      pkg:
+      - nfs-client
+      state: present
+  tags:
+  - packages
