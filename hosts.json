@@ -30,7 +30,7 @@
       "desc": "Kubernetes control plane/worker/etcd",
       "target_node": "ceres",
       "clone": "template-ubuntu-jammy",
-      "memory": "8192",
+      "memory": "4096",
       "cores": "4",
       "macaddr": "4a:c0:00:e9:28:93",
       "disk1": {
