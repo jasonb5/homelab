@@ -8,6 +8,11 @@ ingress:
     host: jellyfin.angrydonkey.io
 
 persistence:
+  config:
+    enabled: true
+    type: pvc
+    size: 16G
+
   media:
     enabled: true
     type: nfs
