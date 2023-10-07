@@ -16,6 +16,14 @@ templates:
     missingFileHandler: Warn
     values:
     - config/{{`{{ .Release.Name }}`}}/values.yaml
+  postsync:
+    hooks:
+    - events:
+      - postsync
+      command: /bin/bash
+      args:
+      - -c
+      - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
 
 releases:
 - name: jellyfin
@@ -34,14 +42,11 @@ releases:
   version: v23.6.1
   inherit:
   - template: production
+  - template: postsync
   disableValidationOnInstall: true
   dependencies:
   - chart: homelab/common-test
     version: 0.1.0
-  hooks:
-  - events: ["postsync"]
-    command: "kubectl"
-    args: ["-n", "gpu-operator", "patch", "clusterpolicy/cluster-policy", "--type", "merge", "--patch-file", "patches/gpu-operator.yaml"]
 - name: traefik
   chart: traefik/traefik
   version: 24.0.0

@@ -1,5 +1,0 @@
-spec:
-  devicePlugin:
-    config:
-      name: time-slicing-config
-      default: any
