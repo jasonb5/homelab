@@ -1,0 +1,32 @@
+# https://community.tp-link.com/en/business/forum/topic/578320
+---
+- name: Check installed
+  ansible.builtin.stat:
+    path: /opt/tplink
+  register: st
+- name: Install TP-Link Omada SDN Controller
+  block:
+    - name: Install libssl1.1
+      ansible.builtin.apt:
+        deb: http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
+    - name: Add gpg
+      ansible.builtin.get_url:
+        url: https://www.mongodb.org/static/pgp/server-4.4.asc
+        dest: /etc/apt/trusted.gpg.d/mongodb-org-4.4.asc
+    - name: Add mongodb repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse"
+        state: present
+    - name: Install mongodb
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - mongodb-org
+        - openjdk-8-jre-headless
+        - jsvc
+        - curl
+    - name: Install Omada controller
+      ansible.builtin.apt:
+        deb: https://static.tp-link.com/upload/software/2023/202309/20230920/Omada_SDN_Controller_v5.12.7_Linux_x64.deb
+  when: not st.stat.exists
