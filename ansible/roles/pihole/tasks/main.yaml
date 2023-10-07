@@ -1,0 +1,44 @@
+---
+- name: Check for /etc/pihole
+  ansible.builtin.stat:
+    path: /etc/pihole/gravity.db
+  register: st
+- name: Download and install pihole
+  block:
+    - name: Download install script
+      ansible.builtin.get_url:
+        url: https://install.pi-hole.net
+        dest: /tmp/pihole.sh
+        mode: 0744
+    - name: Create /etc/pihole
+      ansible.builtin.file:
+        path: /etc/pihole
+        state: directory
+    - name: Template setupVars.conf
+      ansible.builtin.template:
+        src: files/setupVars.conf.jinja
+        dest: /etc/pihole/setupVars.conf
+    - name: Install pihole
+      ansible.builtin.command: /tmp/pihole.sh --unattended
+  when: pihole_install and not st.stat.exists
+- name: Install sqlite3
+  ansible.builtin.apt:
+    name: sqlite3
+    state: present
+- name: Add blocklist
+  ansible.builtin.command: sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('{{ item }}', 1, '')"
+  loop: "{{ pihole_blocklists }}"
+  ignore_errors: true
+- name: Reload blocklists
+  ansible.builtin.command: pihole -g
+- name: Upgrade pihole
+  block:
+    - name: Template setupVars.conf
+      ansible.builtin.template:
+        src: files/setupVars.conf.jinja
+        dest: /etc/pihole/setupVars.conf
+    - name: Upgrade pihole
+      ansible.builtin.command: pihole -up
+    - name: Restart pihole
+      ansible.builtin.command: pihole restartdns
+  when: pihole_upgrade

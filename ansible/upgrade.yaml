@@ -1,0 +1,7 @@
+- hosts: pihole
+  gather_facts: false
+  roles:
+    - role: pihole
+      vars:
+        pihole_install: false
+        pihole_upgrade: true

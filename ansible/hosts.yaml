@@ -15,3 +15,6 @@ all:
             k8s-01.angrydonkey.io:
             k8s-02.angrydonkey.io:
             k8s-03.angrydonkey.io:
+    pihole:
+      hosts:
+        pihole-01.angrydonkey.io:

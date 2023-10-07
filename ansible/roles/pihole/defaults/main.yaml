@@ -1,0 +1,24 @@
+pihole_install: true
+pihole_upgrade: false
+
+pihole_dns1: 8.8.8.8#53
+pihole_dns2: 1.1.1.1#53
+
+pihole_listening: local
+
+pihole_password:
+
+pihole_blocklists:
+  - https://v.firebog.net/hosts/AdguardDNS.txt
+  - https://v.firebog.net/hosts/Admiral.txt
+  - https://v.firebog.net/hosts/Easyprivacy.txt
+  - https://v.firebog.net/hosts/Prigent-Ads.txt
+  - https://osint.digitalside.it/Threat-Intel/lists/latestdomains.txt
+  - https://v.firebog.net/hosts/RPiList-Malware.txt
+  - https://v.firebog.net/hosts/RPiList-Phishing.txt
+
+# reverse dns server
+pihole_rev_server: false
+pihole_rev_server_cidr:
+pihole_rev_server_target:
+pihole_rev_server_domain:
