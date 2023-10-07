@@ -1,0 +1,15 @@
+env:
+  TZ: America/Los_Angeles
+  GOTIFY_DEFAULTUSER_PASS: ref+vault://homelab/k8s/gotify#password
+
+ingress:
+  enabled: true
+  hosts:
+    - name: default
+      host: gotify.angrydonkey.io
+
+persistence:
+  data:
+    enabled: true
+    type: pvc
+    size: 8Gi

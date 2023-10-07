@@ -26,6 +26,11 @@ templates:
       - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
 
 releases:
+- name: gotify
+  chart: homelab/gotify
+  version: 0.1.1
+  inherit:
+  - template: production
 - name: jellyfin
   chart: homelab/jellyfin
   version: 0.1.0
