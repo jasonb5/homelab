@@ -26,6 +26,11 @@ templates:
       - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
 
 releases:
+- name: mealie
+  chart: homelab/mealie
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: kavita
   chart: homelab/kavita
   version: 0.1.0
