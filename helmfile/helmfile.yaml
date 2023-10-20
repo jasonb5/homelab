@@ -26,6 +26,11 @@ templates:
       - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
 
 releases:
+- name: kavita
+  chart: homelab/kavita
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: gotify
   chart: homelab/gotify
   version: 0.1.3
