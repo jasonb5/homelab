@@ -23,14 +23,14 @@ kubespray-env:
 	@make create-env NAME=$@ ARGS='python'
 	$(CONDA_ACTIVATE); \
 		conda activate kubespray; \
-		while read requirement; do mamba install --yes -q $$requirement; done < kubespray/kubespray/requirements-2.12.txt; \
-		pip install -r kubespray/kubespray/requirements-2.12.txt
+		while read requirement; do mamba install --yes -q $$requirement; done < kubespray/kubespray/requirements.txt; \
+		pip install -r kubespray/kubespray/requirements.txt
 
 .PHONY: run
 run:
 	$(CONDA_ACTIVATE); \
 		conda activate $(ENV); \
-		pushd $(if $(WORKING_DIR),$(WORKING_DIR),"."); \
+		cd $(if $(WORKING_DIR),$(WORKING_DIR),"."); \
 		$(CMD)
 
 .PHONY: bootstrap
