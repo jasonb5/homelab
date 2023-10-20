@@ -1,3 +1,15 @@
+secret:
+  rclone:
+    stringData:
+      rclone.conf: |
+        [minio]
+        type = s3
+        provider = Minio
+        access_key_id = artFbPqGK4dOOpYxJQVt
+        secret_access_key = VsQzJgiSw9xn4PcQXfoU3XQvGj4f6OuoVoNXPKPH
+        endpoint = https://s3.angrydonkey.io
+        acl = bucket-owner-full-control
+
 env:
   TZ: America/Los_Angeles
   GOTIFY_DEFAULTUSER_PASS: ref+vault://homelab/k8s/gotify#password
@@ -13,3 +25,24 @@ persistence:
     enabled: true
     type: pvc
     size: 8Gi
+
+addons:
+  rclone:
+    enabled: true
+
+    env:
+      CRON: '* 4 * * *'
+      SOURCE: /data
+      DESTINATION: minio:apps/gotify
+      FLAGS: '--create-empty-src-dirs'
+
+    persistence:
+      data:
+        enabled: true
+
+      rclone:
+        enabled: true
+        type: secret
+        name: rclone
+        subPath: rclone.conf
+        mountPath: /root/.config/rclone/rclone.conf
