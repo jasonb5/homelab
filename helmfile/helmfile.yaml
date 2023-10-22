@@ -24,6 +24,9 @@ templates:
       args:
       - -c
       - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
+  rclone:
+    values:
+    - config/rclone.yaml.gotmpl
 
 releases:
 - name: mealie
@@ -41,6 +44,7 @@ releases:
   version: 0.1.3
   inherit:
   - template: production
+  - template: rclone
 - name: jellyfin
   chart: homelab/jellyfin
   version: 0.1.0
