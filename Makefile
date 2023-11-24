@@ -33,6 +33,12 @@ run:
 		cd $(if $(WORKING_DIR),$(WORKING_DIR),"."); \
 		$(CMD)
 
+.PHONY: helm-check-updates
+helm-check-updates: ENV = homelab
+helm-check-updates: CMD = mamba install -y semver && python helm-check-updates.py -n $(NAMESPACE)
+helm-check-updates: WORKING_DIR = helmfile
+helm-check-updates: run
+
 .PHONY: bootstrap
 bootstrap: ENV = "homelab"
 bootstrap: CMD = ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
