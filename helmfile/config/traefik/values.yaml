@@ -22,7 +22,8 @@ envFrom:
 
 ports:
   web:
-    redirectTo: websecure
+    redirectTo:
+      port: websecure
 
   websecure:
     tls:

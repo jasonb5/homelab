@@ -36,7 +36,7 @@ releases:
   - template: production
 - name: kavita
   chart: homelab/kavita
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: gotify
@@ -47,7 +47,7 @@ releases:
   - template: rclone
 - name: jellyfin
   chart: homelab/jellyfin
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: jupyterhub
@@ -68,7 +68,7 @@ releases:
     version: 0.1.0
 - name: traefik
   chart: traefik/traefik
-  version: 24.0.0
+  version: 25.0.0
   inherit:
   - template: production
   disableValidationOnInstall: true
