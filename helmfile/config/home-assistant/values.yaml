@@ -1,0 +1,31 @@
+nodeSelector:
+  kubernetes.io/hostname: k8s-02
+
+dnsConfig:
+  options:
+    - name: ndots
+      value: "1"
+
+hostNetwork: true
+
+env:
+  TZ: America/Los_Angeles
+
+ingress:
+  enabled: true
+  hosts:
+    - name: default
+      host: ha.angrydonkey.io
+
+persistence:
+  config:
+    enabled: true
+    type: pvc
+    size: 8Gi
+
+  zigbee:
+    enabled: true
+    type: hostpath
+    path: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2488102-if00
+    mountType: "CharDevice"
+    mountPath: /dev/zigbee

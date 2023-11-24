@@ -29,6 +29,11 @@ templates:
     - config/rclone.yaml.gotmpl
 
 releases:
+- name: home-assistant
+  chart: homelab/home-assistant
+  version: 0.1.1
+  inherit:
+  - template: production
 - name: mealie
   chart: homelab/mealie
   version: 0.1.0
