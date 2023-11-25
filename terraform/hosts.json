@@ -42,8 +42,8 @@
       "desc": "Pi-hole primary",
       "target_node": "callisto",
       "clone": "template-ubuntu-jammy",
-      "memory": "1024",
-      "cores": "1",
+      "memory": "2048",
+      "cores": "3",
       "macaddr": "ca:00:25:6d:2b:e0",
       "disk1": {
         "size": "8G"
