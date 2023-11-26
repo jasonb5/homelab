@@ -46,6 +46,16 @@ bootstrap: ENV = "homelab"
 bootstrap: CMD = ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
 bootstrap: homelab-env run
 
+.PHONY: deploy
+deploy: ENV = "homelab"
+deploy: CMD = ansible-playbook -i ansible/hosts.yaml ansible/deploy.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+deploy: homelab-env run
+
+.PHONY: upgrade
+upgrade: ENV = "homelab"
+upgrade: CMD = ansible-playbook -i ansible/hosts.yaml ansible/upgrade.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+upgrade: homelab-env run
+
 .PHONY: kubeconfig
 kubeconfig: ENV = "kubespray"
 kubeconfig: WORKING_DIR = kubespray/kubespray
@@ -54,30 +64,30 @@ kubeconfig: kubespray-env run
 	[ -e "~/.kube" ] || mkdir -p ~/.kube
 	cp kubespray/artifacts/admin.conf ~/.kube/config
 
-.PHONY: deploy
-deploy: ENV = "kubespray"
-deploy: WORKING_DIR = kubespray/kubespray
-deploy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
-deploy: kubeconfig kubespray-env run
+.PHONY: k8s-deploy
+k8s-deploy: ENV = "kubespray"
+k8s-deploy: WORKING_DIR = kubespray/kubespray
+k8s-deploy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" cluster.yml
+k8s-deploy: kubeconfig kubespray-env run
 
-.PHONY: scale
-scale: ENV = "kubespray"
-scale: WORKING_DIR = kubespray/kubespray
-scale: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" playbooks/facts.yaml; \
+.PHONY: k8s-scale
+k8s-scale: ENV = "kubespray"
+k8s-scale: WORKING_DIR = kubespray/kubespray
+k8s-scale: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" playbooks/facts.yaml; \
 	ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" --limit=$(NODE) scale.yml
-scale: kubeconfig kubespray-env run
+k8s-scale: kubeconfig kubespray-env run
 
-.PHONY: upgrade
-upgrade: ENV = "kubespray"
-upgrade: WORKING_DIR = kubespray/kubespray
-upgrade: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -e upgrade_cluster_setup=true cluster.yml
-upgrade: kubeconfig kubespray-env run
+.PHONY: k8s-upgrade
+k8s-upgrade: ENV = "kubespray"
+k8s-upgrade: WORKING_DIR = kubespray/kubespray
+k8s-upgrade: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" -e k8s_cluster_setup=true cluster.yml
+k8s-upgrade: kubeconfig kubespray-env run
 
-.PHONY: destroy
-destroy: ENV = "kubespray"
-destroy: WORKING_DIR = kubespray/kubespray
-destroy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
-destroy: kubeconfig kubespray-env run
+.PHONY: k8s-destroy
+k8s-destroy: ENV = "kubespray"
+k8s-destroy: WORKING_DIR = kubespray/kubespray
+k8s-destroy: CMD = ansible-playbook -i ../hosts.yaml -e @"../custom.yaml" reset.yml
+k8s-destroy: kubeconfig kubespray-env run
 
 .PHONY: ubuntu-jammy-upload
 ubuntu-jammy-upload:
