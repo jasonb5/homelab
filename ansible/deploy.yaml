@@ -2,8 +2,6 @@
   gather_facts: false
   roles:
     - role: pihole
-      vars:
-        pihole_install: true
   tags:
     - pihole
 - hosts: omada

@@ -2,22 +2,22 @@ all:
   children:
     vms:
       children:
-        hosts:
-          charon.angrydonkey.io:
-    baremetal:
-      hosts:
-        callisto.angrydonkey.io:
-        deimos.angrydonkey.io:
-        ceres.angrydonkey.io:
-      children:
+        unraid:
+          hosts:
+            charon.angrydonkey.io:
         kubernetes:
           hosts:
             k8s-01.angrydonkey.io:
             k8s-02.angrydonkey.io:
             k8s-03.angrydonkey.io:
-    pihole:
+        pihole:
+          hosts:
+            pihole-01.angrydonkey.io:
+        omada:
+          hosts:
+            omada.angrydonkey.io:
+    baremetal:
       hosts:
-        pihole-01.angrydonkey.io:
-    omada:
-      hosts:
-        omada.angrydonkey.io:
+        callisto.angrydonkey.io:
+        deimos.angrydonkey.io:
+        ceres.angrydonkey.io:

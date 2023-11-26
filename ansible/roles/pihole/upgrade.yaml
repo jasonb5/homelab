@@ -1,0 +1,8 @@
+- name: Template setupVars.conf
+  ansible.builtin.template:
+    src: files/setupVars.conf.jinja
+    dest: /etc/pihole/setupVars.conf
+- name: Upgrade pihole
+  ansible.builtin.command: pihole -up
+- name: Restart pihole
+  ansible.builtin.command: pihole restartdns

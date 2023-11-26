@@ -1,9 +1,9 @@
-pihole_dns1: 8.8.8.8#53
-pihole_dns2: 1.1.1.1#53
+pihole_dns1: 192.168.55.1#53
+pihole_dns2:
 
-pihole_listening: local
+pihole_listening: single
 
-pihole_password:
+pihole_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'pihole', engine_mount_point='homelab', username=vault_username, password=vault_password).data.data.password }}"
 
 pihole_blocklists:
   - https://v.firebog.net/hosts/AdguardDNS.txt
@@ -15,7 +15,7 @@ pihole_blocklists:
   - https://v.firebog.net/hosts/RPiList-Phishing.txt
 
 # reverse dns server
-pihole_rev_server: false
-pihole_rev_server_cidr:
-pihole_rev_server_target:
-pihole_rev_server_domain:
+pihole_rev_server: true
+pihole_rev_server_cidr: 10.5.5.0/8
+pihole_rev_server_target: 192.168.55.1
+pihole_rev_server_domain: angrydonkey.io

@@ -1,0 +1,10 @@
+---
+- name: Upgrade host systems
+  block:
+    - name: Upgrade packages
+      ansible.builtin.apt:
+        install_recommends: false
+        only_upgrade: true
+        update_cache: true
+        upgrade: full
+  when: task == 'upgrade'
