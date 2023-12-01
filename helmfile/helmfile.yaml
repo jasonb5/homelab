@@ -29,6 +29,11 @@ templates:
     - config/rclone.yaml.gotmpl
 
 releases:
+- name: photoprism
+  chart: homelab/photoprism
+  version: 0.1.1
+  inherit:
+  - template: production
 - name: home-assistant
   chart: homelab/home-assistant
   version: 0.1.1

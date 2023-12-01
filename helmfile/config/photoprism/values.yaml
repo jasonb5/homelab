@@ -1,0 +1,24 @@
+env:
+  TZ: America/Los_Angeles
+  PHOTOPRISM_ADMIN_PASSWORD: ref+vault://homelab/k8s/photoprism/#password
+  PHOTOPRISM_ORIGINALS_PATH: /media/images
+  PHOTOPRISM_IMPORT_PATH: /media/import
+  PHOTOPRISM_EXPERIMENTAL: true
+
+ingress:
+  enabled: true
+  hosts:
+    - name: default
+      host: photoprism.angrydonkey.io
+
+persistence:
+  storage:
+    enabled: true
+    type: pvc
+    size: 8Gi
+
+  media:
+    enabled: true
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/media
