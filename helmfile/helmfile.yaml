@@ -49,7 +49,6 @@ releases:
   version: 0.1.3
   inherit:
   - template: production
-  - template: rclone
 - name: jellyfin
   chart: homelab/jellyfin
   version: 0.1.1

@@ -13,15 +13,3 @@ persistence:
     enabled: true
     type: pvc
     size: 8Gi
-
-addons:
-  rclone:
-    env:
-      CRON: '* 4 * * *'
-      SOURCE: /data
-      DESTINATION: minio:apps/gotify
-      FLAGS: '--create-empty-src-dirs'
-
-    persistence:
-      data:
-        enabled: true
