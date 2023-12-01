@@ -43,7 +43,7 @@ helm-check-updates: run
 
 .PHONY: bootstrap
 bootstrap: ENV = "homelab"
-bootstrap: CMD = ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD)
+bootstrap: CMD = ansible-playbook -i ansible/hosts.yaml ansible/bootstrap.yaml -e vault_username=$(VAULT_USERNAME) -e vault_password=$(VAULT_PASSWORD) -e vault_token=$(VAULT_TOKEN)
 bootstrap: homelab-env run
 
 .PHONY: deploy
