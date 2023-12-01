@@ -10,9 +10,11 @@
       path: ssh-client-signer/config/ca
       data:
         generate_signing_key: true
+      token: "{{ vault_token }}"
   - name: read CA public key
     community.hashi_vault.vault_read:
       path: ssh-client-signer/config/ca#public_key
+      token: "{{ vault_token }}"
     register: vault_ca_public_key
   - name: check artifact directory
     ansible.builtin.stat:
@@ -41,6 +43,7 @@
       key_type: "ca"
       default_user: "root"
       ttl: "24h"
+    token: "{{ vault_token }}"
 - name: check client signed public key
   ansible.builtin.stat:
     path: "{{ vault_client_keypair_path }}-cert.pub"
@@ -59,6 +62,7 @@
       extensions:
         permit-pty: ""
         permit-port-forwarding: ""
+    token: "{{ vault_token }}"
   register: signed_public_key
 - name: write signed client public key
   ansible.builtin.copy:
