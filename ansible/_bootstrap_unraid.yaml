@@ -1,0 +1,12 @@
+---
+- name: copy ca public key
+  ansible.builtin.copy:
+    src: "{{ vault_ca_path }}"
+    dest: /boot/config/ssh/trusted-user-ca-keys.pem
+    mode: 0600
+- name: update sshd_config
+  ansible.builtin.lineinfile:
+    path: /boot/config/ssh/sshd_config
+    insertafter: "EOF"
+    regex: "TrustedUserCAKeys.*"
+    line: "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem"

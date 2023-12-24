@@ -1,15 +1,22 @@
-- hosts: localhost
+---
+- name: bootstrap ssh certificates
+  hosts: localhost
   gather_facts: false
-  roles:
-    - vault/client-key-signing
-- hosts: all
-  roles:
-    - bootstrap
-- hosts: kubernetes
+  vars:
+    artifact_dir: artifacts
+    vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
+    vault_client_keypair_path: ~/.ssh/id_homelab
+    vault_url: https://vault.angrydonkey.io
   tasks:
-  - ansible.builtin.apt:
-      pkg:
-      - nfs-client
-      state: present
-  tags:
-  - packages
+    - ansible.builtin.import_tasks: _bootstrap_vault.yaml
+- name: update trusted user ca on baremetal hosts
+  hosts: proxmox
+  gather_facts: true
+  vars:
+    artifact_dir: artifacts
+    vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
+  tasks:
+    - include_tasks: _bootstrap_unraid.yaml
+      when: ansible_facts['kernel'] is search('Unraid')
+    - include_tasks: _bootstrap_debian.yaml
+      when: ansible_facts['os_family'] == "Debian"

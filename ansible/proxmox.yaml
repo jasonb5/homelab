@@ -1,0 +1,55 @@
+---
+- name: Create VM templates
+  hosts: vms:!unraid
+  gather_facts: false
+  vars:
+    artifact_dir: artifacts
+    vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
+    proxmox_destroy: false
+    hostname: "{{ inventory_hostname }}"
+  tasks:
+    - block:
+      - name: Create cloud-init configuration
+        vars:
+          ansible_password: "{{ proxmox_password }}"
+          trusted_user_ca_keys: "{{ lookup('ansible.builtin.file', vault_ca_path) }}"
+          username: "{{ admin_user }}"
+          password: test
+        ansible.builtin.template:
+          src: user.j2
+          dest: /var/lib/vz/snippets/{{ vmid }}-user.yaml
+        delegate_to: "{{ node }}"
+      - name: Create cloud-init configuration
+        vars:
+          ansible_password: "{{ proxmox_password }}"
+          trusted_user_ca_keys: "{{ lookup('ansible.builtin.file', vault_ca_path) }}"
+          username: admin
+          password: admin
+        ansible.builtin.template:
+          src: network.j2
+          dest: /var/lib/vz/snippets/{{ vmid }}-network.yaml
+        delegate_to: "{{ node }}"
+      - include_tasks: _proxmox_vm.yaml
+      when: not proxmox_destroy
+    - block:
+      - name: Stop VM
+        community.general.proxmox_kvm:
+          api_host: "{{ proxmox_host }}"
+          api_password: "{{ proxmox_password }}"
+          api_user: "{{ proxmox_user }}"
+          force: true
+          name: "{{ inventory_hostname }}"
+          state: stopped
+          vmid: "{{ vmid }}"
+        delegate_to: localhost
+      - name: Remove VM
+        community.general.proxmox_kvm:
+          api_host: "{{ proxmox_host }}"
+          api_password: "{{ proxmox_password }}"
+          api_user: "{{ proxmox_user }}"
+          force: true
+          name: "{{ inventory_hostname }}"
+          state: absent
+          vmid: "{{ vmid }}"
+        delegate_to: localhost
+      when: proxmox_destroy

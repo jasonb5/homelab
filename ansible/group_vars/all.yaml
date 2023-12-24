@@ -1,7 +1,0 @@
-ansible_user: root
-ansible_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'baremetal', engine_mount_point='homelab', username=vault_username, password=vault_password).data.data.password }}"
-
-artifact_dir: artifacts
-
-vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
-vault_client_keypair_path: "~/.ssh/id_homelab"

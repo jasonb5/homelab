@@ -1,0 +1,93 @@
+---
+- name: check for CA for signing client keys
+  ansible.builtin.stat:
+    path: "{{ vault_ca_path }}"
+  register: vault_ca
+- name: check artifact directory
+  ansible.builtin.stat:
+    path: "{{ artifact_dir }}"
+  register: check_artifact_dir
+- name: make artifact directory
+  ansible.builtin.file:
+    path: "{{ artifact_dir }}"
+    state: "directory"
+  when: not check_artifact_dir.stat.exists
+- block:
+  - name: generate CA keypair
+    ignore_errors: true
+    community.hashi_vault.vault_write:
+      path: ssh-client-signer/config/ca
+      data:
+        generate_signing_key: true
+      auth_method: userpass
+      password: "{{ vault_password }}"
+      url: "{{ vault_url }}"
+      username: "{{ vault_username }}"
+  - name: read CA public key
+    community.hashi_vault.vault_read:
+      path: ssh-client-signer/config/ca#public_key
+      auth_method: userpass
+      password: "{{ vault_password }}"
+      url: "{{ vault_url }}"
+      username: "{{ vault_username }}"
+    register: vault_ca_public_key
+  - name: write CA public key
+    ansible.builtin.copy:
+      dest: "{{ vault_ca_path }}"
+      content: "{{ vault_ca_public_key.data.data.public_key }}"
+  when: not vault_ca.stat.exists
+- name: create role for signing client keys
+  community.hashi_vault.vault_write:
+    path: ssh-client-signer/roles/my-role
+    data:
+      default_user: "{{ admin_user }}"
+      key_type: "ca"
+      allowed_users: "root,{{ admin_user }}"
+      ttl: "168h"
+      max_ttl: "168h"
+      allow_user_certificates: true
+      allowed_extensions: "permit-pty,permit-port-forwarding"
+      default_extensions:
+        permit-pty: ""
+      algorithm_signer: "rsa-sha2-256"
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+- name: check client signed public key
+  ansible.builtin.stat:
+    path: "{{ vault_client_keypair_path }}-cert.pub"
+  register: client_keypair_check
+- name: get keypair passphrase
+  community.hashi_vault.vault_kv2_get:
+    engine_mount_point: homelab
+    path: ca
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+  register: vault_ca_passphrase
+- name: generate client keypair
+  community.crypto.openssh_keypair:
+    path: "{{ vault_client_keypair_path }}"
+    passphrase: "{{ vault_ca_passphrase.data.data.passphrase|quote }}"
+  when: not client_keypair_check.stat.exists
+- name: sign client public key
+  community.hashi_vault.vault_write:
+    path: ssh-client-signer/sign/my-role
+    data:
+      public_key: "{{ lookup('ansible.builtin.file', vault_client_keypair_path + '.pub') }}"
+      valid_principals: "root,{{ admin_user }}"
+      extensions:
+        permit-pty: ""
+        permit-port-forwarding: ""
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+  register: signed_public_key
+- name: write signed client public key
+  ansible.builtin.copy:
+    dest: "{{ vault_client_keypair_path }}-cert.pub"
+    content: "{{ signed_public_key.data.data.signed_key }}"
+    mode: 0600
