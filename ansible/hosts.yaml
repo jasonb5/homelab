@@ -20,7 +20,7 @@ all:
           memory: 8192
           image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: da:f3:ee:97:3c:e8
-          disk_size: +96G
+          disk_size: 96G
           node_labels:
             kubernetes.io/area: rack
         galaxy-02:
@@ -33,7 +33,7 @@ all:
           memory: 8192
           image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: da:71:46:a3:17:39
-          disk_size: +96G
+          disk_size: 96G
           node_labels:
             kubernetes.io/area: rack
         galaxy-03:
@@ -46,7 +46,7 @@ all:
           memory: 8192
           image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: da:f4:9b:e5:8b:bd
-          disk_size: +96G
+          disk_size: 96G
           node_labels:
             kubernetes.io/area: router
     unraid:
