@@ -3,11 +3,9 @@ all:
     proxmox:
       hosts:
         callisto:
-          ansible_host: 192.168.55.180
-        deimos:
-          ansible_host: 192.168.55.140
+          ansible_host: 192.168.55.150
         ceres:
-          ansible_host: 192.168.55.200
+          ansible_host: 192.168.55.151
     vms:
       hosts:
         charon:
@@ -18,11 +16,11 @@ all:
           vmid: 5000
           description: "Kubernetes node"
           node: callisto
-          cores: 6
-          memory: 18432
-          image: jammy-server-cloudimg-amd64.img
+          cores: 4
+          memory: 8192
+          image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: da:f3:ee:97:3c:e8
-          disk_size: +128G
+          disk_size: +96G
           node_labels:
             kubernetes.io/area: rack
         galaxy-02:
@@ -30,27 +28,27 @@ all:
           ip: 192.168.55.22
           vmid: 5001
           description: "Kubernetes node"
-          node: ceres
+          node: callisto
           cores: 4
           memory: 8192
-          image: jammy-server-cloudimg-amd64.img
+          image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: da:71:46:a3:17:39
-          disk_size: +128G
+          disk_size: +96G
           node_labels:
-            kubernetes.io/area: router
+            kubernetes.io/area: rack
         galaxy-03:
           ansible_host: 192.168.55.23
           ip: 192.168.55.23
-          vmid: 5002
+          vmid: 5000
           description: "Kubernetes node"
-          node: deimos
+          node: ceres
           cores: 4
-          memory: 12288
-          image: jammy-server-cloudimg-amd64.img
+          memory: 8192
+          image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: da:f4:9b:e5:8b:bd
-          disk_size: +128G
+          disk_size: +96G
           node_labels:
-            kubernetes.io/area: rack
+            kubernetes.io/area: router
     unraid:
       hosts:
         charon:

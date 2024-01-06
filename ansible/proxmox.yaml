@@ -5,6 +5,7 @@
   vars:
     artifact_dir: artifacts
     vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
+    proxmox_host: "{{ node }}.angrydonkey.io"
     proxmox_destroy: false
     hostname: "{{ inventory_hostname }}"
   tasks:
@@ -17,7 +18,7 @@
           password: test
         ansible.builtin.template:
           src: user.j2
-          dest: /var/lib/vz/snippets/{{ vmid }}-user.yaml
+          dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-user.yaml
         delegate_to: "{{ node }}"
       - name: Create cloud-init configuration
         vars:
@@ -27,7 +28,7 @@
           password: admin
         ansible.builtin.template:
           src: network.j2
-          dest: /var/lib/vz/snippets/{{ vmid }}-network.yaml
+          dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-network.yaml
         delegate_to: "{{ node }}"
       - include_tasks: _proxmox_vm.yaml
       when: not proxmox_destroy

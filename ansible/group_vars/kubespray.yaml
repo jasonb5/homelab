@@ -1,7 +1,3 @@
-ansible_user: titters
-
-# override_system_hostname: false
-
 kubeconfig_localhost: true
 
 kube_proxy_mode: ipvs
@@ -9,7 +5,7 @@ kube_proxy_strict_arp: true
 
 kube_vip_enabled: true
 kube_vip_controlplane_enabled: true
-kube_vip_address: 192.168.55.150
+kube_vip_address: 192.168.55.160
 loadbalancer_apiserver:
   address: "{{ kube_vip_address }}"
 kube_vip_arp_enabled: true
@@ -21,7 +17,7 @@ metallb_config:
   address_pools:
     primary:
       ip_range:
-        - 192.168.55.150-192.168.55.200
+        - 192.168.55.161-192.168.55.175
       auto_assign: false
 
   layer2:

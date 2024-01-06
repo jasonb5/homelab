@@ -12,7 +12,7 @@ proxmox-destroy:
 
 .PHONY: kubespray
 kubespray:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/kubespray/cluster.yml --become $(ARGS)
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/kubespray/cluster.yml --become --become-user=root -e ansible_user=titters $(ARGS)
 
 .PHONY: kubespray-reset
 kubespray-reset:

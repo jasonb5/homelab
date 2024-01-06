@@ -68,7 +68,7 @@
     api_host: "{{ proxmox_host }}"
     api_password: "{{ proxmox_password }}"
     api_user: "{{ proxmox_user }}"
-    cicustom: "user=local:snippets/{{ vmid }}-user.yaml,network=local:snippets/{{ vmid }}-network.yaml"
+    cicustom: "user=local:snippets/{{ inventory_hostname }}-{{ vmid }}-user.yaml,network=local:snippets/{{ inventory_hostname }}-{{ vmid }}-network.yaml"
     citype: nocloud
     cores: "{{ cores }}"
     memory: "{{ memory }}"
