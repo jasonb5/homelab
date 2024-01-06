@@ -7,8 +7,8 @@ repositories:
     url: https://helm.ngc.nvidia.com/nvidia
   - name: jupyterhub
     url: https://jupyterhub.github.io/helm-chart/
-  - name: homelab
-    url: https://jasonb5.github.io/charts
+#   - name: homelab
+#    url: https://jasonb5.github.io/charts
 
 templates:
   production:
@@ -24,47 +24,52 @@ templates:
       args:
       - -c
       - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
-  rclone:
-    values:
-    - config/rclone.yaml.gotmpl
 
 releases:
 - name: photoprism
+  installed: false
   chart: homelab/photoprism
   version: 0.1.1
   inherit:
   - template: production
 - name: home-assistant
+  installed: false
   chart: homelab/home-assistant
   version: 0.1.1
   inherit:
   - template: production
 - name: mealie
+  installed: false
   chart: homelab/mealie
   version: 0.1.0
   inherit:
   - template: production
 - name: kavita
+  installed: false
   chart: homelab/kavita
   version: 0.1.1
   inherit:
   - template: production
 - name: gotify
+  installed: false
   chart: homelab/gotify
   version: 0.1.3
   inherit:
   - template: production
 - name: jellyfin
+  installed: false
   chart: homelab/jellyfin
   version: 0.1.1
   inherit:
   - template: production
 - name: jupyterhub
+  installed: false
   chart: jupyterhub/jupyterhub
   version: 3.1.0
   inherit:
   - template: production
 - name: gpu-operator
+  installed: false
   namespace: gpu-operator
   chart: nvidia/gpu-operator
   version: v23.6.1
@@ -77,19 +82,19 @@ releases:
     version: 0.1.0
 - name: traefik
   chart: traefik/traefik
-  version: 25.0.0
+  version: 26.0.0
   inherit:
   - template: production
   disableValidationOnInstall: true
   dependencies:
-  - chart: homelab/common-test
+  - chart: homelab/commonlib
     version: 0.1.0
 - name: longhorn
   namespace: longhorn-system
   chart: longhorn/longhorn
-  version: 1.5.1
+  version: 1.5.3
   inherit:
   - template: production
   dependencies:
-  - chart: homelab/common-test
+  - chart: homelab/commonlib
     version: 0.1.0
