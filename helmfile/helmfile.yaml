@@ -57,9 +57,8 @@ releases:
   inherit:
   - template: production
 - name: jellyfin
-  installed: false
   chart: homelab/jellyfin
-  version: 0.1.1
+  version: 0.1.0
   inherit:
   - template: production
 - name: jupyterhub

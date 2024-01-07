@@ -1,9 +1,6 @@
 env:
   TZ: America/Los_Angeles
 
-nodeSelector:
-  kubernetes.io/hostname: k8s-02
-
 ingress:
   enabled: true
   hosts:
@@ -13,8 +10,9 @@ ingress:
 persistence:
   config:
     enabled: true
-    type: pvc
-    size: 16G
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/appdata/jellyfin
 
   media:
     enabled: true
