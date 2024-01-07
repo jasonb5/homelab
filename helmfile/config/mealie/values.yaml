@@ -3,7 +3,6 @@ env:
 
 ingress:
   enabled: true
-
   hosts:
   - name: default
     host: mealie.angrydonkey.io
@@ -11,5 +10,6 @@ ingress:
 persistence:
   config:
     enabled: true
-    type: pvc
-    size: 8Gi
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/appdata/mealie

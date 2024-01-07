@@ -39,7 +39,6 @@ releases:
   inherit:
   - template: production
 - name: mealie
-  installed: false
   chart: homelab/mealie
   version: 0.1.0
   inherit:
