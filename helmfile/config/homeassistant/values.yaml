@@ -1,5 +1,5 @@
 nodeSelector:
-  kubernetes.io/hostname: k8s-02
+  kubernetes.io/hostname: galaxy-03
 
 dnsConfig:
   options:
@@ -20,12 +20,13 @@ ingress:
 persistence:
   config:
     enabled: true
-    type: pvc
-    size: 8Gi
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/appdata/home-assistant
 
   zigbee:
     enabled: true
     type: hostpath
-    path: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2488102-if00
+    path: /dev/ttyACM0
     mountType: "CharDevice"
     mountPath: /dev/zigbee

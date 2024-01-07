@@ -7,8 +7,8 @@ repositories:
     url: https://helm.ngc.nvidia.com/nvidia
   - name: jupyterhub
     url: https://jupyterhub.github.io/helm-chart/
-#   - name: homelab
-#    url: https://jasonb5.github.io/charts
+  - name: homelab
+    url: https://jasonb5.github.io/charts
 
 templates:
   production:
@@ -32,10 +32,9 @@ releases:
   version: 0.1.1
   inherit:
   - template: production
-- name: home-assistant
-  installed: false
-  chart: homelab/home-assistant
-  version: 0.1.1
+- name: homeassistant
+  chart: homelab/homeassistant
+  version: 0.1.0
   inherit:
   - template: production
 - name: mealie
