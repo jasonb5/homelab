@@ -3,7 +3,6 @@ env:
   PHOTOPRISM_ADMIN_PASSWORD: ref+vault://homelab/k8s/photoprism/#password
   PHOTOPRISM_ORIGINALS_PATH: /media/images
   PHOTOPRISM_IMPORT_PATH: /media/import
-  PHOTOPRISM_EXPERIMENTAL: true
 
 ingress:
   enabled: true
@@ -12,10 +11,11 @@ ingress:
       host: photoprism.angrydonkey.io
 
 persistence:
-  storage:
+  config:
     enabled: true
-    type: pvc
-    size: 8Gi
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/appdata/photoprism
 
   media:
     enabled: true
