@@ -26,6 +26,11 @@ templates:
       - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
 
 releases:
+- name: node-red
+  chart: homelab/node-red
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: photoprism
   chart: homelab/photoprism
   version: 0.1.0
