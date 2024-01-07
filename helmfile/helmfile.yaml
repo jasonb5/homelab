@@ -51,9 +51,8 @@ releases:
   inherit:
   - template: production
 - name: gotify
-  installed: false
   chart: homelab/gotify
-  version: 0.1.3
+  version: 0.1.1
   inherit:
   - template: production
 - name: jellyfin
