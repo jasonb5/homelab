@@ -44,12 +44,6 @@ releases:
   version: 0.1.0
   inherit:
   - template: production
-- name: kavita
-  installed: false
-  chart: homelab/kavita
-  version: 0.1.1
-  inherit:
-  - template: production
 - name: gotify
   chart: homelab/gotify
   version: 0.1.1
