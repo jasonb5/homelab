@@ -1,0 +1,22 @@
+env:
+  TZ: America/Los_Angeles
+
+ingress:
+  enabled: true
+  hosts:
+  - name: default
+    host: zwave-js-ui.angrydonkey.io
+
+persistence:
+  config:
+    enabled: true
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/appdata/zwave-js-ui
+
+  zwave:
+    enabled: true
+    type: hostpath
+    path: /dev/ttyUSB0
+    mountType: "CharDevice"
+    mountPath: /dev/zwave

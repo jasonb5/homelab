@@ -26,6 +26,11 @@ templates:
       - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
 
 releases:
+- name: zwave-js-ui
+  chart: homelab/zwave-js-ui
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: node-red
   chart: homelab/node-red
   version: 0.1.0
