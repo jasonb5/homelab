@@ -84,6 +84,7 @@ releases:
   version: 0.1.0
   inherit:
   - template: production
+  - template: postsync
 - name: mealie
   chart: homelab/mealie
   version: 0.1.0

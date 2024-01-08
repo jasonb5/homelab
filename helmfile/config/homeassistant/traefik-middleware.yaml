@@ -1,0 +1,29 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: homeassistant-headers
+spec:
+  headers:
+    customRequestHeaders:
+      Connection: Upgrade
+      Upgrade: websocket
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homeassistant-wss
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: production-homeassistant-headers@kubernetescrd
+spec:
+  rules:
+  - host: ha.angrydonkey.io
+    http:
+      paths:
+        - backend:
+            service:
+              name: homeassistant
+              port:
+                number: 8123
+          path: /api/websocket
+          pathType: Prefix
