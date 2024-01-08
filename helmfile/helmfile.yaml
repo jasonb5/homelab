@@ -16,6 +16,29 @@ templates:
     missingFileHandler: Warn
     values:
     - config/{{`{{ .Release.Name }}`}}/values.yaml
+  presync:
+    hooks:
+    - events:
+      - presync
+      command: /bin/bash
+      args:
+      - -c
+      - "config/{{`{{ .Release.Name }}`}}/presync.sh install {{`{{ .Release.Namespace }}`}}"
+      showlogs: true
+    - events:
+      - preuninstall
+      command: /bin/bash
+      args:
+      - -c
+      - "config/{{`{{ .Release.Name }}`}}/presync.sh preuninstall {{`{{ .Release.Namespace }}`}}"
+      showlogs: true
+    - events:
+      - postuninstall
+      command: /bin/bash
+      args:
+      - -c
+      - "config/{{`{{ .Release.Name }}`}}/presync.sh postuninstall {{`{{ .Release.Namespace }}`}}"
+      showlogs: true
   postsync:
     hooks:
     - events:
@@ -23,7 +46,22 @@ templates:
       command: /bin/bash
       args:
       - -c
-      - "config/{{`{{ .Release.Name }}`}}/patch.sh {{`{{ .Release.Namespace }}`}}"
+      - "config/{{`{{ .Release.Name }}`}}/postsync.sh install {{`{{ .Release.Namespace }}`}}"
+      showlogs: true
+    - events:
+      - preuninstall
+      command: /bin/bash
+      args:
+      - -c
+      - "config/{{`{{ .Release.Name }}`}}/postsync.sh preuninstall {{`{{ .Release.Namespace }}`}}"
+      showlogs: true
+    - events:
+      - postuninstall
+      command: /bin/bash
+      args:
+      - -c
+      - "config/{{`{{ .Release.Name }}`}}/postsync.sh postuninstall {{`{{ .Release.Namespace }}`}}"
+      showlogs: true
 
 releases:
 - name: zwave-js-ui
