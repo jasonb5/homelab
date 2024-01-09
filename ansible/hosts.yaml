@@ -49,6 +49,15 @@ all:
           disk_size: 96G
           node_labels:
             kubernetes.io/area: router
+        lo-01:
+          vmid: 5001
+          description: "Primary Pi-hole"
+          node: ceres
+          cores: 2
+          memory: 2048
+          image: ubuntu-22.04-server-cloudimg-amd64.img
+          mac_address: de:fe:a6:ad:c1:80
+          disk_size: 8G
     unraid:
       hosts:
         charon:
