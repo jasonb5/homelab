@@ -1,0 +1,35 @@
+---
+- name: install certbot
+  ansible.builtin.apt:
+    name: certbot, python3-certbot-dns-cloudflare
+    state: present
+- name: read cloudflare token
+  community.hashi_vault.vault_kv2_get:
+    url: "{{ vault_url }}"
+    engine_mount_point: homelab
+    path: certbot
+  delegate_to: localhost
+  register: vault_certbot
+- name: create ~/.secrets/certbot
+  ansible.builtin.file:
+    path: ~/.secrets/certbot
+    state: directory
+- name: write credentials
+  ansible.builtin.template:
+    dest: ~/.secrets/certbot/cloudflare.ini
+    src: templates/cloudflare.ini.j2
+- name: request certificate
+  command: certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini -d '*.angrydonkey.io' --non-interactive --agree-tos -m "{{ vault_certbot.data.data.cf_email }}"
+- name: combine certs
+  ansible.builtin.shell: cat /etc/letsencrypt/live/angrydonkey.io/privkey.pem /etc/letsencrypt/live/angrydonkey.io/cert.pem | tee /etc/letsencrypt/live/angrydonkey.io/combined.pem
+- name: set permissions
+  ansible.builtin.file:
+    path: /etc/letsencrypt/live
+    owner: www-data
+    recurse: true
+- name: setup automatic renew
+  ansible.builtin.cron:
+    name: "certbot renew"
+    minute: "0"
+    hour: "0,12"
+    job: "certbot renew --post-hook 'cat /etc/letsencrypt/live/angrydonkey.io/privkey.pem /etc/letsencrypt/live/angrydonkey.io/cert.pem | tee /etc/letsencrypt/live/angrydonkey.io/combined.pem; systemctl restart lighttpd'"

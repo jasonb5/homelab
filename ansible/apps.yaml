@@ -8,4 +8,5 @@
     dns_02: 1.1.1.1
     vault_url: https://vault.angrydonkey.io
   roles:
+    - certbot
     - pihole
