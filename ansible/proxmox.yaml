@@ -3,12 +3,25 @@
   hosts: vms:!unraid
   gather_facts: false
   vars:
+    ansible_user: root
     artifact_dir: artifacts
     vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
     proxmox_host: "{{ node }}.angrydonkey.io"
-    proxmox_destroy: false
     hostname: "{{ inventory_hostname }}"
+    update: false
+    destroy: false
   tasks:
+    - name: Check if vm exists
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_host }}"
+        api_password: "{{ proxmox_password }}"
+        api_user: "{{ proxmox_user }}"
+        name: "{{ inventory_hostname }}"
+        state: current
+        vmid: "{{ vmid }}"
+      ignore_errors: true
+      delegate_to: localhost
+      register: check_vm
     - block:
       - name: Create cloud-init configuration
         vars:
@@ -31,26 +44,34 @@
           dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-network.yaml
         delegate_to: "{{ node }}"
       - include_tasks: _proxmox_vm.yaml
-      when: not proxmox_destroy
+      when: check_vm.failed
     - block:
-      - name: Stop VM
+      - name: copy ca public key
+        ansible.builtin.copy:
+          src: "{{ vault_ca_path }}"
+          dest: /etc/ssh/trusted-user-ca-keys.pem
+          mode: 0600
+      - name: update sshd_config
+        ansible.builtin.lineinfile:
+          path: /etc/ssh/sshd_config
+          insertafter: "EOF"
+          regex: "TrustedUserCAKeys.*"
+          line: "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem"
+        register: updated_sshd_config
+      - name: restart sshd
+        ansible.builtin.systemd:
+          name: sshd
+          state: restarted
+      when: (not check_vm.failed) and update
+    - block:
+      - name: force remove VM
         community.general.proxmox_kvm:
           api_host: "{{ proxmox_host }}"
           api_password: "{{ proxmox_password }}"
           api_user: "{{ proxmox_user }}"
-          force: true
-          name: "{{ inventory_hostname }}"
-          state: stopped
-          vmid: "{{ vmid }}"
-        delegate_to: localhost
-      - name: Remove VM
-        community.general.proxmox_kvm:
-          api_host: "{{ proxmox_host }}"
-          api_password: "{{ proxmox_password }}"
-          api_user: "{{ proxmox_user }}"
-          force: true
           name: "{{ inventory_hostname }}"
           state: absent
+          force: true
           vmid: "{{ vmid }}"
         delegate_to: localhost
-      when: proxmox_destroy
+      when: (not check_vm.failed) and destroy

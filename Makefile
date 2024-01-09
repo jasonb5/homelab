@@ -1,14 +1,18 @@
 .PHONY: bootstrap
 bootstrap:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/bootstrap.yaml -e ansible_user=root --ask-pass
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/bootstrap.yaml --ask-pass
 
 .PHONY: proxmox
 proxmox:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/proxmox.yaml -e ansible_user=root
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/proxmox.yaml
+
+.PHONY: proxmox-update
+proxmox-update:
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" -e update=true ansible/proxmox.yaml
 
 .PHONY: proxmox-destroy
 proxmox-destroy:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" -e proxmox_destroy=true ansible/proxmox.yaml
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" -e destroy=true ansible/proxmox.yaml
 
 .PHONY: kubespray
 kubespray:

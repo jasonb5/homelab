@@ -3,6 +3,7 @@
   hosts: localhost
   gather_facts: false
   vars:
+    ansible_user: root
     artifact_dir: artifacts
     vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
     vault_client_keypair_path: ~/.ssh/id_homelab
