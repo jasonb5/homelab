@@ -58,6 +58,9 @@ all:
           image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: de:fe:a6:ad:c1:80
           disk_size: 8G
+    pihole:
+      hosts:
+        lo-01:
     unraid:
       hosts:
         charon:

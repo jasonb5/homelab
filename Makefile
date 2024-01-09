@@ -2,6 +2,10 @@
 bootstrap:
 	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/bootstrap.yaml --ask-pass
 
+.PHONY: apps
+apps:
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/apps.yaml
+
 .PHONY: proxmox
 proxmox:
 	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/proxmox.yaml

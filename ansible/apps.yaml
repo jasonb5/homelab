@@ -1,0 +1,11 @@
+---
+- name: deploy Pi-hole
+  hosts: pihole
+  gather_facts: false
+  vars:
+    ansible_user: root
+    dns_01: 8.8.8.8
+    dns_02: 1.1.1.1
+    vault_url: https://vault.angrydonkey.io
+  roles:
+    - pihole

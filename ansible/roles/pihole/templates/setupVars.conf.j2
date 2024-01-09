@@ -1,0 +1,9 @@
+# https://discourse.pi-hole.net/t/what-is-setupvars-conf-and-how-do-i-use-it/3533
+WEBPASSWORD={{ vault_pihole.data.data.password | hash('sha256') | hash('sha256') }}
+DNSMASQ_LISTENING=all
+PIHOLE_DNS_1={{ dns_01 }}
+PIHOLE_DNS_2={{ dns_02 }}
+REV_SERVER=true
+REV_SERVER_CIDR=192.168.55.1/24
+REV_SERVER_TARGET=192.168.55.1
+REV_SERVER_DOMAIN=angrydonkey.io

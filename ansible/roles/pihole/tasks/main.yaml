@@ -1,0 +1,23 @@
+---
+- name: download installer
+  ansible.builtin.get_url:
+    dest: /tmp/pihole.sh
+    url: https://install.pi-hole.net
+    mode: '0755'
+- name: get admin password
+  community.hashi_vault.vault_kv2_get:
+    url: "{{ vault_url }}"
+    path: pihole
+    engine_mount_point: homelab
+  delegate_to: localhost
+  register: vault_pihole
+- name: create /etc/pihole
+  ansible.builtin.file:
+    path: /etc/pihole
+    state: directory
+- name: template setupVars.conf
+  ansible.builtin.template:
+    dest: /etc/pihole/setupVars.conf
+    src: templates/setupVars.conf.j2
+- name: install pihole
+  ansible.builtin.command: /tmp/pihole.sh --unattended
