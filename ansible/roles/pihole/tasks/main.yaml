@@ -1,9 +1,0 @@
----
-- name: Check for /etc/pihole/gravity.db
-  ansible.builtin.stat:
-    path: /etc/pihole/gravity.db
-  register: st
-- include_tasks: install.yaml
-  when: not st.stat.exists
-- include_tasks: upgrade.yaml
-  when: st.stat.exists
