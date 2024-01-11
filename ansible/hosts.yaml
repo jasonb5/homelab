@@ -58,6 +58,15 @@ all:
           image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: de:fe:a6:ad:c1:80
           disk_size: 8G
+        omada:
+          vmid: 5002
+          description: "Omada Software Controller"
+          node: ceres
+          cores: 2
+          memory: 2048
+          image: ubuntu-20.04-server-cloudimg-amd64.img
+          mac_address: de:52:cc:d9:61:db
+          disk_size: 8G
     pihole:
       hosts:
         lo-01:
