@@ -4,7 +4,7 @@ bootstrap:
 
 .PHONY: apps
 apps:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/apps.yaml
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/apps.yaml $(ARGS)
 
 .PHONY: proxmox
 proxmox:
