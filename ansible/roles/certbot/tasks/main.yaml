@@ -20,8 +20,6 @@
     src: templates/cloudflare.ini.j2
 - name: request certificate
   command: certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini -d '*.angrydonkey.io' --non-interactive --agree-tos -m "{{ vault_certbot.data.data.cf_email }}"
-- name: combine certs
-  ansible.builtin.shell: cat /etc/letsencrypt/live/angrydonkey.io/privkey.pem /etc/letsencrypt/live/angrydonkey.io/cert.pem | tee /etc/letsencrypt/live/angrydonkey.io/combined.pem
 - name: set permissions
   ansible.builtin.file:
     path: /etc/letsencrypt/live
@@ -32,4 +30,4 @@
     name: "certbot renew"
     minute: "0"
     hour: "0,12"
-    job: "certbot renew --post-hook 'cat /etc/letsencrypt/live/angrydonkey.io/privkey.pem /etc/letsencrypt/live/angrydonkey.io/cert.pem | tee /etc/letsencrypt/live/angrydonkey.io/combined.pem; systemctl restart lighttpd'"
+    job: "certbot renew --post-hook 'source ~/certbot-post-hook.sh'"

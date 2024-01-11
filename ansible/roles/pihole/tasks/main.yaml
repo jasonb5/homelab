@@ -30,6 +30,15 @@
     dest: /etc/lighttpd/conf-enabled/20-pihole-external.conf
     src: files/external.conf
   register: lighttpd_external
+- name: copy certbot post hook
+  ansible.builtin.copy:
+    dest: ~/certbot-post-hook.sh
+    src: files/certbot-post-hook.sh
+    mode: '0755'
+  register: certbot_post_hook
+- name: run post hook
+  ansible.builtin.command: ~/certbot-post-hook.sh
+  when: certbot_post_hook.changed
 - name: restart lighttpd service
   ansible.builtin.systemd_service:
     name: lighttpd

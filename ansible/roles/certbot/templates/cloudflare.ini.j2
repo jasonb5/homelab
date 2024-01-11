@@ -1,1 +1,6 @@
+{% if cf_use_key | default('false') %}
+dns_cloudflare_email = {{ vault_certbot.data.data.cf_email }}
+dns_cloudflare_api_key = {{ vault_certbot.data.data.cf_api_key }}
+{% else %}
 dns_cloudflare_api_token = {{ vault_certbot.data.data.cf_api_token }}
+{% endif %}
