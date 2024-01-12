@@ -9,10 +9,19 @@ repositories:
     url: https://jupyterhub.github.io/helm-chart/
   - name: homelab
     url: https://jasonb5.github.io/charts
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
 
 templates:
   production:
     namespace: production
+    missingFileHandler: Warn
+    values:
+    - config/{{`{{ .Release.Name }}`}}/values.yaml
+  monitoring:
+    namespace: monitoring
     missingFileHandler: Warn
     values:
     - config/{{`{{ .Release.Name }}`}}/values.yaml
@@ -64,6 +73,16 @@ templates:
       showlogs: true
 
 releases:
+- name: loki
+  chart: grafana/loki-stack
+  version: 2.10.0
+  inherit:
+  - template: monitoring
+- name: prometheus
+  chart: prometheus-community/prometheus
+  version: 25.8.2
+  inherit:
+  - template: monitoring
 - name: zwave-js-ui
   chart: homelab/zwave-js-ui
   version: 0.1.0

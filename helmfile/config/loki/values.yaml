@@ -1,0 +1,14 @@
+grafana:
+  enabled: true
+
+  adminUser: titters
+  adminPassword: ref+vault://homelab/k8s/grafana#password
+
+  persistence:
+    enabled: true
+
+  ingress:
+    enabled: true
+
+    hosts:
+    - grafana.angrydonkey.io
