@@ -1,0 +1,21 @@
+env:
+  TZ: America/Los_Angeles
+
+ingress:
+  enabled: true
+  hosts:
+  - name: default
+    host: calibre.angrydonkey.io
+
+persistence:
+  config:
+    enabled: true
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/appdata/calibre
+
+  media:
+    enabled: true
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/media

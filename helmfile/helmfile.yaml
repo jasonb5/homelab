@@ -83,6 +83,11 @@ releases:
   version: 25.8.2
   inherit:
   - template: monitoring
+- name: calibre
+  chart: homelab/calibre
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: zwave-js-ui
   chart: homelab/zwave-js-ui
   version: 0.1.0
