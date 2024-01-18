@@ -10,12 +10,11 @@ ingress:
 persistence:
   config:
     enabled: true
-    type: nfs
-    server: 192.168.55.20
-    path: /mnt/user/appdata/calibre
+    type: pvc
+    size: 32Gi
 
-  media:
+  import:
     enabled: true
     type: nfs
     server: 192.168.55.20
-    path: /mnt/user/media
+    path: /mnt/user/backup/ebooks
