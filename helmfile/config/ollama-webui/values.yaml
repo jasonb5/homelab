@@ -1,0 +1,9 @@
+env:
+  TZ: America/Los_Angeles
+  OLLAMA_API_BASE_URL: http://ganymede.angrydonkey.io:11434/api
+
+ingress:
+  enabled: true
+  hosts:
+  - name: default
+    host: ollama.angrydonkey.io
