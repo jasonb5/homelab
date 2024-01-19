@@ -1,0 +1,14 @@
+env:
+  TZ: America/Los_Angeles
+
+ingress:
+  enabled: true
+  hosts:
+  - name: default
+    host: homebox.angrydonkey.io
+
+persistence:
+  config:
+    enabled: true
+    type: pvc
+    size: 8Gi

@@ -83,6 +83,11 @@ releases:
   version: 25.8.2
   inherit:
   - template: monitoring
+- name: homebox
+  chart: homelab/homebox
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: ollama-webui
   chart: homelab/ollama-webui
   version: 0.1.0
