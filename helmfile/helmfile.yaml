@@ -83,6 +83,11 @@ releases:
   version: 25.8.2
   inherit:
   - template: monitoring
+- name: it-tools
+  chart: homelab/it-tools
+  version: 0.1.0
+  inherit:
+  - template: production
 - name: homebox
   chart: homelab/homebox
   version: 0.1.0
