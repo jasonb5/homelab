@@ -88,8 +88,8 @@ releases:
   version: 0.1.0
   inherit:
   - template: production
-- name: calibre
-  chart: homelab/calibre
+- name: calibre-web
+  chart: homelab/calibre-web
   version: 0.1.0
   inherit:
   - template: production

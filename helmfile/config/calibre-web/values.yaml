@@ -5,16 +5,17 @@ ingress:
   enabled: true
   hosts:
   - name: default
-    host: calibre.angrydonkey.io
+    host: calibre-web.angrydonkey.io
 
 persistence:
   config:
     enabled: true
-    type: pvc
-    size: 32Gi
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/appdata/calibre-web
 
-  import:
+  calibre:
     enabled: true
     type: nfs
     server: 192.168.55.20
-    path: /mnt/user/backup/ebooks
+    path: /mnt/user/appdata/calibre
