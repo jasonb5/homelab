@@ -23,12 +23,20 @@
       delegate_to: localhost
       register: check_vm
     - block:
+      - name: Get admin password
+        community.hashi_vault.vault_kv2_get:
+          url: https://vault.angrydonkey.io
+          engine_mount_point: homelab
+          path: vms
+          username: "{{ vault_username }}"
+          password: "{{ vault_password }}"
+        register: vault_admin_password
       - name: Create cloud-init configuration
         vars:
           ansible_password: "{{ proxmox_password }}"
           trusted_user_ca_keys: "{{ lookup('ansible.builtin.file', vault_ca_path) }}"
           username: "{{ admin_user }}"
-          password: test
+          password: "{{ vault_admin_password.data.data.password }}"
         ansible.builtin.template:
           src: user.j2
           dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-user.yaml
@@ -37,8 +45,6 @@
         vars:
           ansible_password: "{{ proxmox_password }}"
           trusted_user_ca_keys: "{{ lookup('ansible.builtin.file', vault_ca_path) }}"
-          username: admin
-          password: admin
         ansible.builtin.template:
           src: network.j2
           dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-network.yaml
