@@ -14,6 +14,7 @@
   hosts: proxmox
   gather_facts: true
   vars:
+    ansible_user: root
     artifact_dir: artifacts
     vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
   tasks:
