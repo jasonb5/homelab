@@ -13,9 +13,8 @@ ingress:
 persistence:
   config:
     enabled: true
-    type: nfs
-    server: 192.168.55.20
-    path: /mnt/user/appdata/photoprism
+    type: pvc
+    size: 8Gi
 
   media:
     enabled: true

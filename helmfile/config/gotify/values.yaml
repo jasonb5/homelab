@@ -11,6 +11,5 @@ ingress:
 persistence:
   data:
     enabled: true
-    type: nfs
-    server: 192.168.55.20
-    path: /mnt/user/appdata/gotify
+    type: pvc
+    size: 8Gi
