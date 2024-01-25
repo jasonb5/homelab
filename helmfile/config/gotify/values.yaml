@@ -12,4 +12,4 @@ persistence:
   data:
     enabled: true
     type: pvc
-    size: 8Gi
+    size: 1Gi

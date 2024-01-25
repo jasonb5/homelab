@@ -1,6 +1,9 @@
 env:
   TZ: America/Los_Angeles
 
+nodeSelector:
+  kubernetes.io/hostname: galaxy-03
+
 ingress:
   enabled: true
   hosts:
@@ -11,7 +14,7 @@ persistence:
   config:
     enabled: true
     type: pvc
-    size: 8Gi
+    size: 1Gi
 
   zwave:
     enabled: true

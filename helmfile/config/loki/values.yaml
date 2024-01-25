@@ -1,3 +1,7 @@
+loki:
+  persistence:
+    size: 4Gi
+
 grafana:
   enabled: true
 

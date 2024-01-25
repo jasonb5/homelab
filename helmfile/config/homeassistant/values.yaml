@@ -21,7 +21,7 @@ persistence:
   config:
     enabled: true
     type: pvc
-    size: 8Gi
+    size: 1Gi
 
   zigbee:
     enabled: true
