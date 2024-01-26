@@ -14,7 +14,7 @@ persistence:
   config:
     enabled: true
     type: pvc
-    size: 1Gi
+    size: 2Gi
 
   media:
     enabled: true
