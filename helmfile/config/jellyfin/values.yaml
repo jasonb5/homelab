@@ -1,6 +1,9 @@
 env:
   TZ: America/Los_Angeles
 
+nodeSelector:
+  kubernetes.io/hostname: galaxy-01
+
 ingress:
   enabled: true
   hosts:
