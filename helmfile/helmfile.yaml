@@ -85,32 +85,32 @@ releases:
   - template: monitoring
 - name: it-tools
   chart: homelab/it-tools
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: homebox
   chart: homelab/homebox
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: ollama-webui
   chart: homelab/ollama-webui
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: calibre-web
   chart: homelab/calibre-web
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: zwave-js-ui
   chart: homelab/zwave-js-ui
-  version: 0.1.0
+  version: 0.1.4
   inherit:
   - template: production
 - name: node-red
   chart: homelab/node-red
-  version: 0.1.0
+  version: 0.1.3
   inherit:
   - template: production
 - name: photoprism
@@ -120,18 +120,18 @@ releases:
   - template: production
 - name: homeassistant
   chart: homelab/homeassistant
-  version: 0.1.0
+  version: 0.1.6
   inherit:
   - template: production
   - template: postsync
 - name: mealie
   chart: homelab/mealie
-  version: 0.1.0
+  version: 0.1.1
   inherit:
   - template: production
 - name: gotify
   chart: homelab/gotify
-  version: 0.1.1
+  version: 0.1.3
   inherit:
   - template: production
 - name: jellyfin
