@@ -1,0 +1,15 @@
+addons:
+  rclone:
+    enabled: true
+
+    env:
+      CRON: "0 4 * * *"
+      CUSTOM_COMMAND: "restic -r rclone:minio:apps --password-file /root/.config/rclone/restic.txt backup --host {{ .Release.Name }} /config"
+
+    persistence:
+      rclone:
+        enabled: true
+        type: nfs
+        server: 192.168.55.20
+        path: /mnt/user/appdata/rclone
+        mountPath: /root/.config/rclone

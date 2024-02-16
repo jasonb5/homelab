@@ -12,3 +12,21 @@ persistence:
     enabled: true
     type: pvc
     size: 1Gi
+
+initContainers:
+  chown:
+    image:
+      repository: busybox
+      tag: latest
+
+    command: ['chown', '-R', '1000:1000', '/config']
+
+    persistence:
+      config:
+        enabled: true
+
+addons:
+  rclone:
+    persistence:
+      config:
+        enabled: true

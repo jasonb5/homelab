@@ -22,3 +22,9 @@ persistence:
     path: /dev/ttyUSB0
     mountType: "CharDevice"
     mountPath: /dev/zwave
+
+addons:
+  rclone:
+    persistence:
+      config:
+        enabled: true

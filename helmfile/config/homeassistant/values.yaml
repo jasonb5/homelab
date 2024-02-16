@@ -29,3 +29,9 @@ persistence:
     path: /dev/ttyACM0
     mountType: "CharDevice"
     mountPath: /dev/zigbee
+
+addons:
+  rclone:
+    persistence:
+      config:
+        enabled: true

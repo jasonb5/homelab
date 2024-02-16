@@ -18,3 +18,9 @@ persistence:
     type: nfs
     server: 192.168.55.20
     path: /mnt/user/appdata/calibre
+
+addons:
+  rclone:
+    persistence:
+      config:
+        enabled: true

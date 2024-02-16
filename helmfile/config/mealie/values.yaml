@@ -12,3 +12,9 @@ persistence:
     enabled: true
     type: pvc
     size: 1Gi
+
+addons:
+  rclone:
+    persistence:
+      config:
+        enabled: true

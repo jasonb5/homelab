@@ -2,6 +2,14 @@ env:
   TZ: America/Los_Angeles
   GOTIFY_DEFAULTUSER_PASS: ref+vault://homelab/k8s/gotify#password
 
+dnsConfig:
+  options:
+    - name: ndots
+      value: "1"
+
+securityContext:
+  fsGroup: 0
+
 ingress:
   enabled: true
   hosts:
@@ -9,7 +17,14 @@ ingress:
       host: gotify.angrydonkey.io
 
 persistence:
-  data:
+  config:
     enabled: true
     type: pvc
     size: 1Gi
+    mountPath: /app/data
+
+addons:
+  rclone:
+    persistence:
+      config:
+        enabled: true
