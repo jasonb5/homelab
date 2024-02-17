@@ -3,7 +3,7 @@ addons:
     enabled: true
 
     env:
-      CRON: "0 4 * * *"
+      CRON: "30 1 * * *"
       CUSTOM_COMMAND: "restic -r rclone:minio:apps --password-file /root/.config/rclone/restic.txt backup --host {{ .Release.Name }} /config"
 
     persistence:
