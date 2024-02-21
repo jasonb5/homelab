@@ -1,0 +1,13 @@
+---
+- name: install unbound
+  ansible.builtin.apt:
+    name: unbound
+    state: present
+- name: copy unbound conf
+  ansible.builtin.copy:
+    src: files/pi-hole.conf
+    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+- name: restart unbound service
+  ansible.builtin.systemd_service:
+    name: unbound
+    state: restarted

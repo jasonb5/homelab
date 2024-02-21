@@ -50,6 +50,8 @@ all:
           node_labels:
             kubernetes.io/area: router
         lo-01:
+          ansible_host: 192.168.55.30
+          ip: 192.168.55.30
           vmid: 5001
           description: "Primary Pi-hole"
           node: ceres
@@ -59,6 +61,8 @@ all:
           mac_address: de:fe:a6:ad:c1:80
           disk_size: 8G
         omada:
+          ansible_host: 192.168.55.32
+          ip: 192.168.55.32
           vmid: 5002
           description: "Omada Software Controller"
           node: ceres

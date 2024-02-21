@@ -18,8 +18,13 @@
   ansible.builtin.template:
     dest: ~/.secrets/certbot/cloudflare.ini
     src: templates/cloudflare.ini.j2
+- name: check if cert has be installed
+  ansible.builtin.stat:
+    path: /etc/letsencrypt/live/angrydonkey.io
+  register: st
 - name: request certificate
   command: certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini -d '*.angrydonkey.io' --non-interactive --agree-tos -m "{{ vault_certbot.data.data.cf_email }}"
+  when: not st.stat.exists
 - name: set permissions
   ansible.builtin.file:
     path: /etc/letsencrypt/live
