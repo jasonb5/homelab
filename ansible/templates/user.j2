@@ -1,19 +1,35 @@
 #cloud-config
-bootcmd:
-- cloud-init-per once trusted-user-ca-keys echo "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" >> /etc/ssh/sshd_config
 hostname: {{ hostname }}
 fqdn: {{ inventory_hostname }}
-user: {{ username }}
 packages:
 - qemu-guest-agent
 - nfs-client
 package_update: true
 package_reboot_if_required: true
-password: {{ password | password_hash }}
 runcmd:
 - systemctl start qemu-guest-agent
 - systemctl enable qemu-guest-agent
 - apt install -y linux-modules-extra-`uname -r`
+- sed -i 's/\#\?\(PasswordAuthentication .*\)/\#\1/' /etc/ssh/sshd_config
+users:
+- name: root
+  lock_passwd: true
+  shell: /bin/bash
+  ssh_redirect_user: true
+- name: {{ username }}
+  lock_passwd: false
+  passwd: {{ password }}
+  shell: /bin/bash
+  sudo: ALL=(ALL) NOPASSWD:ALL
 write_files:
 - path: /etc/ssh/trusted-user-ca-keys.pem
   content: {{ lookup('ansible.builtin.file', vault_ca_path) }}
+- path: /etc/ssh/sshd_config.d/00-user.conf
+  content: |
+    TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+
+    Match User root
+      PasswordAuthentication no
+
+    Match User {{ username }}
+      PasswordAuthentication yes

@@ -30,13 +30,14 @@
           path: vms
           username: "{{ vault_username }}"
           password: "{{ vault_password }}"
+        delegate_to: localhost
         register: vault_admin_password
       - name: Create cloud-init configuration
         vars:
           ansible_password: "{{ proxmox_password }}"
           trusted_user_ca_keys: "{{ lookup('ansible.builtin.file', vault_ca_path) }}"
           username: "{{ admin_user }}"
-          password: "{{ vault_admin_password.data.data.password }}"
+          password: "{{ vault_admin_password.secret.password | password_hash(hashtype='sha512', rounds=500000) }}"
         ansible.builtin.template:
           src: user.j2
           dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-user.yaml
@@ -50,7 +51,7 @@
           dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-network.yaml
         delegate_to: "{{ node }}"
       - include_tasks: _proxmox_vm.yaml
-      when: check_vm.failed
+      when: (check_vm.exception is not defined) and check_vm.failed
     - block:
       - name: copy ca public key
         ansible.builtin.copy:
