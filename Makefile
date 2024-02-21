@@ -1,6 +1,6 @@
 .PHONY: bootstrap
 bootstrap:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/bootstrap.yaml --ask-pass
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/bootstrap.yaml --ask-pass $(ARGS)
 
 .PHONY: apps
 apps:
@@ -8,15 +8,15 @@ apps:
 
 .PHONY: proxmox
 proxmox:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/proxmox.yaml
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/proxmox.yaml $(ARGS)
 
 .PHONY: proxmox-update
 proxmox-update:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" -e update=true ansible/proxmox.yaml
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" -e update=true ansible/proxmox.yaml $(ARGS)
 
 .PHONY: proxmox-destroy
 proxmox-destroy:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" -e destroy=true ansible/proxmox.yaml
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" -e destroy=true ansible/proxmox.yaml $(ARGS)
 
 .PHONY: kubespray
 kubespray:
@@ -24,7 +24,7 @@ kubespray:
 
 .PHONY: kubespray-reset
 kubespray-reset:
-	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/kubespray/reset.yml --become
+	ansible-playbook -i ansible/hosts.yaml -e @"secrets.yaml" ansible/kubespray/reset.yml --become $(ARGS)
 
 .PHONY: kubeconfig
 kubeconfig:
