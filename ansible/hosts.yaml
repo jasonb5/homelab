@@ -60,6 +60,13 @@ all:
           image: ubuntu-22.04-server-cloudimg-amd64.img
           mac_address: de:fe:a6:ad:c1:80
           disk_size: 8G
+          pihole_blocklist:
+            - url: https://adaway.org/hosts.txt
+              comment: "Advertising"
+            - url: https://v.firebog.net/hosts/Easyprivacy.txt
+              comment: "Tracking & Telemetry"
+            - url: https://raw.githubusercontent.com/DandelionSprout/adfilt/master/Alternate%20versions%20Anti-Malware%20List/AntiMalwareHosts.txt
+              comment: "Malicious"
         omada:
           ansible_host: 192.168.55.32
           ip: 192.168.55.32

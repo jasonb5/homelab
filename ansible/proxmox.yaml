@@ -22,6 +22,7 @@
       ignore_errors: true
       delegate_to: localhost
       register: check_vm
+      when: not (update or destroy)
     - block:
       - name: Get admin password
         community.hashi_vault.vault_kv2_get:
@@ -51,25 +52,18 @@
           dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-network.yaml
         delegate_to: "{{ node }}"
       - include_tasks: _proxmox_vm.yaml
-      when: (check_vm.exception is not defined) and check_vm.failed
+      when: (not update or destroy) and (check_vm.exception is not defined) and check_vm.failed
     - block:
       - name: copy ca public key
         ansible.builtin.copy:
           src: "{{ vault_ca_path }}"
           dest: /etc/ssh/trusted-user-ca-keys.pem
           mode: 0600
-      - name: update sshd_config
-        ansible.builtin.lineinfile:
-          path: /etc/ssh/sshd_config
-          insertafter: "EOF"
-          regex: "TrustedUserCAKeys.*"
-          line: "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem"
-        register: updated_sshd_config
       - name: restart sshd
         ansible.builtin.systemd:
           name: sshd
           state: restarted
-      when: (not check_vm.failed) and update
+      when: update
     - block:
       - name: force remove VM
         community.general.proxmox_kvm:
@@ -81,4 +75,4 @@
           force: true
           vmid: "{{ vmid }}"
         delegate_to: localhost
-      when: (not check_vm.failed) and destroy
+      when: destroy
