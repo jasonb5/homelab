@@ -14,7 +14,7 @@ persistence:
   config:
     enabled: true
     type: pvc
-    size: 32Gi
+    size: 8Gi
 
   media:
     enabled: true
@@ -22,3 +22,13 @@ persistence:
     server: 192.168.55.20
     path: /mnt/user/media
     readOnly: true
+
+  cache:
+    enabled: true
+    type: emptydir
+
+addons:
+  rclone:
+    persistence:
+      config:
+        enabled: true

@@ -155,6 +155,7 @@ releases:
   version: 0.1.0
   inherit:
   - template: production
+  - template: backup
 - name: jupyterhub
   installed: false
   chart: jupyterhub/jupyterhub
