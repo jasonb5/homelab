@@ -1,5 +1,5 @@
 ---
-- include_tasks: create-ca.yaml
+- import_tasks: create-ca.yaml
 - name: Create signing roles
   community.hashi_vault.vault_write:
     path: "ssh-client-signer/roles/{{ item.name }}"
@@ -19,15 +19,11 @@
     url: "{{ vault_url }}"
     username: "{{ vault_username }}"
   loop: "{{ vault_signing_roles }}"
-- name: Get keypair passphrase
-  community.hashi_vault.vault_kv2_get:
-    engine_mount_point: homelab
-    path: ca
-    auth_method: userpass
-    password: "{{ vault_password }}"
-    url: "{{ vault_url }}"
-    username: "{{ vault_username }}"
-  register: vault_ca_passphrase
 - name: Generate SSH keypair and sign public key
-  include_tasks: generate-sign-client.yaml
+  include_tasks:
+    file: generate-sign-client.yaml
+    apply:
+      tags: renew-client-certs
   loop: "{{ vault_signing_roles }}"
+  tags:
+    - renew-client-certs

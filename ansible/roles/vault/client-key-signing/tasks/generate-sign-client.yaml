@@ -1,4 +1,13 @@
 ---
+- name: Get keypair passphrase
+  community.hashi_vault.vault_kv2_get:
+    engine_mount_point: homelab
+    path: ca
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+  register: vault_ca_passphrase
 - name: Generate client keypair
   community.crypto.openssh_keypair:
     path: "{{ vault_client_keypair_path }}-{{ item.name }}"

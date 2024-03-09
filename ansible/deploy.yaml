@@ -16,7 +16,8 @@
     ansible_user: root
   roles:
     - role: proxmox
-      tags: proxmox
+      tags:
+        - proxmox
 
 # - hosts: pihole
 #   gather_facts: false
