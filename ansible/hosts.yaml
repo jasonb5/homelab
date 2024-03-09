@@ -1,15 +1,15 @@
 all:
   children:
-    proxmox:
+    baremetal:
       hosts:
         callisto:
           ansible_host: 192.168.55.150
         ceres:
           ansible_host: 192.168.55.151
-    vms:
-      hosts:
         charon:
           ansible_host: 192.168.55.20
+    vms:
+      hosts:
         galaxy-01:
           ansible_host: 192.168.55.21
           ip: 192.168.55.21
@@ -59,6 +59,17 @@ all:
           memory: 2048
           image: ubuntu-20.04-server-cloudimg-amd64.img
           mac_address: de:52:cc:d9:61:db
+          disk_size: 8G
+        test:
+          ansible_host: 192.168.55.33
+          ip: 192.168.55.33
+          vmid: 5003
+          description: "Test"
+          node: callisto
+          cores: 2
+          memory: 2048
+          image: ubuntu-20.04-server-cloudimg-amd64.img
+          mac_address: 64:16:7F:B0:EC:2D
           disk_size: 8G
     unraid:
       hosts:

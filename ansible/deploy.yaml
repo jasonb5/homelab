@@ -1,12 +1,32 @@
-- hosts: pihole
+- hosts: localhost
   gather_facts: false
   roles:
-    - role: pihole
-  tags:
-    - pihole
-- hosts: omada
-  gather_facts: false
+    - role: vault/client-key-signing
+
+- hosts: baremetal
+  gather_facts: true
+  vars:
+    ansible_user: root
   roles:
-    - role: omada
-  tags:
-    - omada
+    - role: vault/deploy-ca
+
+- hosts: vms
+  gather_facts: false
+  vars:
+    ansible_user: root
+  roles:
+    - role: proxmox
+      tags: proxmox
+
+# - hosts: pihole
+#   gather_facts: false
+#   roles:
+#     - role: pihole
+#   tags:
+#     - pihole
+# - hosts: omada
+#   gather_facts: false
+#   roles:
+#     - role: omada
+#   tags:
+#     - omada

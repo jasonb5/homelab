@@ -1,0 +1,23 @@
+---
+- name: Generate CA key pair
+  ignore_errors: true
+  community.hashi_vault.vault_write:
+    path: ssh-client-signer/config/ca
+    data:
+      generate_signing_key: true
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+- name: Read CA public key
+  community.hashi_vault.vault_read:
+    path: ssh-client-signer/config/ca#public_key
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+  register: vault_ca_public_key
+- name: Write CA public key
+  ansible.builtin.copy:
+    dest: "{{ vault_ca_path }}"
+    content: "{{ vault_ca_public_key.data.data.public_key }}"

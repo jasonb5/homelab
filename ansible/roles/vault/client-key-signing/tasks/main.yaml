@@ -1,0 +1,33 @@
+---
+- include_tasks: create-ca.yaml
+- name: Create signing roles
+  community.hashi_vault.vault_write:
+    path: "ssh-client-signer/roles/{{ item.name }}"
+    data:
+      default_user: "{{ item.default_user }}"
+      key_type: "ca"
+      allowed_users: "{{ item.allowed_users }}"
+      ttl: "24h"
+      max_ttl: "24h"
+      allow_user_certificates: true
+      allowed_extensions: "permit-pty,permit-port-forwarding"
+      default_extensions:
+        permit-pty: ""
+      algorithm_signer: "rsa-sha2-256"
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+  loop: "{{ vault_signing_roles }}"
+- name: Get keypair passphrase
+  community.hashi_vault.vault_kv2_get:
+    engine_mount_point: homelab
+    path: ca
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+  register: vault_ca_passphrase
+- name: Generate SSH keypair and sign public key
+  include_tasks: generate-sign-client.yaml
+  loop: "{{ vault_signing_roles }}"

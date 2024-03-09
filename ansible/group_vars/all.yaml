@@ -1,0 +1,15 @@
+artifact_dir: artifacts
+
+vault_url: https://vault.angrydonkey.io
+
+vault_ca_path: "{{ artifact_dir }}/trusted-user-ca-keys.pem"
+
+vault_client_keypair_path: "~/.ssh/id_homelab"
+
+vault_signing_roles:
+  - name: baremetal
+    allowed_users: "root"
+    default_user: "root"
+  - name: vms
+    allowed_users: "titters"
+    default_user: "titters"

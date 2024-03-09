@@ -1,0 +1,24 @@
+---
+- name: Generate client keypair
+  community.crypto.openssh_keypair:
+    path: "{{ vault_client_keypair_path }}-{{ item.name }}"
+    passphrase: "{{ vault_ca_passphrase.data.data.passphrase|quote }}"
+- name: Sign client public key
+  community.hashi_vault.vault_write:
+    path: "ssh-client-signer/sign/{{ item.name }}"
+    data:
+      public_key: "{{ lookup('ansible.builtin.file', vault_client_keypair_path + '-' +  item.name + '.pub') }}"
+      valid_principals: "{{ item.default_user }}"
+      extensions:
+        permit-pty: ""
+        permit-port-forwarding: ""
+    auth_method: userpass
+    password: "{{ vault_password }}"
+    url: "{{ vault_url }}"
+    username: "{{ vault_username }}"
+  register: signed_public_key
+- name: Write signed client public key
+  ansible.builtin.copy:
+    dest: "{{ vault_client_keypair_path }}-{{ item.name }}-cert.pub"
+    content: "{{ signed_public_key.data.data.signed_key }}"
+    mode: 0600

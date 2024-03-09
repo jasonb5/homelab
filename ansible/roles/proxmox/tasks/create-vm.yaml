@@ -1,15 +1,29 @@
 ---
-- name: Check for VM template
-  community.general.proxmox_kvm:
-    api_host: "{{ proxmox_host }}"
-    api_password: "{{ proxmox_password }}"
-    api_user: "{{ proxmox_user }}"
-    name: "{{ hostname }}"
-    state: current
-    vmid: "{{ vmid }}"
+- name: Get admin password
+  community.hashi_vault.vault_kv2_get:
+    url: "{{ vault_url }}"
+    engine_mount_point: homelab
+    path: vms
+    username: "{{ vault_username }}"
+    password: "{{ vault_password }}"
   delegate_to: localhost
-  ignore_errors: true
-  register: checkvm
+  register: vault_admin_password
+- name: Create cloud-init user configuration
+  vars:
+    trusted_user_ca_keys: "{{ lookup('ansible.builtin.file', vault_ca_path) }}"
+    username: "{{ vm_admin_user }}"
+    password: "{{ vault_admin_password.secret.password | password_hash(hashtype='sha512', rounds=500000) }}"
+  ansible.builtin.template:
+    src: user.j2
+    dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-user.yaml
+  delegate_to: "{{ node }}"
+- name: Create cloud-init network configuration
+  vars:
+    trusted_user_ca_keys: "{{ lookup('ansible.builtin.file', vault_ca_path) }}"
+  ansible.builtin.template:
+    src: network.j2
+    dest: /var/lib/vz/snippets/{{ inventory_hostname }}-{{ vmid }}-network.yaml
+  delegate_to: "{{ node }}"
 - name: Create VM
   throttle: 1
   community.general.proxmox_kvm:
@@ -34,7 +48,7 @@
       ide2: local-lvm:cloudinit,format=raw
     machine: q35
     memory: "{{ memory }}"
-    name: "{{ hostname }}"
+    name: "{{ inventory_hostname }}"
     net:
       net0: "virtio={{ mac_address }},bridge=vmbr0,firewall=1"
     node: "{{ node }}"
@@ -43,21 +57,19 @@
     serial:
       serial0: socket
     state: present
-    update: "{{ checkvm is not failed }}"
     vga: serial0
     vmid: "{{ vmid }}"
   delegate_to: localhost
   register: vm
   until: vm is not failed
   retries: 10
-  when: checkvm is failed
 - name: Stop VM for update
   community.general.proxmox_kvm:
     api_host: "{{ proxmox_host }}"
     api_password: "{{ proxmox_password }}"
     api_user: "{{ proxmox_user }}"
     force: true
-    name: "{{ hostname }}"
+    name: "{{ inventory_hostname }}"
     state: stopped
     vmid: "{{ vmid }}"
   delegate_to: localhost
@@ -87,7 +99,7 @@
     api_user: "{{ proxmox_user }}"
     disk: virtio0
     import_from: "/mnt/pve/iso/{{ image }}"
-    name: "{{ hostname }}"
+    name: "{{ inventory_hostname }}"
     state: present
     storage: local-lvm
     vmid: "{{ vmid }}"
@@ -98,7 +110,7 @@
     api_password: "{{ proxmox_password }}"
     api_user: "{{ proxmox_user }}"
     disk: virtio0
-    name: "{{ hostname }}"
+    name: "{{ inventory_hostname }}"
     size: "{{ disk_size }}"
     state: resized
     vmid: "{{ vmid }}"
@@ -108,7 +120,7 @@
     api_host: "{{ proxmox_host }}"
     api_password: "{{ proxmox_password }}"
     api_user: "{{ proxmox_user }}"
-    name: "{{ hostname }}"
+    name: "{{ inventory_hostname }}"
     state: started
     vmid: "{{ vmid }}"
   delegate_to: localhost
