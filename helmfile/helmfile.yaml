@@ -1,194 +1,198 @@
-repositories:
-  - name: longhorn
-    url: https://charts.longhorn.io
-  - name: traefik
-    url: https://traefik.github.io/charts
-  - name: nvidia
-    url: https://helm.ngc.nvidia.com/nvidia
-  - name: jupyterhub
-    url: https://jupyterhub.github.io/helm-chart/
-  - name: homelab
-    url: https://jasonb5.github.io/charts
-  - name: prometheus-community
-    url: https://prometheus-community.github.io/helm-charts
-  - name: grafana
-    url: https://grafana.github.io/helm-charts
-
-templates:
-  production:
-    namespace: production
-    missingFileHandler: Warn
-    values:
-    - config/{{`{{ .Release.Name }}`}}/values.yaml
-  monitoring:
-    namespace: monitoring
-    missingFileHandler: Warn
-    values:
-    - config/{{`{{ .Release.Name }}`}}/values.yaml
-  backup:
-    values:
-    - config/rclone/values.yaml
-  presync:
-    hooks:
-    - events:
-      - presync
-      command: /bin/bash
-      args:
-      - -c
-      - "config/{{`{{ .Release.Name }}`}}/presync.sh install {{`{{ .Release.Namespace }}`}}"
-      showlogs: true
-    - events:
-      - preuninstall
-      command: /bin/bash
-      args:
-      - -c
-      - "config/{{`{{ .Release.Name }}`}}/presync.sh preuninstall {{`{{ .Release.Namespace }}`}}"
-      showlogs: true
-    - events:
-      - postuninstall
-      command: /bin/bash
-      args:
-      - -c
-      - "config/{{`{{ .Release.Name }}`}}/presync.sh postuninstall {{`{{ .Release.Namespace }}`}}"
-      showlogs: true
-  postsync:
-    hooks:
-    - events:
-      - postsync
-      command: /bin/bash
-      args:
-      - -c
-      - "config/{{`{{ .Release.Name }}`}}/postsync.sh install {{`{{ .Release.Namespace }}`}}"
-      showlogs: true
-    - events:
-      - preuninstall
-      command: /bin/bash
-      args:
-      - -c
-      - "config/{{`{{ .Release.Name }}`}}/postsync.sh preuninstall {{`{{ .Release.Namespace }}`}}"
-      showlogs: true
-    - events:
-      - postuninstall
-      command: /bin/bash
-      args:
-      - -c
-      - "config/{{`{{ .Release.Name }}`}}/postsync.sh postuninstall {{`{{ .Release.Namespace }}`}}"
-      showlogs: true
-
 releases:
-- name: loki
-  chart: grafana/loki-stack
-  version: 2.10.0
+- chart: grafana/loki-stack
   inherit:
   - template: monitoring
-- name: prometheus
-  chart: prometheus-community/prometheus
-  version: 25.8.2
+  name: loki
+  version: 2.10.1
+- chart: prometheus-community/prometheus
   inherit:
   - template: monitoring
-- name: homarr
-  chart: homelab/homarr
-  version: 0.1.1
+  name: prometheus
+  version: 25.17.0
+- chart: homelab/homarr
   inherit:
   - template: production
-- name: it-tools
-  chart: homelab/it-tools
-  version: 0.1.1
-  inherit:
-  - template: production
-- name: homebox
-  chart: homelab/homebox
-  version: 0.1.1
-  inherit:
-  - template: production
-  - template: backup
-- name: ollama-webui
-  chart: homelab/ollama-webui
-  version: 0.1.1
-  inherit:
-  - template: production
-- name: calibre-web
-  chart: homelab/calibre-web
-  version: 0.1.1
-  inherit:
-  - template: production
-  - template: backup
-- name: zwave-js-ui
-  chart: homelab/zwave-js-ui
-  version: 0.1.4
-  inherit:
-  - template: production
-  - template: backup
-- name: node-red
-  chart: homelab/node-red
-  version: 0.1.3
-  inherit:
-  - template: production
-  - template: backup
-- name: photoprism
-  chart: homelab/photoprism
-  version: 0.1.0
-  inherit:
-  - template: production
-  - template: backup
-- name: homeassistant
-  chart: homelab/homeassistant
+  name: homarr
   version: 0.1.6
+- chart: homelab/it-tools
+  inherit:
+  - template: production
+  name: it-tools
+  version: 0.1.2
+- chart: homelab/homebox
+  inherit:
+  - template: production
+  - template: backup
+  name: homebox
+  version: 0.1.2
+- chart: homelab/ollama-webui
+  inherit:
+  - template: production
+  name: ollama-webui
+  version: 0.1.2
+- chart: homelab/calibre-web
+  inherit:
+  - template: production
+  - template: backup
+  name: calibre-web
+  version: 0.1.2
+- chart: homelab/zwave-js-ui
+  inherit:
+  - template: production
+  - template: backup
+  name: zwave-js-ui
+  version: 0.1.9
+- chart: homelab/node-red
+  inherit:
+  - template: production
+  - template: backup
+  name: node-red
+  version: 0.1.6
+- chart: homelab/photoprism
+  inherit:
+  - template: production
+  - template: backup
+  name: photoprism
+  version: 0.1.2
+- chart: homelab/homeassistant
   inherit:
   - template: production
   - template: postsync
   - template: backup
-- name: mealie
-  chart: homelab/mealie
-  version: 0.1.1
+  name: homeassistant
+  version: 0.1.15
+- chart: homelab/mealie
   inherit:
   - template: production
   - template: backup
-- name: gotify
-  chart: homelab/gotify
-  version: 0.1.3
+  name: mealie
+  version: 0.1.2
+- chart: homelab/gotify
   inherit:
   - template: production
   - template: backup
-- name: jellyfin
-  chart: homelab/jellyfin
-  version: 0.1.0
+  name: gotify
+  version: 0.1.4
+- chart: homelab/jellyfin
   inherit:
   - template: production
   - template: backup
-- name: jupyterhub
+  name: jellyfin
+  version: 0.1.2
+- chart: jupyterhub/jupyterhub
+  inherit:
+  - template: production
   installed: false
-  chart: jupyterhub/jupyterhub
-  version: 3.1.0
-  inherit:
-  - template: production
-- name: gpu-operator
-  installed: false
-  namespace: gpu-operator
-  chart: nvidia/gpu-operator
-  version: v23.6.1
-  inherit:
-  - template: production
-  - template: postsync
-  disableValidationOnInstall: true
+  name: jupyterhub
+  version: 3.2.1
+- chart: nvidia/gpu-operator
   dependencies:
   - chart: homelab/common-test
     version: 0.1.0
-- name: traefik
-  chart: traefik/traefik
-  version: 26.0.0
-  inherit:
-  - template: production
   disableValidationOnInstall: true
-  dependencies:
-  - chart: homelab/commonlib
-    version: 0.1.0
-- name: longhorn
-  namespace: longhorn-system
-  chart: longhorn/longhorn
-  version: 1.5.3
   inherit:
   - template: production
+  - template: postsync
+  installed: false
+  name: gpu-operator
+  namespace: gpu-operator
+  version: v23.9.2
+- chart: traefik/traefik
   dependencies:
   - chart: homelab/commonlib
     version: 0.1.0
+  disableValidationOnInstall: true
+  inherit:
+  - template: production
+  name: traefik
+  version: 26.1.0
+- chart: longhorn/longhorn
+  dependencies:
+  - chart: homelab/commonlib
+    version: 0.1.0
+  inherit:
+  - template: production
+  name: longhorn
+  namespace: longhorn-system
+  version: 1.6.0
+repositories:
+- name: longhorn
+  url: https://charts.longhorn.io
+- name: traefik
+  url: https://traefik.github.io/charts
+- name: nvidia
+  url: https://helm.ngc.nvidia.com/nvidia
+- name: jupyterhub
+  url: https://jupyterhub.github.io/helm-chart/
+- name: homelab
+  url: https://jasonb5.github.io/charts
+- name: prometheus-community
+  url: https://prometheus-community.github.io/helm-charts
+- name: grafana
+  url: https://grafana.github.io/helm-charts
+templates:
+  backup:
+    values:
+    - config/rclone/values.yaml
+  monitoring:
+    missingFileHandler: Warn
+    namespace: monitoring
+    values:
+    - config/{{`{{ .Release.Name }}`}}/values.yaml
+  postsync:
+    hooks:
+    - args:
+      - -c
+      - config/{{`{{ .Release.Name }}`}}/postsync.sh install {{`{{ .Release.Namespace
+        }}`}}
+      command: /bin/bash
+      events:
+      - postsync
+      showlogs: true
+    - args:
+      - -c
+      - config/{{`{{ .Release.Name }}`}}/postsync.sh preuninstall {{`{{ .Release.Namespace
+        }}`}}
+      command: /bin/bash
+      events:
+      - preuninstall
+      showlogs: true
+    - args:
+      - -c
+      - config/{{`{{ .Release.Name }}`}}/postsync.sh postuninstall {{`{{ .Release.Namespace
+        }}`}}
+      command: /bin/bash
+      events:
+      - postuninstall
+      showlogs: true
+  presync:
+    hooks:
+    - args:
+      - -c
+      - config/{{`{{ .Release.Name }}`}}/presync.sh install {{`{{ .Release.Namespace
+        }}`}}
+      command: /bin/bash
+      events:
+      - presync
+      showlogs: true
+    - args:
+      - -c
+      - config/{{`{{ .Release.Name }}`}}/presync.sh preuninstall {{`{{ .Release.Namespace
+        }}`}}
+      command: /bin/bash
+      events:
+      - preuninstall
+      showlogs: true
+    - args:
+      - -c
+      - config/{{`{{ .Release.Name }}`}}/presync.sh postuninstall {{`{{ .Release.Namespace
+        }}`}}
+      command: /bin/bash
+      events:
+      - postuninstall
+      showlogs: true
+  production:
+    missingFileHandler: Warn
+    namespace: production
+    values:
+    - config/{{`{{ .Release.Name }}`}}/values.yaml
