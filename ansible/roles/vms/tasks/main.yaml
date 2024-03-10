@@ -1,0 +1,41 @@
+---
+- block:
+  - name: Disable SSH password authentication in sshd_config
+    ansible.builtin.shell: sed -i "s/#\?\(PasswordAuthentication .*\)/#\1/" /etc/ssh/sshd_config
+  - name: Remove TrustedUserCAKeys from sshd_config
+    ansible.builtin.shell: sed -i "s/TrustedUserCAKeys .*//" /etc/ssh/sshd_config
+  - name: Write SSH include
+    ansible.builtin.copy:
+      dest: /etc/ssh/sshd_config.d/00-user.conf
+      content: |
+        TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
+
+        PermitRootLogin no
+
+        Match User root
+          PasswordAuthentication no
+
+        Match User {{ username }}
+          PasswordAuthentication yes
+  - name: Get admin password
+    become: false
+    community.hashi_vault.vault_kv2_get:
+      url: "{{ vault_url }}"
+      engine_mount_point: homelab
+      path: vms
+      username: "{{ vault_username }}"
+      password: "{{ vault_password }}"
+    delegate_to: localhost
+    register: vault_admin_password
+  - name: Change user password
+    ansible.builtin.user:
+      name: "{{ username }}"
+      password: "{{ vault_admin_password.secret.password | password_hash(hashtype='sha512', rounds=500000) }}"
+  - name: Restart sshd service
+    ansible.builtin.systemd_service:
+      name: sshd
+      state: restarted
+  become: true
+  tags:
+    - vms
+    - update

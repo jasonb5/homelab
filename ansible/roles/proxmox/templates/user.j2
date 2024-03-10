@@ -28,6 +28,8 @@ write_files:
   content: |
     TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem
 
+    PermitRootLogin no
+
     Match User root
       PasswordAuthentication no
 

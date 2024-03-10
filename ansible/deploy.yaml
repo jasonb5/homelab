@@ -26,6 +26,7 @@
   vars:
     ansible_user: titters
   roles:
+    - role: vms
     - role: apps/certbot
       when: certbot is defined and certbot
     - role: apps/main
