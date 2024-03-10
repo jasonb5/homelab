@@ -1,22 +1,44 @@
 ---
 - name: download debian package
   ansible.builtin.get_url:
-    dest: /tmp/omada.deb
-    url: https://static.tp-link.com/upload/software/2023/202312/20231201/Omada_SDN_Controller_v5.13.22_Linux_x64.deb
+    dest: "/tmp/{{ download_url | basename }}"
+    url: "{{ download_url }}"
+  tags:
+    - apps
+    - omada
+    - install
+    - upgrade
 - name: install java 8
   ansible.builtin.apt:
     name: openjdk-8-jre-headless
     state: present
+  tags:
+    - apps
+    - omada
+    - install
 - name: install package
   ansible.builtin.apt:
-    deb: /tmp/omada.deb
+    deb: "/tmp/{{ download_url | basename }}"
     state: present
+  tags:
+    - apps
+    - omada
+    - install
+    - upgrade
 - name: copy certbot post hook
   ansible.builtin.copy:
     dest: ~/certbot-post-hook.sh
     src: files/certbot-post-hook.sh
     mode: '0755'
   register: certbot_post_hook
+  tags:
+    - apps
+    - omada
+    - install
 - name: run certbot post hook
   ansible.builtin.command: ~/certbot-post-hook.sh
   when: certbot_post_hook.changed
+  tags:
+    - apps
+    - omada
+    - install

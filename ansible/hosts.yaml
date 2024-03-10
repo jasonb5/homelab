@@ -50,6 +50,9 @@ all:
           node_labels:
             kubernetes.io/area: router
         omada:
+          app: omada
+          download_url: https://static.tp-link.com/upload/software/2024/202402/20240227/Omada_SDN_Controller_v5.13.30.8_linux_x64.deb
+          certbot: true
           ansible_host: 192.168.55.32
           ip: 192.168.55.32
           vmid: 5002

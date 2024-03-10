@@ -1,12 +1,32 @@
 ---
 - ansible.builtin.include_tasks: _install_unbound.yaml
+  tags:
+    - apps
+    - pihole
+    - install
 - ansible.builtin.include_tasks: _install_pihole.yaml
+  tags:
+    - apps
+    - pihole
+    - install
 - ansible.builtin.include_tasks: _certbot.yaml
+  tags:
+    - apps
+    - pihole
+    - install
 - name: register blocklists
   ansible.builtin.command: sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('{{ item.url }}', 1, '{{ item.comment }}')"
   ignore_errors: true
   loop: "{{ pihole_blocklist }}"
   register: blocklists
+  tags:
+    - apps
+    - pihole
+    - install
 - name: reload pihole
   command: pihole restartdns reload-lists
   when: not blocklists.failed
+  tags:
+    - apps
+    - pihole
+    - install
