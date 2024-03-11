@@ -24,10 +24,6 @@ addons:
   rclone:
     enabled: true
 
-    image:
-      tag: 0.1.2
-      pullPolicy: Always
-
     cronSchedule: "30 1 * * *"
 
     globalFlags: "--password-file /root/.config/rclone/restic.txt"
@@ -38,14 +34,6 @@ addons:
       enabled: true
 
       repo: rclone:minio:apps
-
-    # env:
-    #   CRON: "30 1 * * *"
-    #   BACKUP_APP: restic
-    #   RESTIC_PATH: /config
-    #   RESTIC_REPO: rclone:minio:apps
-    #   RESTIC_GLOBAL_FLAGS: "--password-file /root/.config/rclone/restic.txt"
-    #   RESTIC_FLAGS: "--host {{ .Release.Name }}"
 
     persistence:
       rclone:
