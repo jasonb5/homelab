@@ -1,3 +1,6 @@
+securityContext:
+  privileged: true
+
 env:
   TZ: America/Los_Angeles
 
