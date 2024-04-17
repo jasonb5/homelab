@@ -4,6 +4,10 @@ env:
 nodeSelector:
   kubernetes.io/hostname: galaxy-01
 
+service:
+  loadBalancerIP: "192.168.55.162"
+  type: LoadBalancer
+
 ingress:
   enabled: true
   hosts:
