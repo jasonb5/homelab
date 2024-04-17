@@ -3,17 +3,17 @@ releases:
   inherit:
   - template: monitoring
   name: loki
-  version: 2.10.1
+  version: 2.10.2
 - chart: prometheus-community/prometheus
   inherit:
   - template: monitoring
   name: prometheus
-  version: 25.17.0
+  version: 25.19.1
 - chart: homelab/homarr
   inherit:
   - template: production
   name: homarr
-  version: 0.1.7
+  version: 0.1.8
 - chart: homelab/it-tools
   inherit:
   - template: production
@@ -41,13 +41,13 @@ releases:
   - template: production
   - template: backup
   name: zwave-js-ui
-  version: 0.1.10
+  version: 0.1.12
 - chart: homelab/node-red
   inherit:
   - template: production
   - template: backup
   name: node-red
-  version: 0.1.7
+  version: 0.1.9
 - chart: homelab/photoprism
   inherit:
   - template: production
@@ -60,7 +60,7 @@ releases:
   - template: postsync
   - template: backup
   name: homeassistant
-  version: 0.1.16
+  version: 0.1.21
 - chart: homelab/mealie
   inherit:
   - template: production
@@ -84,7 +84,7 @@ releases:
   - template: production
   installed: false
   name: jupyterhub
-  version: 3.2.1
+  version: 3.3.7
 - chart: nvidia/gpu-operator
   dependencies:
   - chart: homelab/common-test
@@ -105,7 +105,7 @@ releases:
   inherit:
   - template: production
   name: traefik
-  version: 26.1.0
+  version: 27.0.0
 - chart: longhorn/longhorn
   dependencies:
   - chart: homelab/commonlib
@@ -114,7 +114,7 @@ releases:
   - template: production
   name: longhorn
   namespace: longhorn-system
-  version: 1.6.0
+  version: 1.6.1
 repositories:
 - name: longhorn
   url: https://charts.longhorn.io
