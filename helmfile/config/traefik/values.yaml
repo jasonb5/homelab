@@ -1,4 +1,9 @@
 deployment:
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+
   initContainers:
     - name: volume-permission
       image: busybox:latest
