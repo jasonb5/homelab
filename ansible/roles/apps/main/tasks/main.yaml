@@ -3,8 +3,4 @@
     name: "apps/{{ app }}"
   when: app is defined
   tags:
-    - apps
-    - omada
-    - pihole
-    - install
-    - upgrade
+    - "{{ app|default('never') }}"

@@ -4,13 +4,6 @@
     dest: /tmp/pihole.sh
     url: https://install.pi-hole.net
     mode: '0755'
-- name: get admin password
-  community.hashi_vault.vault_kv2_get:
-    url: "{{ vault_url }}"
-    path: pihole
-    engine_mount_point: homelab
-  delegate_to: localhost
-  register: vault_pihole
 - name: create /etc/pihole
   ansible.builtin.file:
     path: /etc/pihole
@@ -24,4 +17,5 @@
     name: lighttpd-mod-openssl, sqlite3
     state: present
 - name: install pihole
+  ignore_errors: true
   ansible.builtin.command: /tmp/pihole.sh --unattended

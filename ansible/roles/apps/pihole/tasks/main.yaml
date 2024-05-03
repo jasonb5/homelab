@@ -1,32 +1,31 @@
 ---
-- ansible.builtin.include_tasks: _install_unbound.yaml
-  tags:
-    - apps
-    - pihole
-    - install
-- ansible.builtin.include_tasks: _install_pihole.yaml
-  tags:
-    - apps
-    - pihole
-    - install
-- ansible.builtin.include_tasks: _certbot.yaml
-  tags:
-    - apps
-    - pihole
-    - install
-- name: register blocklists
-  ansible.builtin.command: sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('{{ item.url }}', 1, '{{ item.comment }}')"
-  ignore_errors: true
-  loop: "{{ pihole_blocklist }}"
-  register: blocklists
-  tags:
-    - apps
-    - pihole
-    - install
-- name: reload pihole
-  command: pihole restartdns reload-lists
-  when: not blocklists.failed
-  tags:
-    - apps
-    - pihole
-    - install
+- include_tasks: install_unbound.yaml
+  tags: [ unbound ]
+  vars:
+    ansible_become: true
+- name: get admin password
+  become: no
+  community.hashi_vault.vault_kv2_get:
+    url: "{{ vault_url }}"
+    path: pihole
+    engine_mount_point: homelab
+  delegate_to: localhost
+  register: vault_pihole
+- include_tasks: install_pihole.yaml
+  vars:
+    ansible_become: true
+- include_tasks: certbot.yaml
+  vars:
+    ansible_become: true
+  tags: [ certbot ]
+- block:
+    - name: register blocklists
+      ansible.builtin.command: sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('{{ item.url }}', 1, '{{ item.comment }}')"
+      ignore_errors: true
+      loop: "{{ pihole_blocklist }}"
+      register: blocklists
+    - name: reload pihole
+      command: pihole restartdns reload-lists
+      when: not blocklists.failed
+  when: pihole_blocklist is defined
+  tags: [ blocklists ]

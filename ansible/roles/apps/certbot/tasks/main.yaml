@@ -1,63 +1,52 @@
 ---
-- name: install certbot
-  ansible.builtin.apt:
-    name: certbot, python3-certbot-dns-cloudflare
-    state: present
-  tags:
-    - certbot
-    - install
-- name: read cloudflare token
+- name: Read cloudflare token
   community.hashi_vault.vault_kv2_get:
     url: "{{ vault_url }}"
     engine_mount_point: homelab
     path: certbot
   delegate_to: localhost
   register: vault_certbot
-  tags:
-    - certbot
-    - install
-- name: create ~/.secrets/certbot
-  ansible.builtin.file:
-    path: ~/.secrets/certbot
-    state: directory
-  tags:
-    - certbot
-    - install
-- name: write credentials
-  ansible.builtin.template:
-    dest: ~/.secrets/certbot/cloudflare.ini
-    src: templates/cloudflare.ini.j2
-  tags:
-    - certbot
-    - install
-- name: check if cert has be installed
+- block:
+    - name: Install python3 and pip
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-venv
+        state: present
+    - name: Install certbot and cloudflare
+      ansible.builtin.pip:
+        name:
+          - certbot
+          - certbot-dns-cloudflare
+        state: present
+        virtualenv: ~/certbot
+        virtualenv_command: python3 -m venv
+    - name: Create ~/.secrets/certbot
+      ansible.builtin.file:
+        path: ~/.secrets/certbot
+        state: directory
+    - name: Write credentials
+      ansible.builtin.template:
+        dest: ~/.secrets/certbot/cloudflare.ini
+        src: templates/cloudflare.ini.j2
+    - name: Check if cert has be installed
+      become: true
+      ansible.builtin.stat:
+        path: /etc/letsencrypt/live/angrydonkey.io
+      register: st
+    - name: Request certificate
+      shell: ". ~/certbot/bin/activate; certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini -d '*.angrydonkey.io' --non-interactive --agree-tos -m {{ vault_certbot.data.data.cf_email }}"
+      when: not st.stat.exists
+    - name: Set permissions
+      ansible.builtin.file:
+        path: /etc/letsencrypt/live
+        owner: www-data
+        recurse: true
+    - name: Setup cron for automatic renew
+      ansible.builtin.cron:
+        name: "certbot renew"
+        minute: "0"
+        hour: "0,12"
+        job: "certbot renew --post-hook 'source ~/certbot-post-hook.sh'"
   become: true
-  ansible.builtin.stat:
-    path: /etc/letsencrypt/live/angrydonkey.io
-  register: st
-  tags:
-    - certbot
-    - install
-- name: request certificate
-  command: certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini -d '*.angrydonkey.io' --non-interactive --agree-tos -m "{{ vault_certbot.data.data.cf_email }}"
-  when: not st.stat.exists
-  tags:
-    - certbot
-    - install
-- name: set permissions
-  ansible.builtin.file:
-    path: /etc/letsencrypt/live
-    owner: www-data
-    recurse: true
-  tags:
-    - certbot
-    - install
-- name: setup automatic renew
-  ansible.builtin.cron:
-    name: "certbot renew"
-    minute: "0"
-    hour: "0,12"
-    job: "certbot renew --post-hook 'source ~/certbot-post-hook.sh'"
-  tags:
-    - certbot
-    - install

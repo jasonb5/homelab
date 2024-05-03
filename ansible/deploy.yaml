@@ -3,6 +3,7 @@
   gather_facts: false
   roles:
     - role: vault/client-key-signing
+  tags: [ vault ]
 
 - name: Deploy Vault CA public key and update sshd_config
   hosts: baremetal
@@ -11,14 +12,14 @@
     ansible_user: root
   roles:
     - role: vault/deploy-ca
+  tags: [ vault ] 
 
 - name: Provision VMs on proxmox hosts
   hosts: vms
   gather_facts: false
-  vars:
-    ansible_user: titters
   roles:
     - role: proxmox
+  tags: [ proxmox ]
 
 - name: Install apps to VMs
   hosts: vms
@@ -27,6 +28,9 @@
     ansible_user: titters
   roles:
     - role: vms
+      tags: [ vms ]
     - role: apps/certbot
-      when: certbot is defined and certbot
+      when: certbot is defined
+      tags: [ certbot ]
     - role: apps/main
+      tags: [ apps ]

@@ -20,10 +20,5 @@
     username: "{{ vault_username }}"
   loop: "{{ vault_signing_roles }}"
 - name: Generate SSH keypair and sign public key
-  include_tasks:
-    file: generate-sign-client.yaml
-    apply:
-      tags: renew-client-certs
+  include_tasks: generate-sign-client.yaml
   loop: "{{ vault_signing_roles }}"
-  tags:
-    - renew-client-certs

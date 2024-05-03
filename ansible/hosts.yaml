@@ -3,10 +3,13 @@ all:
     baremetal:
       hosts:
         callisto:
+          ansible_user: root
           ansible_host: 192.168.55.150
         ceres:
+          ansible_user: root
           ansible_host: 192.168.55.151
         charon:
+          ansible_user: root
           ansible_host: 192.168.55.20
     vms:
       hosts:
@@ -62,6 +65,34 @@ all:
           memory: 2048
           image: ubuntu-20.04-server-cloudimg-amd64.img
           mac_address: de:52:cc:d9:61:db
+          disk_size: 8G
+        lo-01:
+          app: pihole
+          certbot:
+            use_cf_api_token: true
+          ansible_host: 192.168.55.30
+          ip: 192.168.55.30
+          vmid: 5003
+          description: "Pi-hole w/unbound"
+          node: ceres
+          cores: 1
+          memory: 1024
+          image: ubuntu-20.04-server-cloudimg-amd64.img
+          mac_address: 64:16:7F:24:B1:A2
+          disk_size: 8G
+        lo-02:
+          app: pihole
+          certbot:
+            use_cf_api_token: true
+          ansible_host: 192.168.55.31
+          ip: 192.168.55.31
+          vmid: 5004
+          description: "Pi-hole w/unbound via VPN"
+          node: ceres
+          cores: 1
+          memory: 1024
+          image: ubuntu-20.04-server-cloudimg-amd64.img
+          mac_address: 64:16:7F:9F:5B:1C
           disk_size: 8G
     unraid:
       hosts:
