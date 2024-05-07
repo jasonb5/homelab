@@ -30,12 +30,6 @@ releases:
   - template: production
   name: ollama-webui
   version: 0.1.3
-- chart: homelab/calibre-web
-  inherit:
-  - template: production
-  - template: backup
-  name: calibre-web
-  version: 0.1.3
 - chart: homelab/zwave-js-ui
   inherit:
   - template: production
