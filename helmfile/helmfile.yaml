@@ -25,11 +25,6 @@ releases:
   - template: backup
   name: homebox
   version: 0.1.3
-- chart: homelab/ollama-webui
-  inherit:
-  - template: production
-  name: ollama-webui
-  version: 0.1.3
 - chart: homelab/zwave-js-ui
   inherit:
   - template: production
