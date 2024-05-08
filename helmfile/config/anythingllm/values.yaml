@@ -1,0 +1,15 @@
+env:
+  TZ: America/Los_Angeles
+  VITE_API_BASE: "/api"
+
+ingress:
+  enabled: true
+  hosts:
+    - name: default
+      host: allm.angrydonkey.io
+
+persistence:
+  config:
+    enabled: false
+    type: pvc
+    size: 1Gi

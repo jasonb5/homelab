@@ -1,4 +1,9 @@
 releases:
+- chart: homelab/anythingllm
+  inherit:
+  - template: production
+  name: anythingllm
+  version: 0.1.1
 - chart: grafana/loki-stack
   inherit:
   - template: monitoring
