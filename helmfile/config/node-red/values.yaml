@@ -1,6 +1,11 @@
 env:
   TZ: America/Los_Angeles
 
+dnsConfig:
+  options:
+    - name: ndots
+      value: "1"
+
 ingress:
   enabled: true
   hosts:
