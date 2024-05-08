@@ -40,6 +40,10 @@ service:
   spec:
     loadBalancerIP: "192.168.55.161"
 
+updateStrategy:
+  type: Recreate
+  rollingUpdate: null
+
 ingressRoute:
   dashboard:
     entryPoints: ["websecure"]
