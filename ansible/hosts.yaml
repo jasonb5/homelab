@@ -75,6 +75,7 @@ all:
           vmid: 5003
           description: "Pi-hole w/unbound"
           node: ceres
+          onboot: true
           cores: 1
           memory: 1024
           image: ubuntu-20.04-server-cloudimg-amd64.img
@@ -89,6 +90,7 @@ all:
           vmid: 5004
           description: "Pi-hole w/unbound via VPN"
           node: ceres
+          onboot: true
           cores: 1
           memory: 1024
           image: ubuntu-20.04-server-cloudimg-amd64.img
