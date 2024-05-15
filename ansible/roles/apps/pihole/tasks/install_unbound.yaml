@@ -1,13 +1,18 @@
 ---
-- name: install unbound
+- name: Install Unbound
   ansible.builtin.apt:
     name: unbound
     state: present
-- name: copy unbound conf
+- name: Copy unbound conf
   ansible.builtin.copy:
     src: files/pi-hole.conf
     dest: /etc/unbound/unbound.conf.d/pi-hole.conf
-- name: restart unbound service
+- name: Download root.hints
+  ansible.builtin.get_url:
+    url: https://www.internic.net/domain/named.root
+    dest: /var/lib/unbound/root.hints
+    checksum: md5:https://www.internic.net/domain/named.root.md5
+- name: Restart unbound service
   ansible.builtin.systemd_service:
     name: unbound
     state: restarted
