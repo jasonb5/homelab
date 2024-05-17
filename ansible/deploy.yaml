@@ -3,7 +3,7 @@
   gather_facts: false
   roles:
     - role: vault/client-key-signing
-  tags: [ vault ]
+  tags: [ vault, vault_bootstrap ]
 
 - name: Deploy Vault CA public key and update sshd_config
   hosts: baremetal
@@ -34,3 +34,12 @@
       tags: [ certbot ]
     - role: apps/main
       tags: [ apps ]
+
+- name: Update/install os packages
+  hosts: vms
+  gather_facts: true
+  vars:
+    ansible_user: titters
+  roles:
+    - role: os
+  tags: [ os ]

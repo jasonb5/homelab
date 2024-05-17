@@ -40,6 +40,8 @@ all:
           node_labels:
             kubernetes.io/area: rack
         galaxy-03:
+          pkgs:
+            - linux-modules-extra-{{ ansible_kernel }}
           ansible_host: 192.168.55.23
           ip: 192.168.55.23
           vmid: 5000
