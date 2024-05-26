@@ -8,10 +8,15 @@
     url: "{{ vault_url }}"
     username: "{{ vault_username }}"
   register: vault_ca_passphrase
+- name: Check if client keypair exists
+  ansible.builtin.stat:
+    path: "{{ vault_client_keypair_path }}-{{ item.name }}"
+  register: client_keypair
 - name: Generate client keypair
   community.crypto.openssh_keypair:
     path: "{{ vault_client_keypair_path }}-{{ item.name }}"
     passphrase: "{{ vault_ca_passphrase.data.data.passphrase|quote }}"
+  when: not client_keypair.stat.exists
 - name: Sign client public key
   community.hashi_vault.vault_write:
     path: "ssh-client-signer/sign/{{ item.name }}"
