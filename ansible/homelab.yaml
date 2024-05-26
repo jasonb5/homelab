@@ -23,12 +23,15 @@
 
 - name: Install apps to VMs
   hosts: vms
-  gather_facts: false
+  gather_facts: true
   vars:
     ansible_user: titters
   tasks:
     - include_role:
         name: apps/vms
+        apply:
+          tags: [ vms ]
+      tags: [ vms ]
     - include_role:
         name: apps/certbot
         apply:
@@ -47,12 +50,3 @@
           tags: [ omada ]
       when: "'omada' in group_names"
       tags: [ omada ]
-
-- name: Update/install os packages
-  hosts: vms
-  gather_facts: true
-  vars:
-    ansible_user: titters
-  roles:
-    - role: os
-  tags: [ os ]

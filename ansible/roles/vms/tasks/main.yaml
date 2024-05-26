@@ -35,7 +35,22 @@
     ansible.builtin.systemd_service:
       name: sshd
       state: restarted
+  - name: Updates all packages
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
+      update_cache: true
+  - name: Install new packages
+    ansible.builtin.apt:
+      name: "{{ pkgs }}"
+      state: present
+    when: pkgs is defined
+  - name: Check if reboot required
+    ansible.builtin.stat:
+      path: /var/run/reboot-required
+    register: reboot_required_file
+  - name: Reboot if required
+    throttle: 1
+    reboot:
+    when: reboot_required_file.stat.exists
   become: true
-  tags:
-    - vms
-    - update
