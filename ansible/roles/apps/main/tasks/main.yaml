@@ -1,6 +1,0 @@
----
-- include_role:
-    name: "apps/{{ app }}"
-  when: app is defined
-  tags:
-    - "{{ app|default('never') }}"
