@@ -14,11 +14,6 @@ releases:
   - template: monitoring
   name: prometheus
   version: 25.21.0
-- chart: homelab/homarr
-  inherit:
-  - template: production
-  name: homarr
-  version: 0.1.9
 - chart: homelab/it-tools
   inherit:
   - template: production
