@@ -1,9 +1,11 @@
 ---
-- include_tasks: install_unbound.yaml
+- name: Install unbound
+  include_tasks: install_unbound.yaml
   tags: [ unbound ]
   vars:
     ansible_become: true
-- name: get admin password
+  when: unbound
+- name: Get Pi-hole admin password
   become: no
   community.hashi_vault.vault_kv2_get:
     url: "{{ vault_url }}"
@@ -11,7 +13,8 @@
     engine_mount_point: homelab
   delegate_to: localhost
   register: vault_pihole
-- include_tasks: install_pihole.yaml
+- name: Install Pi-hole
+  include_tasks: install_pihole.yaml
   vars:
     ansible_become: true
 - include_tasks: certbot.yaml
@@ -19,13 +22,16 @@
     ansible_become: true
   tags: [ certbot ]
 - block:
-    - name: register blocklists
+    - name: Clear blocklists
+      ansible.builtin.command: sqlite3 /etc/pihole/gravity.db "DELETE FROM adlist"
+    - name: Add blocklist to database
       ansible.builtin.command: sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('{{ item.url }}', 1, '{{ item.comment }}')"
       ignore_errors: true
-      loop: "{{ pihole_blocklist }}"
-      register: blocklists
-    - name: reload pihole
-      command: pihole restartdns reload-lists
-      when: not blocklists.failed
-  when: pihole_blocklist is defined
+      loop: "{{ blocklists }}"
+      register: add_blocklist
+  become: true
   tags: [ blocklists ]
+- name: Reload blocklists
+  command: pihole -g
+- name: Reload pihole
+  command: pihole restartdns reload-lists

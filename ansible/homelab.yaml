@@ -23,12 +23,12 @@
 
 - name: Install apps to VMs
   hosts: vms
-  gather_facts: true
+  gather_facts: false
   vars:
     ansible_user: titters
   tasks:
     - include_role:
-        name: apps/vms
+        name: vms
         apply:
           tags: [ vms ]
       tags: [ vms ]

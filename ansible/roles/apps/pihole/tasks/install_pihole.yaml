@@ -19,3 +19,10 @@
 - name: install pihole
   ignore_errors: true
   ansible.builtin.command: /tmp/pihole.sh --unattended
+- name: Creating 05-custom.conf under dnsmasq.d
+  ansible.builtin.copy:
+    dest: /etc/dnsmasq.d/05-custom.conf 
+    content: |
+      server=/angrydonkey.io/10.5.5.3
+
+      rev-server=10.5.5.1/24,192.168.55.1
