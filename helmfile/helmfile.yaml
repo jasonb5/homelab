@@ -13,12 +13,12 @@ releases:
   inherit:
   - template: monitoring
   name: prometheus
-  version: 25.20.1
+  version: 25.21.0
 - chart: homelab/homarr
   inherit:
   - template: production
   name: homarr
-  version: 0.1.8
+  version: 0.1.9
 - chart: homelab/it-tools
   inherit:
   - template: production
@@ -51,16 +51,15 @@ releases:
 - chart: homelab/homeassistant
   inherit:
   - template: production
-  - template: postsync
   - template: backup
   name: homeassistant
-  version: 0.1.26
+  version: 0.1.28
 - chart: homelab/mealie
   inherit:
   - template: production
   - template: backup
   name: mealie
-  version: 0.1.3
+  version: 0.1.4
 - chart: homelab/gotify
   inherit:
   - template: production
@@ -72,7 +71,7 @@ releases:
   - template: production
   - template: backup
   name: jellyfin
-  version: 0.1.3
+  version: 0.1.4
 - chart: jupyterhub/jupyterhub
   inherit:
   - template: production
@@ -99,7 +98,7 @@ releases:
   inherit:
   - template: production
   name: traefik
-  version: 28.0.0
+  version: 28.1.0
 - chart: longhorn/longhorn
   dependencies:
   - chart: homelab/commonlib
@@ -108,7 +107,7 @@ releases:
   - template: production
   name: longhorn
   namespace: longhorn-system
-  version: 1.6.1
+  version: 1.6.2
 repositories:
 - name: longhorn
   url: https://charts.longhorn.io
