@@ -5,11 +5,13 @@ releases:
   name: anythingllm
   version: 0.1.1
 - chart: grafana/loki-stack
+  installed: false
   inherit:
   - template: monitoring
   name: loki
   version: 2.10.2
 - chart: prometheus-community/prometheus
+  installed: false
   inherit:
   - template: monitoring
   name: prometheus
