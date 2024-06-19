@@ -33,3 +33,12 @@ kubeconfig:
 		-t client \
 		ansible/kubespray/cluster.yml --become && \
 			cp ansible/artifacts/admin.conf ~/.kube/config
+
+.PHONY: homelab-env
+homelab-env:
+	mamba create -n homelab -y \
+		'python<=3.11' hvac cryptography && \
+		source $(join $(dir $(CONDA_EXE)), '/..')/etc/profile.d/conda.sh && \
+		conda activate homelab && \
+		pip install -r ansible/kubespray/requirements.txt && \
+		pip install cryptography[ssh]
