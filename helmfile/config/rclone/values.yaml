@@ -1,39 +1,23 @@
-# initContainers:
-#   restore:
-#     image:
-#       repository: ghcr.io/jasonb5/rclone
-#       tag: 0.1.2
-# 
-#     env:
-#       RESTORE: true
-#       BACKUP_APP: restic
-#       RESTIC_PATH: /config
-#       RESTIC_REPO: rclone:minio:apps
-#       RESTIC_GLOBAL_FLAGS: "--password-file /root/.config/rclone/restic.txt"
-#       RESTIC_FLAGS: "--host {{ .Release.Name }}"
-# 
-#     persistence:
-#       rclone:
-#         enabled: true
-#         type: nfs
-#         server: 192.168.55.20
-#         path: /mnt/user/appdata/rclone
-#         mountPath: /root/.config/rclone
-
 addons:
   rclone:
     enabled: true
 
+    image:
+      tag: 0.1.3
+
     cronSchedule: "30 1 * * *"
+    cronArgs: "-d 8 -f"
 
-    globalFlags: "--password-file /root/.config/rclone/restic.txt"
+    globalArgs: "--password-file /root/.config/rclone/restic.txt"
 
-    flags: "--host {{ .Release.Name }}"
+    backupArgs: "--host {{ .Release.Name }}"
+
+    restoreArgs: "--host {{ .Release.Name }}"
+
+    destination: rclone:minio:apps
 
     restic:
       enabled: true
-
-      repo: rclone:minio:apps
 
     persistence:
       rclone:
