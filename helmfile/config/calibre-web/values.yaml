@@ -1,0 +1,21 @@
+env:
+  TZ: America/Los_Angeles
+
+ingress:
+  enabled: true
+  hosts:
+    - name: default
+      host: calibre-web.angrydonkey.io
+
+persistence:
+  config:
+    enabled: true
+    type: pvc
+    size: 1Gi
+    mountPath: /app/data
+
+  data:
+    enabled: true
+    type: nfs
+    server: 192.168.55.20
+    path: /mnt/user/media/ebooks

@@ -1,4 +1,9 @@
 releases:
+- chart: homelab/calibre-web
+  inherit:
+  - template: production
+  name: calibre-web
+  version: 0.1.4
 - chart: homelab/anythingllm
   inherit:
   - template: production
