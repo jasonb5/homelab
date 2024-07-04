@@ -17,7 +17,7 @@ persistence:
   config:
     enabled: true
     type: pvc
-    size: 1Gi
+    size: 2Gi
 
   zwave:
     enabled: true
