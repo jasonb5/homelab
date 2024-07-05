@@ -4,11 +4,6 @@ releases:
   - template: production
   name: calibre-web
   version: 0.1.4
-- chart: homelab/anythingllm
-  inherit:
-  - template: production
-  name: anythingllm
-  version: 0.1.2
 - chart: grafana/loki-stack
   inherit:
   - template: monitoring
